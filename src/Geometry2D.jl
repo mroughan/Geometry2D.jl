@@ -2,9 +2,14 @@ module Geometry2D
 
 using PyPlot
 import PyPlot: plot
-import Base: convert, length, promote, promote_rule, sort, sort!, unique
+import Base: convert, length, promote, promote_rule, sort, sort!, unique, isfinite, isnan, copy, Array, eltype, abs, isequal, isless, ones, zeros, angle, sign, print
+import Base: !, !=, $, %, .%, &, *, +, -, .!=, .+, .-, .*, ./, .<, .<=, .==, .>,
+    .>=, .\, .^, /, //, <, <:, <<, <=, ==, >, >=, >>, .>>, .<<, >>>,
+    <|, |>, \, ^, |, ~, !==, >:, colon, hcat, vcat, hvcat, getindex, setindex!,
+    transpose, ctranspose
 
 export G2dObject, G2dTransform, G2dSimpleObject, G2dCompoundObject
+export tolerance
  
 abstract G2dObject
 
@@ -12,7 +17,7 @@ abstract G2dTransform <: G2dObject
 abstract G2dSimpleObject <: G2dObject
 abstract G2dCompoundObject <: G2dObject
 
-# automated promotion rules, for use primarily in constructors
+# automated promotion rules for arrays of numbers
 promote_rule{T<:Integer,S<:FloatingPoint}(::Type{Array{T,1}}, ::Type{Array{S,1}} ) = Array{S,1}
 promote_rule{T<:Integer}(::Type{Array{Rational{T},1}}, ::Type{Array{T,1}}) = Array{Rational{T},1}
 promote_rule{T<:Integer,S<:Integer}(::Type{Array{Rational{T},1}}, ::Type{Array{S,1}}) = Array{Rational{promote_type(T,S)},1}
