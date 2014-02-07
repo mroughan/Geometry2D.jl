@@ -29,7 +29,8 @@ tolerance = eps() # global variable for tolerance of many operations in floating
 
 # various parts of the package
 include("point.jl")
-# include("utilities.jl")
+include("triangle.jl")
+include("utilities.jl")
 # include("plots.jl")
 # include("convexhull.jl")
 

@@ -1,5 +1,5 @@
 
-export Point, PointVector, PointArray
+export Point, PointArray
 
 export origin
 
@@ -107,19 +107,9 @@ function PointArray{T<:Number}(x::Array{T}, y::Array{T})
         error(" size of x must be the same as size y.")
     end
     if ndims(x)==1
-        tmp = Array(Point{T}, length(x))
-        for k=1:length(x)
-            tmp[k] = Point(x[k],x[k])
-        end
-        return tmp
-        # using a comprehension seemed slightly slower in my benchmarks
-        # return [ Point(x[i], y[i]) for i=1:length(x) ]
+        return [ Point(x[i], y[i]) for i=1:length(x) ]
     else
-        tmp = Array(Point{T}, length(x))
-        for k=1:length(x)
-            tmp[k] = Point(x[k],x[k])
-        end
-        return reshape(tmp, size(x))
+        return reshape([ Point(x[i], y[i]) for i=1:length(x) ], size(x))
     end
 end
 PointArray{T<:Number, S<:Number}(x::Array{T}, y::Array{S}) = PointArray(promote(x,y)...)
@@ -128,7 +118,10 @@ PointArray(n::Integer) = PointArray(ones(n)*NaN, ones(n)*NaN)
 PointArray(n::Integer, m::Integer) = PointArray(ones(n,m)*NaN, ones(n,m)*NaN)
 zeros{T<:Number}(x::Array{Point{T}}) = PointArray(zeros(T,size(x)), zeros(T,size(x)))
 ones{T<:Number}(x::Array{Point{T}}) = PointArray(ones(T,size(x)), ones(T,size(x)))
-# could have "nans" and "infs"
+# could have "nans" and "infs" as well?
+
+# create a set of random points
+PointArrayRand(n::Integer, m::Integer) = PointArray(rand(n,m), rand(n,m))
 
 # return x or y coordinates
 points_x{T<:Number}(p::Array{Point{T},1}) = [p[i].x for i=1:length(p)]
