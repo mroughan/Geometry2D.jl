@@ -6,18 +6,21 @@ export ccw
 
 ######################################################
 # CCW functions
+#   there are various overloaded alternatives here, but the first is preferred
 #
 
-# assume three "Point" composite data structures 
-#   this is the best one to use if the data are already in "Point"
-function ccw(point1::Point, point2::Point, point3::Point)
+# Input is three "Point" composite data structures 
+#   This is the best one to use if the data are already in "Point" data structures.
+#   The others are slower, but may be used to create cleaner code where it doesn't
+#   need to be fast, or putting the data into Points would be wasteful (say for an array of points)
+function ccw{T <: Real}(point1::Point{T}, point2::Point{T}, point3::Point{T})
     v1 = point2 .- point1
     v2 = point3 .- point2
     return v1.x*v2.y - v1.y*v2.x
 end
 
-# assumes input is a vector of 3 Points
-function ccw{T <: Number}(points::Vector{Point{T}})
+# Input is a vector of 3 Points
+function ccw{T <: Real}(points::Vector{Point{T}})
     if length(points) != 3
        error("points should be a 3 element vector of points")
     end
@@ -26,8 +29,8 @@ function ccw{T <: Number}(points::Vector{Point{T}})
     return v1.x*v2.y - v1.y*v2.x
 end
 
-# assumes input is a 3xn array of Points
-function ccw{T <: Number}(points::Array{Point{T}})
+# Inputs 'points' is a 3xn array of Points
+function ccw{T <: Real}(points::Array{Point{T}})
     if size(points,1) != 3
        error("points should be a 3xn array of points")
     end
@@ -36,8 +39,8 @@ function ccw{T <: Number}(points::Array{Point{T}})
     return points_x(v1).*points_y(v2) .- points_y(v1).*points_x(v2)
 end
 
-# x and y vectors passed for the three points
-function ccw(x::Vector, y::Vector) 
+# Inputs x and y are 3 element vectors providing coordinates for the three points
+function ccw{T <: Real}(x::Vector{T}, y::Vector{T}) 
     if length(x) != length(x)
         error("The size of x must be the same as size y.")
     end
@@ -45,8 +48,8 @@ function ccw(x::Vector, y::Vector)
                (y[2] - y[1])*(x[3] - x[1])
 end
 
-# x and y vectors passed a 3xn array of points (n Points)
-function ccw(X::Array, Y::Array) 
+# Inputs X and Y are 3xn arrays of coordinates of n sets of 3 points
+function ccw{T <: Real}(X::Array{T}, Y::Array{T}) 
     if size(X) != size(Y)
         error("The size of X must be the same as size Y.")
     end
@@ -57,8 +60,8 @@ function ccw(X::Array, Y::Array)
                (Y[2,:] - Y[1,:]).*(X[3,:] - X[1,:])
 end
 
-# assumes input are three 2-element vectors
-function ccw(p1::Vector, p2::Vector, p3::Vector)
+# Inputs p1,p2, and p3 are three 2-element vectors, each containing (x,y) coordinates
+function ccw{T <: Real}(p1::Vector{T}, p2::Vector{T}, p3::Vector{T})
     if length(p1)!=2 || length(p2)!=2 || length(p3)!=2 
         error("p1, p2, and p3 should be 2 element vectors")
     end

@@ -1,26 +1,29 @@
 
-export Point, PointArray
+export Point, Vect, PointArray
 
 export origin
 
 export points_x, points_y, isfinite, isinf, isnan, eltype, isless, isequal, convert, cmp, angle, abs, distance, distance2, ones, zeros, quadrant, sign, print
 
 # define a "point"
-#    at the moment I'm not making a distinction between a point and vector
 immutable Point{T<:Number} <: G2dSimpleObject
     x::T
     y::T
 end
 # convenience constructor
-Point{T<:Number, S<:Number}(x::T, y::S) = Point(promote(x,y)...);
+Point{T<:Number, S<:Number}(x::T, y::S) = Point(promote(x,y)...)
 const origin = Point(0,0)
+
+# at the moment I'm not making a distinction between a point and vector
+#   just have the alias to make some nomenclature easier
+typealias Vect Point
 
 # automated promotion rules for Points
 promote_rule{T<:Integer,S<:FloatingPoint}(::Type{Point{T}}, ::Type{Point{S}} ) = Point{S}
 promote_rule{T<:Integer}(::Type{Point{Rational{T}}}, ::Type{Point{T}}) = Point{Rational{T}}
-promote_rule{T<:Integer,S<:Integer}(::Type{Point{Rational{T}}}, ::Type{Point{S}}) = Point{Rational{promote_type(T,S)}}
-promote_rule{T<:Integer,S<:Integer}(::Type{Point{Rational{T}}}, ::Type{Point{Rational{S}}}) = Point{Rational{promote_type(T,S)}}
-promote_rule{T<:Integer,S<:FloatingPoint}(::Type{Array{Rational{T},1}}, ::Type{Point{S}})  = Point{promote_type(T,S)}
+promote_rule{T<:Integer,S<:Integer}(::Type{Point{Rational{T}}},::Type{Point{S}}) = Point{Rational{promote_type(T,S)}}
+promote_rule{T<:Integer,S<:Integer}(::Type{Point{Rational{T}}},::Type{Point{Rational{S}}}) = Point{Rational{promote_type(T,S)}}
+promote_rule{T<:Integer,S<:FloatingPoint}(::Type{Point{Rational{T}}}, ::Type{Point{S}})  = Point{promote_type(T,S)}
 # should probably put something in here for complex numbers too
 
 # arithmetic
@@ -58,7 +61,7 @@ isfinite(p::Point) = isfinite(p.x) & isfinite(p.y)
 isinf(p::Point) = !isfinite(p)
 isnan(p::Point) = isnan(p.x) | isnan(p.y)
 eltype{T<:Number}(p::Point{T}) = T
-convert{T<:Number, S<:Number}(::Type{Point{T}}, p::Point{S}) = Point(convert(T,p.x), convert(T,p.y));
+convert{T<:Number, S<:Number}(::Type{Point{T}}, p::Point{S}) = Point(convert(T,p.x), convert(T,p.y))
 
 abs(p::Point) = Point(abs(p.x), abs(p.y))
 sign(p::Point) = Point(sign(p.x), sign(p.y))
