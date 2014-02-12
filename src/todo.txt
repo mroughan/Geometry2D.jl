@@ -1,0 +1,69 @@
+point.jl
+
+line.jl
+  Haven't really implemented much of "Ray" yet 
+  Conversions between Line, Ray and Segment
+  Intersections between mixed Line, Ray and Segment
+  Arrays of lines, rays and segments???
+  Many of the constructors for a "Line" push them towards being Float64
+     which will then have an impact on later algorithms
+     -- could have specialised algorithms to deal with Rationals (say)
+
+triangle.jl
+  finish constructors etc
+  isin(point, triangle)
+     generic "isin" 
+           return "false" if not in
+	   return "true" if interior
+	   return ??? if on boundary -- maybe add a switch 
+  area(triangle)
+  intersections and unions -- by converting into a polygon
+
+
+circle.jl (center, radius)
+  arc (part of a circle)
+  approximating polygons
+
+transforms.jl
+  scale
+  translate
+  rotate
+  shear
+  ???
+
+polygons.jl
+   constructors
+   union/intersection
+
+utilities.jl
+   convex hulls
+   triangulations
+   distance functions (calculate distances between two objects, and
+                       closest points)   
+
+plot.jl
+   conditionally include PyPlot and create routines for plotting all
+   of the above, maybe in with their files, or maybe together?
+      -- how to plot unbounded?
+
+   at the moment in utilities.jl
+
+   create
+       P = displayPath(O)
+   for all objects for basic plot
+
+   perhaps create my own fill routines though
+
+
+other issues
+   -- should we have isin return more complex arguments to see if things
+      are on edges? maybe there should be a separate "onedge" function?
+
+   -- is there really a point to having separate types for "Point" and
+      "Vect"?
+
+
+
+
+
+

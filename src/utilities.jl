@@ -2,7 +2,7 @@
 # some basicly useful functions
 # 
 
-export ccw
+export ccw, sort, plot
 
 ######################################################
 # CCW functions
@@ -71,5 +71,29 @@ end
 
 
 ######################################################
-# ???? functions
+# Lexicographic sorting functions for points
+#     i.e., sort first by x-coordinate, then if that is equal sort by y
+#     the function returns the permutation, to get sorted points do
+#        points = points[k]
 #
+
+# Input a vector of Points
+function sortperm{T <: Real}(points::Vector{Point{T}})
+    k1 = sortperm(points_y(points))
+    k2 = sortperm(points_x(points[k1]), alg=MergeSort)
+    return k1[k2]
+end
+
+# Inputs x and y are vectors providing coordinates for the points
+function sortperm{T <: Real}(x::Vector{T}, y::Vector{T}) 
+    k1 = sortperm(y)
+    k2 = sortperm(x[k1], alg=MergeSort)
+    return k1[k2]
+end
+
+# # Inputs are the points in a nx2 array, would overload native sorts, so avoid this
+# function sort{T <: Real}(P::Array{T})
+#     k1 = sortperm(P[:,2])
+#     k2 = sortperm(P[k1,1], alg=MergeSort)
+#     return P[k1[k2],:], k1[k2]
+# end

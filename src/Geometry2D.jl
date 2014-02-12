@@ -1,8 +1,9 @@
 module Geometry2D
 
-using PyPlot
+using PyPlot 
 import PyPlot: plot
-import Base: convert, length, promote, promote_rule, sort, sort!, unique, isfinite, isnan, copy, Array, eltype, abs, isequal, isless, ones, zeros, angle, sign, print
+
+import Base: convert, length, promote, promote_rule, sort, sort!, sortperm, unique, isfinite, isnan, copy, Array, eltype, abs, isequal, isless, ones, zeros, angle, sign, print
 import Base: !, !=, $, %, .%, &, *, +, -, .!=, .+, .-, .*, ./, .<, .<=, .==, .>,
     .>=, .\, .^, /, //, <, <:, <<, <=, ==, >, >=, >>, .>>, .<<, >>>,
     <|, |>, \, ^, |, ~, !==, >:, colon, hcat, vcat, hvcat, getindex, setindex!,
@@ -29,9 +30,10 @@ tolerance = eps() # global variable for tolerance of many operations in floating
 
 # various parts of the package
 include("point.jl")
+include("utilities.jl")
 include("line.jl")
 include("triangle.jl")
-include("utilities.jl")
+include("circle.jl")
 # include("plots.jl")
 # include("convexhull.jl")
 

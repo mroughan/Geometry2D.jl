@@ -30,7 +30,7 @@ function Triangle{T<:Number}(x::Array{T}, y::Array{T})
         end 
     elseif ndims(x)==2
         tmp = Array(Point{T}, size(x))
-        c = CCW(x, y)
+        c = ccw(x, y)
         for k=1:size(x,2)
             if c[k]>0
                 tmp[1,k] = Point(x[1,k],x[1,k])
@@ -52,6 +52,7 @@ Triangle() = PointArray(3)
 Triangle(n::Integer) = PointArray(3, n)
 TriangleRand(n::Integer) = Triangle(rand(3,n), rand(3,n))
 
+# have a test because Triangle isn't a formal type
 function isTriangle{T<:Number}(t::Array{Point{T}})
     # returns true for each array element that is a valid triangle
     #     i.e., a 3 element vector of points in counter-clockwise order
@@ -61,3 +62,8 @@ function isTriangle{T<:Number}(t::Array{Point{T}})
     return ccw(t) > 0
 end
 
+
+# utilities
+
+# no "type" Triangle
+# bounded(t::Triangle) = true
