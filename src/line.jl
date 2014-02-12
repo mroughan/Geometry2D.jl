@@ -120,26 +120,25 @@ isparallel(p1::Segment, p2::Segment) = ( slope(p1) == slope(p2) )
 
 # inclusion tests: return true if a point is on a Line, Ray or Segment, repectively
 #     not that tolerance specifies a distance from the object that is allowed
-#     for bounded cases (Ray or Segment) the parameter "closed" allows you to specify whether
-#         you want the closed set (including boundary) or the open set (not including it)
+#     for bounded cases (Ray or Segment) the second returned argument is "onedge"
 #         this is confusing in conjunction with tolerance which effectively makes the boundary have a width
-function isin(p::Point, line::Line; tolerance=1.0e-12, closed=true)
+function isin(p::Point, line::Line; tolerance=1.0e-12)
     r = 1
-    if (abs(line.theta) <= pi/4)
+    if (abs(slope(line)) < 1)
         y = yint(line) + p.x * slope(line)
         r = p.y - y
     else
         x = xint(line) + p.y * invslope(line)
         r = p.x - x
     end
-    return abs(r) < tolerance
+    return abs(r) < tolerance, false
 end
 
-function isin(p::Point, r::Ray; tolerance=1.0e-12, closed=true)
+function isin(p::Point, r::Ray; tolerance=1.0e-12)
     error("not implemented yet")
 end
 
-function isin(p::Point, s::Segment; tolerance=1.0e-12, closed=true)
+function isin(p::Point, s::Segment; tolerance=1.0e-12)
     if (abs(slope(s)) < 1)
         # for segments that are closer to horizontal
         
@@ -160,19 +159,29 @@ function intersection( line1::Line, line2::Line; tolerance=1.0e-12)
     #                  if they don't intersect then return "nothing"
     #                  if they are the same, then return the Line
 
+    
+
     # if neither line is near vertical
-    if abs(line1.slope - line2.slope)  < tolerance
-        # lines are parallel
-        if abs(line1.yint - line2.yint)  < tolerance
-            # lines are the same
-            return 2, line1
+    if abs(line1.theta - line2.theta) < tolerance
+        if distance(line1.point,line2.point) < tolerance
+            return 2, line1     # lines are the same
         else
-            return 0, nothing 
+            return 0, nothing   # lines are parallel
         end
     else
-        x = (line1.yint - line2.yint) / (line2.slope - line1.slope)
-        y = line1.yint + line1.slope * x
-        return 1, Point(x,y)
+        A = [[cos(line1.theta) -cos(line2.theta)]
+             [sin(line1.theta) -sin(line2.theta)]]
+        b = [line2.point.x - line1.point.x,
+             line2.point.y - line1.point.y,
+             ]
+        par = A \ b
+        p1 = line1.point + par[1]*Point(cos(line1.theta), sin(line1.theta))
+        p2 = line2.point + par[2]*Point(cos(line2.theta), sin(line2.theta))
+
+        # println("p1 = $p1")
+        # println("p2 = $p2")
+
+        return 1, p1
     end
 
 end

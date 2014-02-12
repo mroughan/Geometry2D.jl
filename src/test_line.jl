@@ -66,8 +66,6 @@ println(  isin( Point(eps(),1), Line(1.0,5.0) ) )     # true
 println(  isin( Point(0.0000001,1), Line(1.0,5.0) ) ) # false
 
 # test intersections algorithms
-# i,p = intersection(l1, l2)
-
-
-
-
+i12,p12 = intersection(l1, l2)
+i34,p34 = intersection(l3, l4)
+i16,p16 = intersection(l1, l6)

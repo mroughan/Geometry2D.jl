@@ -34,7 +34,7 @@ include("utilities.jl")
 include("line.jl")
 include("triangle.jl")
 include("circle.jl")
-# include("plots.jl")
+include("plot.jl")
 # include("convexhull.jl")
 
 end # module

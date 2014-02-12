@@ -23,8 +23,8 @@ Circle{T<:Number, S<:Number}(center::Point{T}, radius::S) = Circle(convert(Point
 #   this is going to be a floating point calculation, so don't bother subtyping inputs
 #   this is probably not the fastest way to solve this, but does a bit of checking
 function Circle(a::Point, b::Point, c::Point; tolerance=1.0e-12)
-    c = ccw(a, b, c)
-    if abs(c) <= tolerance
+    clockwise = ccw(a, b, c)
+    if abs(clockwise) <= tolerance
         error("input points are close to colinear")
         # NB: this includes the case that two points are the same point
     end
@@ -34,28 +34,15 @@ function Circle(a::Point, b::Point, c::Point; tolerance=1.0e-12)
     mid_ac = (a+c)/2
     mid_bc = (b+c)/2
 
-    # find slopes of right-angles to chords between the points
-    #   avoiding cases where one chord is vertical
-    if (abs(a.y-b.y) > tolerance)
-        slope_ab = - (b.x-a.x)./(b.y-a.y);
-    else
-        slope_ab = Inf
-    end
-    if (abs(a.y-c.y) > tolerance)
-        slope_ac = - (c.x-a.x)./(c.y-a.y);
-    else
-        slope_ac = Inf
-    end
-    if (abs(b.y-c.y) > tolerance)
-        slope_bc = - (c.x-b.x)./(c.y-b.y);
-    else
-        slope_bc = Inf
-    end
+    # find thetas of right-angles to chords between the points
+    theta_ab = atan( - (b.x-a.x) / (b.y-a.y))
+    theta_ac = atan( - (c.x-a.x) / (c.y-a.y))
+    theta_bc = atan( - (c.x-b.x) / (c.y-b.y))
 
     # create one line for each
-    line_ab = Line(mid_ab, slope_ab)
-    line_ac = Line(mid_ac, slope_ac)
-    line_bc = Line(mid_bc, slope_bc)
+    line_ab = Line(mid_ab, theta_ab)
+    line_ac = Line(mid_ac, theta_ac)
+    line_bc = Line(mid_bc, theta_bc)
 
     # find intersection points of the chords
     i_bc,c_bc = intersection(line_ab, line_ac)
@@ -68,6 +55,7 @@ function Circle(a::Point, b::Point, c::Point; tolerance=1.0e-12)
         distance(c_ac,c_bc)>tolerance
         error("incompatible center point calculations")
     end
+    center = (c_ab+c_ac+c_bc)/3
 
     # calculate the radius
     radius = distance(a, center)
@@ -81,12 +69,12 @@ isequal(c1::Circle, c2::Circle) = c1.center==c2.center && c1.radius==c2.radius
 center(c::Circle) = c.center
 radius(c::Circle) = c.radius
 area(c::Circle) = pi*c.radius*c.radius
-function isin(p::Point, c::Circle; tolerance=1.0e-12, closed=true)
+function isin(p::Point, c::Circle; tolerance=1.0e-12)
     d = distance(p, c.center)
-    if closed
-        return distance <= radius + tolerance
-    else
-        return distance < radius - tolerance
+    if distance < radius - tolerance
+        return true, false
+    elseif distance <= radius + tolerance
+        return true, true
     end
 end 
 bounded(c::Circle) = true
@@ -95,8 +83,8 @@ bounded(c::Circle) = true
 function approxpoly(c::Circle, n::Integer)
     dtheta = 2.0*pi/n
     theta = dtheta*[0:n]
-    x = c.radius * cos(theta)
-    y = c.radius * sin(theta)
+    x = c.center.x + c.radius * cos(theta)
+    y = c.center.y + c.radius * sin(theta)
     return PointArray(x,y)
 end
 
