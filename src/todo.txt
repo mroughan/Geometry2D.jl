@@ -6,6 +6,12 @@ General
        operations on these, but will need it for transformations (maybe)
        and maybe for constructing arrays of these things
 
+  - Tests
+     - put tests into a different directory from the sources
+     - add more comprehensive tests, using @assert to check things are correct
+     - perhaps put the tests that do plots in separate "examples"
+         as these are no suitable for off-line testing?
+
 point.jl
 
 line.jl
