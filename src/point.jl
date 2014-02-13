@@ -3,7 +3,7 @@ export Point, Vect, PointArray
 
 export origin
 
-export points_x, points_y, isfinite, isinf, isnan, eltype, isless, isequal, convert, cmp, angle, abs, distance, distance2, ones, zeros, quadrant, sign, print, bounded, displayPath
+export points_x, points_y, isfinite, isinf, isnan, eltype, isless, isequal, convert, cmp, angle, abs, distance, distance2, ones, zeros, quadrant, sign, print, bounded, displayPath, closed
 
 # define a "point"
 immutable Point{T<:Number} <: G2dSimpleObject
@@ -63,6 +63,9 @@ isnan(p::Point) = isnan(p.x) | isnan(p.y)
 eltype{T<:Number}(p::Point{T}) = T
 convert{T<:Number, S<:Number}(::Type{Point{T}}, p::Point{S}) = Point(convert(T,p.x), convert(T,p.y))
 bounded(p::Point) = true
+
+# does the shape define an "inside" and "outside" of the plane
+closed(::Point) = false
 
 abs(p::Point) = Point(abs(p.x), abs(p.y))
 sign(p::Point) = Point(sign(p.x), sign(p.y))

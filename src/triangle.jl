@@ -2,7 +2,7 @@
 # An assortment of routines related to triangles
 #
 export Triangle
-export TriangleRand, isin, bounded, bounds, area, displayPath
+export TriangleRand, isin, bounded, bounds, area, displayPath, closed
 
 immutable Triangle{T<:Number} <:  G2dCompoundObject
     points::Vector{Point{T}}
@@ -65,6 +65,9 @@ function area(t::Triangle)
             ) / 2.0
 end
 bounds(t::Triangle) = Bounds(t.points)
+
+# does the shape define an "inside" and "outside" of the plane
+closed(::Triangle) = true
 
 # function for plotting
 displayPath(t::Triangle) = [t.points, t.points[1]]

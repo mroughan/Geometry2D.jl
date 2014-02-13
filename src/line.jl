@@ -1,7 +1,7 @@
 
 export Line, Ray, Segment
 
-export slope, invslope, yint, xint, isequal, isparallel, intersection, isin, SegmentRand, displayPath, bounded, bounds
+export slope, invslope, yint, xint, isequal, isparallel, intersection, isin, SegmentRand, displayPath, bounded, bounds, closed
 
 # general representation of a line that avoids problems with infinite slope
 #   at the cost of storing three values instead of just slope and intercept
@@ -105,10 +105,15 @@ invslope(p::Segment) = ( (p.endpoint.x-p.startpoint.x) / (p.endpoint.y-p.startpo
 xint(p::Line) = ( p.point.x - p.point.y * cot(p.theta) )
 yint(p::Line) = ( p.point.y - p.point.x * tan(p.theta) )
 
-bounded(p::Line) = false
-bounded(p::Ray) = false
-bounded(p::Segment) = true
+bounded(::Line) = false
+bounded(::Ray) = false
+bounded(::Segment) = true
 bounds(p::Segment) = Bounds(p.endpoint.y, p.startpoint.y, p.startpoint.x, p.endpoint.x)
+
+# does the shape define an "inside" and "outside" of the plane
+closed(::Line) = false
+closed(::Ray) = false
+closed(::Segment) = false
 
 # comparisons
 isequal(p1::Line, p2::Line) = ( p1.point==p2.point && p1.theta==p2.theta )

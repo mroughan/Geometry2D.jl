@@ -4,8 +4,8 @@ export plot
 
 ######################################################
 # plotting routines
-#    NB: should define "displayPath" for all objects that need be plotted
-#
+#    NB: should define "displayPath" and "bounded" for all objects that need be plotted
+#           
 
 # approach is to convert into a standard path form, and plot
 #   varargs are the standard optional arguments for PyPlot
@@ -36,7 +36,12 @@ end
 # also need a nice "fill" routine
 
 
-# various attempts at automating the above
+
+
+
+#####################################################
+# various attempts at automating function creation
+#   none of which is working as yet
 
 # function plot(c::Circle, plotargs...)
 #     println("plot(circle)")

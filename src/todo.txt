@@ -11,6 +11,25 @@ General
      - add more comprehensive tests, using @assert to check things are correct
      - perhaps put the tests that do plots in separate "examples"
          as these are no suitable for off-line testing?
+     - generic tests that "universal" functions such as isin, closed, bounded, ...
+       exist for all types
+
+  - Documentation
+     - how should we document everything in here
+        -- auto, e.g. doxygen
+	-- separate docs, e.g. using iJulia
+
+  - Additional shapes/objects to add
+     - Splines (Bezier, ...?)
+         already some dicussion of B-Splines
+	 	 https://groups.google.com/forum/#!topic/julia-dev/lYBoGV_iK1g
+		 https://groups.google.com/forum/#!topic/econforge/SW_PbHh_OCE
+     - Ellipses (and arcs)
+     - other mathsy shapes/curves
+
+  - most of my types have been made "immutable" by presumably don't
+    want to do that for polygons
+     - maybe not for circles? maybe not for others
 
 point.jl
 
@@ -43,6 +62,9 @@ polygons.jl
    constructors
    union/intersection
 
+bounds
+   could make Bounds a special case of a rectangle???
+
 utilities.jl
    convex hulls
    triangulations
@@ -63,7 +85,11 @@ plot.jl
    perhaps create my own fill routines though
 
    replace add-hoc "bounds" with a Bounds object
+     -- in plot, and in line.jl
 
+   -- also really need am optional "n" argument for plot and displayPath
+      so that the user can make a more or less exact approximation to
+      the real curve
 
 other issues
 

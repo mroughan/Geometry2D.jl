@@ -1,6 +1,6 @@
 export Circle, Arc
 
-export isequal, center, radius, area, isin, bounded, approxpoly, displayPath
+export isequal, center, radius, area, isin, bounded, approxpoly, displayPath, closed
 
 #################################################################
 # Circles
@@ -105,6 +105,10 @@ end
 bounded(c::Circle) = true
 bounds(c::Circle) = Bounds(c.center.y+c.radius, c.center.y-c.radius, c.center.x-c.radius, c.center.x+c.radius)
 
+# does the shape define an "inside" and "outside" of the plane
+closed(::Circle) = true
+
+
 # approximate as a regular polygon
 function approxpoly(c::Circle, n::Integer)
     dtheta = 2.0*pi/n
@@ -151,8 +155,11 @@ Arc{T<:Number}(center::Point{T}, radius::T) = Arc{T}(center, radius, theta0, the
 Arc{T<:Number, S<:Number}(center::Point{T}, radius::S, theta0, theta1) = Arc(convert(Point{promote_type(T,S)}, center), convert(promote_type(T,S),radius) )
 Arc(circle::Circle, theta0, theta1) = Arc( circle.center, circle.radius, theta0, theta1 )
 
-# utility functions
-bounded(a::Arc) = false
+# are the points on the curve bounded
+bounded(a::Arc) = true
+
+# does the shape define an "inside" and "outside" of the plane
+closed(::Arc) = true
 
 # approximate as a set of points
 function approxpoly(a::Arc, n::Integer)

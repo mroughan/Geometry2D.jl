@@ -12,6 +12,11 @@ typeof(Point)
 # make sure there is a bounded() for every type of object
 methods(bounded)
 
+likewise for 
+    closed
+    area
+    ...
+
 
 
 
