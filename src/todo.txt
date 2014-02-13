@@ -1,3 +1,11 @@
+General
+  - add routines for displaying/printing the different datatypes
+
+  - promotion rules: Circles, Lines, Bounds, Triangles, ...
+     - have left them for the moment, as don't often do binary
+       operations on these, but will need it for transformations (maybe)
+       and maybe for constructing arrays of these things
+
 point.jl
 
 line.jl
@@ -11,15 +19,9 @@ line.jl
   isin for Ray and Segment
 
 triangle.jl
-  finish constructors etc
-  isin(point, triangle)
-     generic "isin" 
-           return "false" if not in
-	   return "true" if interior
-	   return ??? if on boundary -- maybe add a switch 
-  area(triangle)
   intersections and unions -- by converting into a polygon
-
+     (NB: triangles aren't polygons(type) because don't store 4 points
+          cause its a waste)
 
 circle.jl (center, radius)
   arc (part of a circle)
@@ -57,14 +59,7 @@ plot.jl
    replace add-hoc "bounds" with a Bounds object
 
 
-promotion rules
-   Circles, Lines, Bounds, ...
-     - have left them for the moment, as don't often do binary
-       operations on these, but will need it for transformations?
-
 other issues
-   -- should we have isin return more complex arguments to see if things
-      are on edges? maybe there should be a separate "onedge" function?
 
    -- is there really a point to having separate types for "Point" and
       "Vect"?
