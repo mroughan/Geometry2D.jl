@@ -37,6 +37,24 @@ println(" xint=$(xint(l6)), yint=$(yint(l6)), slope=$(slope(l6)), invslope=$(inv
 println(" xint=$(xint(l7)), yint=$(yint(l7)), slope=$(slope(l7)), invslope=$(invslope(l7))" )
 println(" xint=$(xint(l8)), yint=$(yint(l8)), slope=$(slope(l8)), invslope=$(invslope(l8))" )
 
+figure(20)
+hold(false)
+plot(0,0)
+hold(true)
+b = [[-1 0], [1 1.5]]
+plot(l1;color="red", bounds=b) 
+plot(l2; label="line2", color="blue", linestyle="--", bounds=b)
+plot(l3; label="line3", color="green", linestyle=":", bounds=b)
+plot(l4; label="line4", color="yellow", bounds=b)
+plot(l5; label="line5", color="orange", bounds=b)
+plot(l6; label="line6", color="brown", bounds=b)
+# plot(l7; label="line7", color="black", bounds=b)
+plot(l8; label="line8", color="cyan", bounds=b)
+figure(20)
+axis([-1.2, 2.2, -1.2, 2.2])
+# axis("equal")
+legend(loc="lower right")
+
 # set up Rays and test them
 
 # set up Segments and test them

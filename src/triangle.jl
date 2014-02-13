@@ -1,69 +1,71 @@
 # 
 # An assortment of routines related to triangles
-#    NB: a triangle here is just a PointArray with three points
-#        it doesn't really seem to make sense to have a separate type or I have to redefine everything again
-#        so we have to know that a point array is a triangle of not using "istriangle"    
-#    So a triangle is a 3x1 array of points
-#    And a Vector of triangles is a 3xn array of points
-#    Don't build arbitrary arrays of triangles
 #
-#    https://groups.google.com/forum/#!topic/julia-dev/Pz5bBwwQmMw
-#
-export Triangle, TriangleRand, isTriangle
+export Triangle
+export TriangleRand, isin, bounded, bounds, area, displayPath
 
-function Triangle{T<:Number}(x::Array{T}, y::Array{T})
-    if size(x) != size(y)
-        error(" size of x must be the same as size y.")
-    end
-    if (size(x,1) != 3 || size(y,3) != 3)
-        error(" triangles have three vertices")
-    end
-    if ndims(x)==1
-        # points must be unique, and in counter-clockwise order
-        c = ccw(x, y)
+immutable Triangle{T<:Number} <:  G2dCompoundObject
+    points::Vector{Point{T}}
+
+    function Triangle(points::Vector{Point{T}})
+        if (length(points) != 3)
+            error(" triangles have three vertices")
+        end
+        c = ccw(points)
         if c>0
-            return PointArray(x, y)
+            return new(points)
         elseif c<0
-            return PointArray(flipud(x), flipud(y))            
+            return new(flipud(points))
         else
             error("points appear to be colinear")
         end 
-    elseif ndims(x)==2
-        tmp = Array(Point{T}, size(x))
-        c = ccw(x, y)
-        for k=1:size(x,2)
-            if c[k]>0
-                tmp[1,k] = Point(x[1,k],x[1,k])
-                tmp[2,k] = Point(x[2,k],x[2,k])
-                tmp[3,k] = Point(x[3,k],x[3,k])
-            elseif c[k]<0
-                tmp[3,k] = Point(x[1,k],x[1,k])
-                tmp[2,k] = Point(x[2,k],x[2,k])
-                tmp[1,k] = Point(x[3,k],x[3,k])
-            else
-                error("points $k appear to be colinear")
-            end
-        end
-        return tmp
     end
 end
-Triangle{T<:Number, S<:Number}(x::Array{T}, y::Array{S}) = Triangle(promote(x,y)...)
+Triangle{T<:Number}(points::Vector{Point{T}}) = Triangle{T}(points)
+function Triangle{T<:Number}(x::Vector{T}, y::Vector{T})
+    if length(x) != 3
+        error("x should have 3 elements")
+    end
+    if length(y) != 3
+        error("y should have 3 elements")
+    end
+    return Triangle(PointArray(x, y))
+end
+Triangle{T<:Number, S<:Number}(x::Vector{T}, y::Vector{S}) = Triangle(promote(x,y)...)
 Triangle() = PointArray(3)
-Triangle(n::Integer) = PointArray(3, n)
-TriangleRand(n::Integer) = Triangle(rand(3,n), rand(3,n))
+TriangleRand(n::Integer) = Triangle(rand(3,1), rand(3,1))
 
-# have a test because Triangle isn't a formal type
-function isTriangle{T<:Number}(t::Array{Point{T}})
-    # returns true for each array element that is a valid triangle
-    #     i.e., a 3 element vector of points in counter-clockwise order
-    if (size(t,1) != 3)
-        return falses(size(t))
-    end
-    return ccw(t) > 0
-end
-
+# promotion/conversion functions
 
 # utilities
+bounded(t::Triangle) = true
+function isin(p::Point, t::Triangle; tolerance=1.0e-12)
+    # points on the triangle should always be in CCW direction, 
+    # so just need to check p_{i},p_{i+1},p are in CCW order
+    c1 = ccw(t.points[1],t.points[2],p)
+    c2 = ccw(t.points[2],t.points[3],p)
+    c3 = ccw(t.points[3],t.points[1],p)
 
-# no "type" Triangle
-# bounded(t::Triangle) = true
+    if c1>tolerance && c2>tolerance && c3>tolerance
+        return true, false
+    elseif c1>=-tolerance && c2>=-tolerance && c3>=-tolerance
+        return true, true
+    else
+        return false, false
+    end
+end
+function area(t::Triangle)
+    a = t.points[1]
+    b = t.points[2]
+    c = t.points[3]
+    
+    return ( a.x*b.y - a.y*b.x
+            + a.y*c.x - a.x*c.y
+            + b.x*c.y - b.y*c.x
+            ) / 2.0
+end
+bounds(t::Triangle) = Bounds(t.points)
+
+# function for plotting
+displayPath(t::Triangle) = [t.points, t.points[1]]
+

@@ -90,7 +90,7 @@ angle(p::Point) = angle(p, origin) # default is o=(0,0)
 # distance and distance squared (default is distance from the origin) 
 distance2(p1::Point) = p1.x^2 + p1.y^2
 distance(p1::Point) = sqrt( distance2(p1) )
-distance2(p1::Point, p2::Point) = distance(p2 - p1)
+distance2(p1::Point, p2::Point) = distance2(p2 - p1)
 distance(p1::Point, p2::Point) = sqrt( distance2(p1,p2) )
 
 # functions to get x and y coordinates

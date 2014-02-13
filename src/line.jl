@@ -1,7 +1,7 @@
 
 export Line, Ray, Segment
 
-export slope, invslope, yint, xint, isequal, isparallel, intersection, isin, SegmentRand, displayPath
+export slope, invslope, yint, xint, isequal, isparallel, intersection, isin, SegmentRand, displayPath, bounded, bounds
 
 # general representation of a line that avoids problems with infinite slope
 #   at the cost of storing three values instead of just slope and intercept
@@ -108,6 +108,7 @@ yint(p::Line) = ( p.point.y - p.point.x * tan(p.theta) )
 bounded(p::Line) = false
 bounded(p::Ray) = false
 bounded(p::Segment) = true
+bounds(p::Segment) = Bounds(p.endpoint.y, p.startpoint.y, p.startpoint.x, p.endpoint.x)
 
 # comparisons
 isequal(p1::Line, p2::Line) = ( p1.point==p2.point && p1.theta==p2.theta )
@@ -139,13 +140,7 @@ function isin(p::Point, r::Ray; tolerance=1.0e-12)
 end
 
 function isin(p::Point, s::Segment; tolerance=1.0e-12)
-    if (abs(slope(s)) < 1)
-        # for segments that are closer to horizontal
-        
-    else
-        # for segments that are closer to vertical
-
-    end
+    error("not implemented yet")
 end
 
 
@@ -216,7 +211,47 @@ end
 
 
 # function for plotting
-function displayPath(s::Segment)
-    return [s.startpoint, s.endpoint]
+function displayPath(line::Line; bounds=[[0 0], [1 1]]) 
+    # create bounding lines
+    p1 = Point(bounds[1,1], bounds[1,2])
+    p2 = Point(bounds[2,1], bounds[2,2])
+    l1 = Line(p1, 0)
+    l2 = Line(p1, pi/2)
+    l3 = Line(p2, 0)
+    l4 = Line(p2, -pi/2)
+
+    # find intersections
+    i1,p1 = intersection(line, l1)
+    i2,p2 = intersection(line, l2)
+    i3,p3 = intersection(line, l3)
+    i4,p4 = intersection(line, l4)
+
+    # choose the two points that are in the bounding rectangle
+    P = []
+    if i1==1 && 
+        p1.x>=bounds[1,1] && p1.x<=bounds[2,1] &&
+        p1.y>=bounds[1,2] && p1.y<=bounds[2,2]
+        P = [P, p1]
+    end
+    if i2==1 && 
+        p2.x>=bounds[1,1] && p2.x<=bounds[2,1] &&
+        p2.y>=bounds[1,2] && p2.y<=bounds[2,2]
+        P = [P, p2]
+    end
+    if i3==1 && 
+        p3.x>=bounds[1,1] && p3.x<=bounds[2,1] &&
+        p3.y>=bounds[1,2] && p3.y<=bounds[2,2]
+        P = [P, p3]
+    end
+    if i4==1 && 
+        p4.x>=bounds[1,1] && p4.x<=bounds[2,1] &&
+        p4.y>=bounds[1,2] && p4.y<=bounds[2,2]
+        P = [P, p4]
+    end
+    return unique(P) # doesn't eliminate all possible redundant points because of roundoff errors
 end
+function displayPath(r::Ray; bounds=[[0 0], [1 1]]) 
+    return [s.startpoint, s.startpoint + s.direction]
+end
+displayPath(s::Segment) = [s.startpoint, s.endpoint]
 

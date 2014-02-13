@@ -18,11 +18,14 @@ using PyPlot
 reload("test_point")
 reload("test_line")
 
+# test the various overloaded forms of ccw
+reload("test_ccw")
+
 # test circles
 reload("test_circle")
 
-# test the various overloaded forms of ccw
-reload("test_ccw")
+# test triangles
+reload("test_triangle")
 
 # test the convex hull code
 

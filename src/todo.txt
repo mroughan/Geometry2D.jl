@@ -8,6 +8,7 @@ line.jl
   Many of the constructors for a "Line" push them towards being Float64
      which will then have an impact on later algorithms
      -- could have specialised algorithms to deal with Rationals (say)
+  isin for Ray and Segment
 
 triangle.jl
   finish constructors etc
@@ -22,7 +23,6 @@ triangle.jl
 
 circle.jl (center, radius)
   arc (part of a circle)
-  approximating polygons
 
 transforms.jl
   scale
@@ -54,6 +54,13 @@ plot.jl
 
    perhaps create my own fill routines though
 
+   replace add-hoc "bounds" with a Bounds object
+
+
+promotion rules
+   Circles, Lines, Bounds, ...
+     - have left them for the moment, as don't often do binary
+       operations on these, but will need it for transformations?
 
 other issues
    -- should we have isin return more complex arguments to see if things
@@ -61,6 +68,8 @@ other issues
 
    -- is there really a point to having separate types for "Point" and
       "Vect"?
+
+
 
 
 

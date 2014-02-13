@@ -8,12 +8,29 @@ export plot
 #
 
 # approach is to convert into a standard path form, and plot
-function plot(O::G2dObject; color="blue", label="G2dObject", marker="o", linestyle="-", linewidth=1, markersize=10)
-    P = displayPath(O)
+#   varargs are the standard optional arguments for PyPlot
+#      color, marker, markersize, linestyle, linewidth, hold, ...
+#   http://matplotlib.org/api/axes_api.html#matplotlib.axes.Axes.plot
+function plot(O::G2dObject; bounds=[[0 0], [1 1]], label="G2dObject", varargs...)
+    if bounded(O)
+        P = displayPath(O)
+    else
+        # for unbounded objects, give them a rectangle in which to be plotted
+        #    bounds = [ [x_0,y0], [x_1,y_1]]  where 
+        #                  (x_0,y_0) = bottom left
+        #                  (x_1,y_1) = top right
+        P = displayPath(O; bounds=bounds)
+    end
     if (label=="G2dObject")
         label=string(typeof(O)) # default label is the type of the object being plotted
     end
-    plot(points_x(P), points_y(P); color=color, label=label, marker=marker, linestyle=linestyle, linewidth=linewidth, markersize=markersize)
+    # println(P)
+    h = plot(points_x(P), points_y(P); label=label, varargs...)
+    # if ~bounded(O) && length(P)>1
+    #     arrow(P[2].x, P[2].y, P[1].x, P[1].y, head_width=0.05, head_length=0.1)
+    #     arrow(P[end-1].x, P[end-1].y, P[end].x, P[end].y, head_width=0.05, head_length=0.1)
+    # end
+    return h
 end
 
 # also need a nice "fill" routine

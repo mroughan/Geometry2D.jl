@@ -21,6 +21,11 @@ plot(c2)
 plot(a; color="magenta", marker="d")
 plot(b; color="magenta", marker="d")
 plot(c; color="magenta", marker="d")
-
-
 legend()
+
+println("c1 is bounded is $(bounded(c1)), with bounds = $(bounds(c1))")
+println("c2 is bounded is $(bounded(c2)), with bounds = $(bounds(c2))")
+
+
+#### Need some tests for Arc as well
+

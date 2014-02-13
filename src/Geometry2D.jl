@@ -30,6 +30,7 @@ tolerance = eps() # global variable for tolerance of many operations in floating
 
 # various parts of the package
 include("point.jl")
+include("bounds.jl")
 include("utilities.jl")
 include("line.jl")
 include("triangle.jl")
