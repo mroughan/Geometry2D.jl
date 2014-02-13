@@ -34,9 +34,18 @@ function plot(O::G2dObject; bounds=[[0 0], [1 1]], label="G2dObject", varargs...
 end
 
 # also need a nice "fill" routine
-
-
-
+#   basic approach similar to above
+#       used "closed" instead of "bounded" to decide how to plot
+#       define a "boundingPath" function for each type to create a closed polygon approximating it
+#       fill the polygon
+#   will need a "fill" command: maybe matplotlib to start, but then my own for patterns
+#   will need to know something about convexity/simplicity to fill?
+#   
+#   somethings: Point, Line, ...
+#     aren't fillable
+#
+#   what should be the default for a "PointArray"?
+#
 
 
 #####################################################

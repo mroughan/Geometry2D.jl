@@ -32,6 +32,11 @@ General
      - maybe not for circles? maybe not for others
 
 point.jl
+  - currently have Point and Vect as aliases for each other
+       strictly a point and a vector are different, and different operators work on each
+       but at the moment this just seems to be a mathematical nicety
+            e.g., its convenient to be able to do (a+b)/2 to find a mid-point of points a and b
+                  thought strictly should only be done with vectors
 
 line.jl
   Haven't really implemented much of "Ray" yet 
@@ -58,12 +63,71 @@ transforms.jl
   shear
   ???
 
+  probably start with a transform for a "point" and "line" and build up
+  do we want transforms to be "objects", with functions/operators to
+     apply them, or do we just want functions?
+
+
 polygons.jl
+       points -- normally a vector
+              -- could be an array for complex polys, but that could
+                 be wasteful, as longest path dominates
+
    constructors
-   union/intersection
+   union/intersection/differences
+     -- can I create a new operator 'u' or 'n' or using Unicode
+     	-- would that even be wise
+
+   do we need a "path" made up of line segments?
+   do we need subtypes for the various polygons
+
+      remove_colinear.m (from a path)
+          including points that are really (floating point) the same
+
+   generators
+       regular (see Circles)
+       star_poly
+       random (convex, simple, almostsimple, ...)       
+
+   centroid
+   angles (internal angles at vertices)
+   minkowski sum
+   medial axis
+   perimeter
+   area
+
+   isregular
+   isconvex
+   issimple (can be drawn without lines overlapping)
+   isalmostsimple 
+
+   not complex (no holes, can be drawn with one continous line)
+
+   nearvertex
+
+   isclockwise -- maybe not needed as try to store all polys this way
+               -- only makes sense for convex (as an overall metric) 
+
+   implicit_vertices -- implict vertices in complex polygon
+
+   triangulation -- decompose into triangles
+      -- and ideally put it back together again as well
+
+   simplify -- smooth edges
+
+   distances from various objects (e.g. point, line)
+   nearest vertex, nearest point, tangent vertex
+
+   generate sample points on a polygon
+
+   use a polygon as a clipping region for drawing some other object
+      - maybe of use in filling?
 
 bounds
    could make Bounds a special case of a rectangle???
+   add standard functions to bounds 
+      maybe doesn't make sense if its an abstract, but 'isin' at least
+          would be useful
 
 utilities.jl
    convex hulls
@@ -90,6 +154,19 @@ plot.jl
    -- also really need am optional "n" argument for plot and displayPath
       so that the user can make a more or less exact approximation to
       the real curve
+
+   add labels to vertices of a plot
+   draw internal angles
+   draw arrows for unbounded bits
+
+   fill routine
+      using matplotlib to start, but then
+        solid color
+	shading
+	stripes
+	cross-hatching
+	speckled
+	checkerboard
 
 other issues
 

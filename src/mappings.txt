@@ -1,0 +1,27 @@
+Polygon classification
+
+regular/irregular
+
+convex
+concave
+    simple (no self-intersections)
+    almost simple (cross overs that could be converted to simple)
+    complex (holes or some other? unremovable overlap)
+
+
+
+
+some of the mappings logical operators do
+   union
+     convex  -> concave
+     concave -> simple
+
+   difference
+     convex -> complex
+
+   intersection
+     convex -> convex
+     simple -> simple
+     complex -> complex
+
+
