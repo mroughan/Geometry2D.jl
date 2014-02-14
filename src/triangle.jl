@@ -2,7 +2,7 @@
 # An assortment of routines related to triangles
 #
 export Triangle
-export TriangleRand, isin, bounded, bounds, area, displayPath, closed
+export TriangleRand, isin, bounded, bounds, area, perimeter, angles, displayPath, closed, distance
 
 immutable Triangle{T<:Number} <:  G2dCompoundObject
     points::Vector{Point{T}}
@@ -64,10 +64,45 @@ function area(t::Triangle)
             + b.x*c.y - b.y*c.x
             ) / 2.0
 end
+perimeter(t::Triangle) = distance(t.points[1],t.points[2]) + distance(t.points[2],t.points[3]) + distance(t.points[3],t.points[1]) 
+
 bounds(t::Triangle) = Bounds(t.points)
+function angles(t::Triangle)
+    a = Array{Float,3}
+    a[1] = angle( t.points[3], t.points[1], t.points[2]  )
+    a[2] = angle( t.points[1], t.points[2], t.points[3]  )
+    a[3] = angle( t.points[2], t.points[3], t.points[1]  )
+end
 
 # does the shape define an "inside" and "outside" of the plane
 closed(::Triangle) = true
+
+# distance from point to Triangle
+function distance(p::Point, t::Triangle)
+    n = 3
+
+    # compute the distance to each vertex
+    d = Array(Float64,n)
+    for i=1:n
+        d[i] = distance(p, t.points[i])
+    end
+    Id = indmin(d)
+
+    # compute distance to each edge, and take the smallest
+    s = Array(Float64,n)
+    p = PointArray(3)
+    for i=1:n
+      s[i],p[i] = distance(p, Segment(t.points[i],t.points[mod1(i+1,n)]) )  
+    end
+    Is = indmin(s)
+
+    # take the smallest one
+    if d[Id] <= s[Is]
+        return d[Id], t.points[Id]
+    else
+        return s[Is], p[Is]
+    end
+end
 
 # function for plotting
 displayPath(t::Triangle) = [t.points, t.points[1]]

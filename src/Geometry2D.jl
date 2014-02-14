@@ -3,7 +3,7 @@ module Geometry2D
 using PyPlot 
 import PyPlot: plot
 
-import Base: convert, length, promote, promote_rule, sort, sort!, sortperm, unique, isfinite, isnan, copy, Array, eltype, abs, isequal, isless, ones, zeros, angle, sign, print
+import Base: convert, length, promote, promote_rule, sort, sort!, sortperm, unique, isfinite, isnan, copy, Array, eltype, abs, isequal, isless, ones, zeros, angle, sign, print, rationalize
 import Base: !, !=, $, %, .%, &, *, +, -, .!=, .+, .-, .*, ./, .<, .<=, .==, .>,
     .>=, .\, .^, /, //, <, <:, <<, <=, ==, >, >=, >>, .>>, .<<, >>>,
     <|, |>, \, ^, |, ~, !==, >:, colon, hcat, vcat, hvcat, getindex, setindex!,
@@ -15,7 +15,7 @@ export tolerance
 abstract G2dObject
 
 abstract G2dTransform <: G2dObject
-abstract G2dSimpleObject <: G2dObject
+abstract G2dSimpleObject <: G2dObject # objects for which area,perimeter,isin, make no sense
 abstract G2dCompoundObject <: G2dObject
 
 # automated promotion rules for arrays of numbers
@@ -35,7 +35,11 @@ include("utilities.jl")
 include("line.jl")
 include("triangle.jl")
 include("circle.jl")
+include("polygon.jl")
 include("plot.jl")
 # include("convexhull.jl")
+
+include("vectorize.jl")
+
 
 end # module

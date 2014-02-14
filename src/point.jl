@@ -26,6 +26,11 @@ promote_rule{T<:Integer,S<:Integer}(::Type{Point{Rational{T}}},::Type{Point{Rati
 promote_rule{T<:Integer,S<:FloatingPoint}(::Type{Point{Rational{T}}}, ::Type{Point{S}})  = Point{promote_type(T,S)}
 # should probably put something in here for complex numbers too
 
+# don't seem to need these?
+# convert{T<:FloatingPoint}(::Type{Point{T}}, p::Point) = Point(convert(T,p.x), convert(T,p.y))
+# convert{T<:Integer}(::Type{Point{Rational{T}}}, p::Point) = Point(convert(Rational{T},p.x), convert(Rational{T},p.y))
+# convert{T<:Integer}(::Type{Point{T}}, p::Point) = Point(convert(T,p.x), convert(T,p.y))
+
 # arithmetic
 +(z::Number, p1::Point) = Point(p1.x+z, p1.y+z)
 +(p1::Point, z::Number) = Point(p1.x+z, p1.y+z)
@@ -89,6 +94,17 @@ end
 # angle WRT x-axis, as implied b the (potentially user defined) origin "o"
 angle(p::Point, o::Point) = atan2( p.y-o.y, p.x-o.x )
 angle(p::Point) = angle(p, origin) # default is o=(0,0)
+# angle between three points
+function angle(p1::Point, p2::Point, p3::Point)
+    v1 = p2-p1
+    v2 = p3-p2
+    d1 = sqrt( sum( v1.^2 ) )
+    d2 = sqrt( sum( v2.^2 ) )
+    tmp = sum( v1.*v2 ) / (d1*d2)
+    tmp = minimum([tmp 1.0])
+    tmp = maximum([tmp -1.0])
+    return acos( tmp )
+end
 
 # distance and distance squared (default is distance from the origin) 
 distance2(p1::Point) = p1.x^2 + p1.y^2

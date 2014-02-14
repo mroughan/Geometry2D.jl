@@ -1,7 +1,7 @@
 
 export Line, Ray, Segment
 
-export slope, invslope, yint, xint, isequal, isparallel, intersection, isin, SegmentRand, displayPath, bounded, bounds, closed
+export slope, invslope, yint, xint, isequal, isparallel, intersection, isin, SegmentRand, displayPath, bounded, bounds, closed, area, perimeter, convert, flip, distance
 
 # general representation of a line that avoids problems with infinite slope
 #   at the cost of storing three values instead of just slope and intercept
@@ -42,7 +42,6 @@ end
 Ray{T<:Number, S<:Number}(startpoint::Point{T}, direction::Vect{S}) = Ray(promote(startpoint, direction)...)
 
 
-
 immutable Segment{T<:Number} <: G2dCompoundObject
     startpoint::Point{T}
     endpoint::Point{T}
@@ -73,26 +72,37 @@ SegmentRand() = Segment(Point(rand(),rand()), Point(rand(),rand()))
 #    segment constructed with point, and direction, and distance
 #
 
-# automated promotion rules for Lines
-promote_rule{T<:Integer,S<:FloatingPoint}(::Type{Line{T}}, ::Type{Line{S}} ) = Line{S}
-promote_rule{T<:Integer}(::Type{Line{Rational{T}}}, ::Type{Line{T}}) = Line{Rational{T}}
-promote_rule{T<:Integer,S<:Integer}(::Type{Line{Rational{T}}}, ::Type{Line{S}}) = Line{Rational{promote_type(T,S)}}
-promote_rule{T<:Integer,S<:Integer}(::Type{Line{Rational{T}}}, ::Type{Line{Rational{S}}}) = Line{Rational{promote_type(T,S)}}
-promote_rule{T<:Integer,S<:FloatingPoint}(::Type{Line{Rational{T}}}, ::Type{Line{S}})  = Line{promote_type(T,S)}
+# automated promotion and conversion rules
+promote_rule{T<:Number,S<:Number}(::Type{Line{T}}, ::Type{Line{S}})  = Line{promote_type(T,S)}
+promote_rule{T<:Number,S<:Number}(::Type{Ray{T}}, ::Type{Ray{S}})  = Ray{promote_type(T,S)}
+promote_rule{T<:Number,S<:Number}(::Type{Segment{T}}, ::Type{Segment{S}})  = Segment{promote_type(T,S)}
 
-# automated promotion rules for Rays
-promote_rule{T<:Integer,S<:FloatingPoint}(::Type{Ray{T}}, ::Type{Ray{S}} ) = Ray{S}
-promote_rule{T<:Integer}(::Type{Ray{Rational{T}}}, ::Type{Ray{T}}) = Ray{Rational{T}}
-promote_rule{T<:Integer,S<:Integer}(::Type{Ray{Rational{T}}}, ::Type{Ray{S}}) = Ray{Rational{promote_type(T,S)}}
-promote_rule{T<:Integer,S<:Integer}(::Type{Ray{Rational{T}}}, ::Type{Ray{Rational{S}}}) = Ray{Rational{promote_type(T,S)}}
-promote_rule{T<:Integer,S<:FloatingPoint}(::Type{Ray{Rational{T}}}, ::Type{Ray{S}})  = Ray{promote_type(T,S)}
+convert(::Type{Segment{Float64}}, s::Segment) = Segment(convert(Float64,startpoint), convert(Float64,endpoint))
+# need some more here
 
-# automated promotion rules for Segments
-promote_rule{T<:Integer,S<:FloatingPoint}(::Type{Segment{T}}, ::Type{Segment{S}} ) = Segment{S}
-promote_rule{T<:Integer}(::Type{Segment{Rational{T}}}, ::Type{Segment{T}}) = Segment{Rational{T}}
-promote_rule{T<:Integer,S<:Integer}(::Type{Segment{Rational{T}}}, ::Type{Segment{S}}) = Segment{Rational{promote_type(T,S)}}
-promote_rule{T<:Integer,S<:Integer}(::Type{Segment{Rational{T}}}, ::Type{Segment{Rational{S}}}) = Segment{Rational{promote_type(T,S)}}
-promote_rule{T<:Integer,S<:FloatingPoint}(::Type{Segment{Rational{T}}}, ::Type{Segment{S}})  = Segment{promote_type(T,S)}
+# promote_rule{T<:Integer,S<:FloatingPoint}(::Type{Line{T}}, ::Type{Line{S}} ) = Line{S}
+# promote_rule{T<:Integer}(::Type{Line{Rational{T}}}, ::Type{Line{T}}) = Line{Rational{T}}
+# promote_rule{T<:Integer,S<:Integer}(::Type{Line{Rational{T}}}, ::Type{Line{S}}) = Line{Rational{promote_type(T,S)}}
+# promote_rule{T<:Integer,S<:Integer}(::Type{Line{Rational{T}}}, ::Type{Line{Rational{S}}}) = Line{Rational{promote_type(T,S)}}
+# promote_rule{T<:Integer,S<:FloatingPoint}(::Type{Line{Rational{T}}}, ::Type{Line{S}})  = Line{promote_type(T,S)}
+
+# promote_rule{T<:Integer,S<:FloatingPoint}(::Type{Ray{T}}, ::Type{Ray{S}} ) = Ray{S}
+# promote_rule{T<:Integer}(::Type{Ray{Rational{T}}}, ::Type{Ray{T}}) = Ray{Rational{T}}
+# promote_rule{T<:Integer,S<:Integer}(::Type{Ray{Rational{T}}}, ::Type{Ray{S}}) = Ray{Rational{promote_type(T,S)}}
+# promote_rule{T<:Integer,S<:Integer}(::Type{Ray{Rational{T}}}, ::Type{Ray{Rational{S}}}) = Ray{Rational{promote_type(T,S)}}
+# promote_rule{T<:Integer,S<:FloatingPoint}(::Type{Ray{Rational{T}}}, ::Type{Ray{S}})  = Ray{promote_type(T,S)}
+
+# promote_rule{T<:Integer,S<:FloatingPoint}(::Type{Segment{T}}, ::Type{Segment{S}} ) = Segment{S}
+# promote_rule{T<:Integer}(::Type{Segment{Rational{T}}}, ::Type{Segment{T}}) = Segment{Rational{T}}
+# promote_rule{T<:Integer,S<:Integer}(::Type{Segment{Rational{T}}}, ::Type{Segment{S}}) = Segment{Rational{promote_type(T,S)}}
+# promote_rule{T<:Integer,S<:Integer}(::Type{Segment{Rational{T}}}, ::Type{Segment{Rational{S}}}) = Segment{Rational{promote_type(T,S)}}
+# promote_rule{T<:Integer,S<:FloatingPoint}(::Type{Segment{Rational{T}}}, ::Type{Segment{S}})  = Segment{promote_type(T,S)}
+
+# conversion of one type to another: note though that these loose information
+convert(::Type{Ray}, s::Segment) = Ray(s.startpoint, s.endpoint-s.startpoint)
+convert(::Type{Line}, s::Segment) = Line(s.startpoint, atan( (s.endpoint.y-s.startpoint.y)/(s.endpoint.x-s.startpoint.x) ))
+convert(::Type{Line}, r::Ray) = Line(s.startpoint, atan(direction.y, direction.x) )
+# can't convert back the other way without providing extra information
 
 # useful functions
 slope(p::Line) = ( tan(p.theta) )
@@ -109,11 +119,31 @@ bounded(::Line) = false
 bounded(::Ray) = false
 bounded(::Segment) = true
 bounds(p::Segment) = Bounds(p.endpoint.y, p.startpoint.y, p.startpoint.x, p.endpoint.x)
+bounds(::Line) = Bounds(Inf, Inf, Inf, Inf)
+function bounds(r::Ray)
+    if quadrant(direction)==1
+        return Bounds(Inf,r.startpoint.y,r.startpoint.x,Inf) # top bottom left right
+    elseif quadrant(direction)==2
+        return Bounds(Inf,r.startpoint.y,-Inf,r.startpoint.x)
+    elseif quadrant(direction)==3
+        return Bounds(r.startpoint.y,-Inf,r.startpoint.x,Inf)
+    elseif quadrant(direction)==4
+        return Bounds(r.startpoint.y,-Inf,-Inf,r.startpoint.x)
+    end
+end
 
 # does the shape define an "inside" and "outside" of the plane
 closed(::Line) = false
 closed(::Ray) = false
 closed(::Segment) = false
+
+# include area/perimeter functions for completeness
+area(::Line) = 0
+area(::Ray) = 0
+area(::Segment) = 0
+perimeter(::Line) = Inf
+perimeter(::Ray) = Inf
+perimeter(s::Segment) = distance( s.startpoint, s.endpoint )
 
 # comparisons
 isequal(p1::Line, p2::Line) = ( p1.point==p2.point && p1.theta==p2.theta )
@@ -124,28 +154,73 @@ isparallel(p1::Line, p2::Line) = ( p1.theta == p2.theta )
 isparallel(p1::Ray, p2::Ray) = ( p1.direction == p2.direction )
 isparallel(p1::Segment, p2::Segment) = ( slope(p1) == slope(p2) )
 
-# inclusion tests: return true if a point is on a Line, Ray or Segment, repectively
-#     not that tolerance specifies a distance from the object that is allowed
-#     for bounded cases (Ray or Segment) the second returned argument is "onedge"
-#         this is confusing in conjunction with tolerance which effectively makes the boundary have a width
-function isin(p::Point, line::Line; tolerance=1.0e-12)
-    r = 1
-    if (abs(slope(line)) < 1)
-        y = yint(line) + p.x * slope(line)
-        r = p.y - y
-    else
-        x = xint(line) + p.y * invslope(line)
-        r = p.x - x
+# distance returns the distance to the nearest point on the object, and that point
+function distance(p::Point, line::Line)
+    if abs( abs(line.theta) - pi/2 ) < tolerance
+        # vertical line
+        return abs(p.x - line.point.x), Point(line.point.x,p.y)
+    elseif  abs(line.theta) < tolerance
+        # horizontal line
+        return abs(p.y - line.point.y), Point(p.x,line.point.y)
     end
-    return abs(r) < tolerance, false
+    s1 = (p.x - line.point.x) / cos(line.theta)
+    s2 = (p.y - line.point.y) / sin(line.theta)
+    s = abs(s1 - s2)
+    d = s*cos(line.theta)*sin(line.theta)
+    ss = min([s1,s2]) + s*sin(line.theta)*sin(line.theta)
+    ps = line.point + ss*Point(cos(line.theta), sin(line.theta))
+    return d, ps
 end
 
-function isin(p::Point, r::Ray; tolerance=1.0e-12)
-    error("not implemented yet")
+function distance(p::Point, r::Ray)
+
+    # distance from p to equivalent line
+    d,pp = distance(p, convert(Line, r))
+
+    # distance from p to startpoint
+    dp = distance(p, r.startpoint)
+
+    # if you are close to the end point, choose that
+
+    # else check that the point closest on the line is on the ray
+    # and if not still return the end point
+
+    # otherwise return the point on the line that is closest
 end
 
 function isin(p::Point, s::Segment; tolerance=1.0e-12)
-    error("not implemented yet")
+    if distance2(p, s.startpoint)<tolerance
+        return true, true
+    elseif distance2(p, s.endpoint)<tolerance
+        return true, true
+    end
+    r1 = convert(Ray, s)
+    r2 = Ray( s.endpoint, s.startpoint-s.endpoint) # can't use conversion here because of ordering
+    I1,E1 = isin(p,r1)
+    I2,E2 = isin(p,r2)
+    return I1 && I2, false
+end
+
+# inclusion tests: return true if a point is on a Line, Ray or Segment, repectively
+#     tolerance specifies a distance from the object that is allowed
+#     the second return value means the point is on the "edge", but the edge here
+#        means a bounding points, e.g., the startpoint of a Ray, or the end-points of a Segment
+#        maybe not mathematically sound, but this way is useful
+function isin(p::Point, line::Line; tolerance=1.0e-12)
+    return distance(p,line) < tolerance, false
+end
+
+function isin(p::Point, r::Ray; tolerance=1.0e-12)
+    return distance(p,r) < tolerance, distance(p,r.startpoint) < tolerance
+end
+
+function isin(p::Point, s::Segment; tolerance=1.0e-12)
+    if distance2(p, s.startpoint)<tolerance
+        return true, true
+    elseif distance2(p, s.endpoint)<tolerance
+        return true, true
+    end
+    return distance(p,s) < tolerance, false
 end
 
 
@@ -158,12 +233,8 @@ function intersection( line1::Line, line2::Line; tolerance=1.0e-12)
     #   point     = the intersection point if it exists
     #                  if they don't intersect then return "nothing"
     #                  if they are the same, then return the Line
-
-    
-
-    # if neither line is near vertical
     if abs(line1.theta - line2.theta) < tolerance
-        if distance(line1.point,line2.point) < tolerance
+        if distance2(line1.point,line2.point) < tolerance
             return 2, line1     # lines are the same
         else
             return 0, nothing   # lines are parallel
@@ -180,38 +251,69 @@ function intersection( line1::Line, line2::Line; tolerance=1.0e-12)
 
         # println("p1 = $p1")
         # println("p2 = $p2")
-
         return 1, p1
     end
+end
 
+# intersections of rays
+function intersection( r1::Ray, r2::Ray; tolerance=1.0e-12)
+    # NB: can do this just as in lines, but 
+    #    1 - need to keep track of sense, particularly for overlaps
+    #            could be in same direction, or opposite
+    #    2 - need the par[1:2] to both be positive
+    error("not implemented yet")
 end
 
 # intersection of segments
-function intersection( segment1::Segment, segment2::Segment; tolerance=1.0e-12 )
+function intersection( s1::Segment, s2::Segment; tolerance=1.0e-12 )
     #OUTPUTS: 
     #   intersect = 0 means segments don't intersect
     #             = 1 means 1 intersection
     #             = 2 means they overlap (infinite intersections) 
-    #             = 3 means they are co-linear or parallel segments but with zero intersections
+    #             
     #   point     = the intersection point if it exists
     #                  if they don't intersect then return "nothing"
     #                  if the segments overlap then return the overlapping Segment
     #               note that for floating point calculations we could be a little more sophisticated
     #               about these tests, but at the moment just test equality with respect to tolerance
-
-    epsilon = 1.0e-9
-    delta = 1.0e-12 # for finding "almost" intersections with end-points
     
+    # check the 4 possible end-point intersections
+    d1 = distance2(s1.startpoint, s2.startpoint)
+    d2 = distance2(s1.endpoint, s2.endpoint)
+    if d1<tolerance && d2<tolerance
+        return 2, s1
+    elseif d1<tolerance
+        return 1, s1.startpoint
+    elseif d2<tolerance
+        return 1, s1.endpoint
+    end
 
-    # different cases
-    #   one line is near vertical
-    
+    d12 = distance2(s1.startpoint, s2.endpoint)
+    if d12 < tolerance
+        return 1, s1.startpoint
+    end
 
+    d21 = distance2(s2.startpoint, s1.endpoint)
+    if d21 < tolerance
+        return 1, s2.startpoint
+    end
 
-    return intersect, point
+    # now check if lines overlap
+    l1 = convert(Line, s1)
+    l2 = convert(Line, s2)
+    I,p = intersection(l1,l2)
+    if I
+        # find out if p is on the segments
+        if isin(p,s1) && isin(p,s2)
+            return 1,p
+        else
+            return 0,nothing
+        end
+    else
+        return 0,nothing
+    end
 end
 
-# prolly should add intersections of Rays
 # prolly should add Ray-Line, Ray-Segment, and Line-Segment intersections as well
 
 

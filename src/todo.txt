@@ -31,6 +31,9 @@ General
     want to do that for polygons
      - maybe not for circles? maybe not for others
 
+  - vectorised versions of functions such as "bounded" "closed"
+    vector/array versions of "isin"
+
 point.jl
   - currently have Point and Vect as aliases for each other
        strictly a point and a vector are different, and different operators work on each
@@ -40,13 +43,15 @@ point.jl
 
 line.jl
   Haven't really implemented much of "Ray" yet 
-  Conversions between Line, Ray and Segment
+  Conversions between Line -> Ray -> Segment (with extra information)???
   Intersections between mixed Line, Ray and Segment
   Arrays of lines, rays and segments???
   Many of the constructors for a "Line" push them towards being Float64
      which will then have an impact on later algorithms
      -- could have specialised algorithms to deal with Rationals (say)
-  isin for Ray and Segment
+     -- similar issues with circles etc
+  intersections for Rays
+  finish "distance" functions and test, and use them for "isin" functions
 
 triangle.jl
   intersections and unions -- by converting into a polygon
@@ -69,19 +74,17 @@ transforms.jl
 
 
 polygons.jl
-       points -- normally a vector
-              -- could be an array for complex polys, but that could
-                 be wasteful, as longest path dominates
+   simple OK
+   almost simple, almost OK
+   complex not implemented at all
+      do we need a "path" made up of line segments?
 
    constructors
    union/intersection/differences
      -- can I create a new operator 'u' or 'n' or using Unicode
      	-- would that even be wise
 
-   do we need a "path" made up of line segments?
-   do we need subtypes for the various polygons
-
-      remove_colinear.m (from a path)
+   remove_colinear.m (from a path)
           including points that are really (floating point) the same
 
    generators
@@ -90,23 +93,15 @@ polygons.jl
        random (convex, simple, almostsimple, ...)       
 
    centroid
-   angles (internal angles at vertices)
    minkowski sum
    medial axis
-   perimeter
-   area
 
    isregular
-   isconvex
-   issimple (can be drawn without lines overlapping)
    isalmostsimple 
 
    not complex (no holes, can be drawn with one continous line)
 
    nearvertex
-
-   isclockwise -- maybe not needed as try to store all polys this way
-               -- only makes sense for convex (as an overall metric) 
 
    implicit_vertices -- implict vertices in complex polygon
 
@@ -125,7 +120,7 @@ polygons.jl
 
 bounds
    could make Bounds a special case of a rectangle???
-   add standard functions to bounds 
+   add standard functions to bounds???
       maybe doesn't make sense if its an abstract, but 'isin' at least
           would be useful
 
@@ -173,7 +168,8 @@ other issues
    -- is there really a point to having separate types for "Point" and
       "Vect"?
 
-
+   -- make sure to vectorize a lot of the basic functions, e.g., area,
+      perimeter, ...
 
 
 

@@ -1,6 +1,6 @@
 export Circle, Arc
 
-export isequal, center, radius, area, isin, bounded, approxpoly, displayPath, closed
+export isequal, center, radius, area, perimeter, isin, bounded, approxpoly, displayPath, closed, distance
 
 #################################################################
 # Circles
@@ -22,7 +22,7 @@ Circle{T<:Number, S<:Number}(center::Point{T}, radius::S) = Circle(convert(Point
 # also allow construction from three points on the circle
 #   this is going to be a floating point calculation, so don't bother subtyping inputs
 #   this is probably not the fastest way to solve this, but does a bit of checking
-function Circle(a::Point, b::Point, c::Point; tolerance=1.0e-6) # tolerance here seems to need to be a little larger
+function Circle(a::Point, b::Point, c::Point; tolerance=1.0e-12)
     clockwise = ccw(a, b, c)
     if abs(clockwise) <= tolerance
         error("input points are close to colinear")
@@ -68,9 +68,9 @@ function Circle(a::Point, b::Point, c::Point; tolerance=1.0e-6) # tolerance here
     # plot(c_bc; color="orange", marker="o")
 
     # check that all three give the same point
-    d1 = distance(c_ab,c_ac)
-    d2 = distance(c_ab,c_bc)
-    d3 = distance(c_ac,c_bc)
+    d1 = distance2(c_ab,c_ac)
+    d2 = distance2(c_ab,c_bc)
+    d3 = distance2(c_ac,c_bc)
     # println("d1 = $d1, d2=$d2, d3=$d3")
     if d1>tolerance || d2>tolerance || d3>tolerance
         error("incompatible center point calculations")
@@ -94,6 +94,7 @@ isequal(c1::Circle, c2::Circle) = c1.center==c2.center && c1.radius==c2.radius
 center(c::Circle) = c.center
 radius(c::Circle) = c.radius
 area(c::Circle) = pi*c.radius*c.radius
+perimeter(c::Circle) = 2*pi*c.radius
 function isin(p::Point, c::Circle; tolerance=1.0e-12)
     d = distance(p, c.center)
     if distance < radius - tolerance
@@ -161,6 +162,10 @@ bounded(a::Arc) = true
 # does the shape define an "inside" and "outside" of the plane
 closed(::Arc) = true
 
+# for completeness
+area(::Arc) = Inf
+perimeter(a::Arc) = (theta1-theta0)*a.radius
+
 # approximate as a set of points
 function approxpoly(a::Arc, n::Integer)
     dtheta = a.theta1 - a.theta0
@@ -170,6 +175,16 @@ function approxpoly(a::Arc, n::Integer)
     return PointArray(x,y)
 end
 
+function distance(p::Point, c::Circle)
+    d = distance(p,c.center)
+    if (d - c.radius > 0)
+        direction = p - c.center
+        p = c.center + (c.radius/d)*direction
+        return d - c.radius, p
+    else
+        return zero(d),d
+    end
+end
 
 # function for plotting
 function displayPath(a::Arc; n=100)
