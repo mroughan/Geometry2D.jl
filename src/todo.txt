@@ -51,8 +51,7 @@ line.jl
      -- could have specialised algorithms to deal with Rationals (say)
      -- similar issues with circles etc
   intersections for Rays
-  finish "distance" functions and test, and use them for "isin" functions
-
+ 
 triangle.jl
   intersections and unions -- by converting into a polygon
      (NB: triangles aren't polygons(type) because don't store 4 points
@@ -131,22 +130,14 @@ utilities.jl
                        closest points)   
 
 plot.jl
-   conditionally include PyPlot and create routines for plotting all
-   of the above, maybe in with their files, or maybe together?
-      -- how to plot unbounded?
+   conditionally include PyPlot?
 
-   at the moment in utilities.jl
+   perhaps have "displayPath" output 'points' and 'lines' for
+   different treatement
+        pass marker to one and linestyle to the other by separating
+          these from varargs...
 
-   create
-       P = displayPath(O)
-   for all objects for basic plot
-
-   perhaps create my own fill routines though
-
-   replace add-hoc "bounds" with a Bounds object
-     -- in plot, and in line.jl
-
-   -- also really need am optional "n" argument for plot and displayPath
+   -- also really need an optional "n" argument for plot and displayPath
       so that the user can make a more or less exact approximation to
       the real curve
 

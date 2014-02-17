@@ -372,7 +372,11 @@ function displayPath(r::Ray; bounds=default_bounds)
     in, edge = isin(r.startpoint, bounds)
     if in && !edge
         # the startpoint is inside the box, so only draw half a line
-        return [r.startpoint, r.startpoint + r.direction]
+        P = [startpoint]
+        
+        # NEEDS intersection of ray and line routine
+
+        return  P
     elseif edge
         # startpoint is on the edge, so check if we are pointed in or out
         in2,edge2 = isin(r.startpoint + 1.0e-6*r.direction, bounds) # prolly should do this with angle test
