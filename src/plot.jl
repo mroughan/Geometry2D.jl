@@ -11,7 +11,7 @@ export plot
 #   varargs are the standard optional arguments for PyPlot
 #      color, marker, markersize, linestyle, linewidth, hold, ...
 #   http://matplotlib.org/api/axes_api.html#matplotlib.axes.Axes.plot
-function plot(O::G2dObject; bounds=[[0 0], [1 1]], label="G2dObject", varargs...)
+function plot(O::G2dObject; bounds=default_bounds, label="G2dObject", varargs...)
     if bounded(O)
         P = displayPath(O)
     else
@@ -25,12 +25,16 @@ function plot(O::G2dObject; bounds=[[0 0], [1 1]], label="G2dObject", varargs...
         label=string(typeof(O)) # default label is the type of the object being plotted
     end
     # println(P)
-    h = plot(points_x(P), points_y(P); label=label, varargs...)
+    if length(P)>0
+        h = plot(points_x(P), points_y(P); label=label, varargs...)
+        return h
+    else
+        warn("empty set of plot points")
+    end
     # if ~bounded(O) && length(P)>1
     #     arrow(P[2].x, P[2].y, P[1].x, P[1].y, head_width=0.05, head_length=0.1)
     #     arrow(P[end-1].x, P[end-1].y, P[end].x, P[end].y, head_width=0.05, head_length=0.1)
     # end
-    return h
 end
 
 # also need a nice "fill" routine

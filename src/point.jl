@@ -3,7 +3,7 @@ export Point, Vect, PointArray
 
 export origin
 
-export points_x, points_y, isfinite, isinf, isnan, eltype, isless, isequal, convert, cmp, angle, abs, distance, distance2, ones, zeros, quadrant, sign, print, bounded, displayPath, closed
+export points_x, points_y, isfinite, isinf, isnan, eltype, isless, isequal, convert, cmp, angle, abs, distance, distance2, ones, zeros, quadrant, sign, print, bounded, displayPath, closed, inner, length
 
 # define a "point"
 immutable Point{T<:Number} <: G2dSimpleObject
@@ -41,7 +41,11 @@ promote_rule{T<:Integer,S<:FloatingPoint}(::Type{Point{Rational{T}}}, ::Type{Poi
 /(p2::Point, k::Number) = Point(p2.x/k, p2.y/k)
 .*(k::Number, p2::Point) = Point(k * p2.x, k * p2.y)
 .*(p2::Point, k::Number) = Point(k * p2.x, k * p2.y)
+.*(p1::Point, p2::Point) = Point(p1.x * p2.x, p1.y * p2.y)
 ./(p2::Point, k::Number) = Point(p2.x/k, p2.y/k)
+^{T<:Number}(p::Point{T},e::Integer) = Point(p.x^e, p.y^e)
+^{T<:Number}(p::Point{T},e::Real) = Point(p.x^e, p.y^e)
+inner(p1::Point, p2::Point) = p1.x * p2.x    +     p1.y * p2.y
 
 # comparisons (perform lexicographically)
 isequal(p1::Point, p2::Point) = ( p1.x==p2.x && p1.y==p2.y )
@@ -57,8 +61,6 @@ isless(p1::Point, p2::Point) = ( p1.x<p2.x || (p1.x==p2.x && p1.y<p2.y) )
 .>=(p1::Point, p2::Point) = p1<=p2
 .<=(p1::Point, p2::Point) = p2<=p1
 cmp(p1::Point, p2::Point) = p1<p2 ? -1 : p2<p1 ? 1 : 0
-^{T<:Number}(p::Point{T},e::Integer) = Point(p.x^e, p.y^e)
-^{T<:Number}(p::Point{T},e::Real) = Point(p.x^e, p.y^e)
 
 
 # utility functions
@@ -68,6 +70,7 @@ isnan(p::Point) = isnan(p.x) | isnan(p.y)
 eltype{T<:Number}(p::Point{T}) = T
 convert{T<:Number, S<:Number}(::Type{Point{T}}, p::Point{S}) = Point(convert(T,p.x), convert(T,p.y))
 bounded(p::Point) = true
+length(p::Point) = 1 # just for convenience
 
 # does the shape define an "inside" and "outside" of the plane
 closed(::Point) = false
@@ -84,7 +87,7 @@ function quadrant(p::Point) # output the correct quadrant (1=++, 2=-+, 3=--, 4=+
         return 3
     elseif s.x==1 && s.y==-1
         return 4
-    else
+    else 
         return 0 # if it is on one of the axes, return zero
     end
 end
@@ -97,12 +100,12 @@ angle(p::Point) = angle(p, origin) # default is o=(0,0)
 # angle between three points
 function angle(p1::Point, p2::Point, p3::Point)
     v1 = p2-p1
-    v2 = p3-p2
-    d1 = sqrt( sum( v1.^2 ) )
-    d2 = sqrt( sum( v2.^2 ) )
-    tmp = sum( v1.*v2 ) / (d1*d2)
-    tmp = minimum([tmp 1.0])
-    tmp = maximum([tmp -1.0])
+    v2 = p2-p3
+    d1 = distance(v1)
+    d2 = distance(v2)
+    tmp = inner(v1,v2) / (d1*d2)
+    tmp = minimum([tmp one(tmp)])
+    tmp = maximum([tmp -one(tmp)])
     return acos( tmp )
 end
 

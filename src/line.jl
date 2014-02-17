@@ -99,9 +99,9 @@ convert(::Type{Segment{Float64}}, s::Segment) = Segment(convert(Float64,startpoi
 # promote_rule{T<:Integer,S<:FloatingPoint}(::Type{Segment{Rational{T}}}, ::Type{Segment{S}})  = Segment{promote_type(T,S)}
 
 # conversion of one type to another: note though that these loose information
-convert(::Type{Ray}, s::Segment) = Ray(s.startpoint, s.endpoint-s.startpoint)
-convert(::Type{Line}, s::Segment) = Line(s.startpoint, atan( (s.endpoint.y-s.startpoint.y)/(s.endpoint.x-s.startpoint.x) ))
-convert(::Type{Line}, r::Ray) = Line(s.startpoint, atan(direction.y, direction.x) )
+convert{T<:Number}(::Type{Ray}, s::Segment{T}) = Ray(s.startpoint, s.endpoint-s.startpoint)
+convert{T<:Number}(::Type{Line}, s::Segment{T}) = Line(s.startpoint, atan( (s.endpoint.y-s.startpoint.y)/(s.endpoint.x-s.startpoint.x) ))
+convert{T<:Number}(::Type{Line}, r::Ray{T}) = Line(r.startpoint, atan(r.direction.y / r.direction.x) )
 # can't convert back the other way without providing extra information
 
 # useful functions
@@ -167,39 +167,46 @@ function distance(p::Point, line::Line)
     s2 = (p.y - line.point.y) / sin(line.theta)
     s = abs(s1 - s2)
     d = s*cos(line.theta)*sin(line.theta)
-    ss = min([s1,s2]) + s*sin(line.theta)*sin(line.theta)
+    if (s1 <= s2)
+        ss = s1 + s*sin(line.theta)*sin(line.theta)
+    else
+        ss = s2 + s*cos(line.theta)*cos(line.theta)        
+    end
     ps = line.point + ss*Point(cos(line.theta), sin(line.theta))
     return d, ps
 end
+distance2(p::Point, line::Line) = distance(p, line)[1]^2 # this isn't more efficient, but to be consistent with point distances
 
 function distance(p::Point, r::Ray)
-
-    # distance from p to equivalent line
-    d,pp = distance(p, convert(Line, r))
-
-    # distance from p to startpoint
-    dp = distance(p, r.startpoint)
-
-    # if you are close to the end point, choose that
-
-    # else check that the point closest on the line is on the ray
-    # and if not still return the end point
-
-    # otherwise return the point on the line that is closest
-end
-
-function isin(p::Point, s::Segment; tolerance=1.0e-12)
-    if distance2(p, s.startpoint)<tolerance
-        return true, true
-    elseif distance2(p, s.endpoint)<tolerance
-        return true, true
+    a = angle( r.startpoint+r.direction, r.startpoint, p)
+    if abs(a) < pi/2
+        # distance from p to equivalent line
+        return distance(p, convert(Line, r))
+    else
+        # distance from p to the startpoint of the ray
+        d = distance(p, r.startpoint)
+        return d, r.startpoint
     end
-    r1 = convert(Ray, s)
-    r2 = Ray( s.endpoint, s.startpoint-s.endpoint) # can't use conversion here because of ordering
-    I1,E1 = isin(p,r1)
-    I2,E2 = isin(p,r2)
-    return I1 && I2, false
 end
+distance2(p::Point, r::Ray) = distance(p, r::Ray)[1]^2 # this isn't more efficient, but to be consistent with point distances
+
+function distance(p::Point, s::Segment)
+    a1 = angle( p, s.startpoint, s.endpoint)
+    a2 = angle( p, s.endpoint, s.startpoint)
+    if abs(a1) < pi/2 && abs(a2) < pi/2
+        # distance from p to equivalent line
+        return distance(p, convert(Line, s))
+    elseif abs(a1) < pi/2  
+        d = distance(p, s.endpoint)
+        return d, s.endpoint
+    elseif abs(a2) < pi/2
+        d = distance(p, s.startpoint)
+        return d, s.startpoint
+    else
+        error("something went wrong here")
+    end
+end
+distance2(p::Point, s::Segment) = distance(p, s::Segment)[1]^2 # this isn't more efficient, but to be consistent with point distances
 
 # inclusion tests: return true if a point is on a Line, Ray or Segment, repectively
 #     tolerance specifies a distance from the object that is allowed
@@ -207,11 +214,11 @@ end
 #        means a bounding points, e.g., the startpoint of a Ray, or the end-points of a Segment
 #        maybe not mathematically sound, but this way is useful
 function isin(p::Point, line::Line; tolerance=1.0e-12)
-    return distance(p,line) < tolerance, false
+    return distance2(p,line) < tolerance, false
 end
 
 function isin(p::Point, r::Ray; tolerance=1.0e-12)
-    return distance(p,r) < tolerance, distance(p,r.startpoint) < tolerance
+    return distance2(p,r) < tolerance, distance2(p,r.startpoint) < tolerance
 end
 
 function isin(p::Point, s::Segment; tolerance=1.0e-12)
@@ -220,9 +227,8 @@ function isin(p::Point, s::Segment; tolerance=1.0e-12)
     elseif distance2(p, s.endpoint)<tolerance
         return true, true
     end
-    return distance(p,s) < tolerance, false
+    return distance2(p,s) < tolerance, false
 end
-
 
 # intersection of lines
 function intersection( line1::Line, line2::Line; tolerance=1.0e-12)
@@ -318,10 +324,10 @@ end
 
 
 # function for plotting
-function displayPath(line::Line; bounds=[[0 0], [1 1]]) 
+function displayPath(line::Line; bounds=default_bounds) 
     # create bounding lines
-    p1 = Point(bounds[1,1], bounds[1,2])
-    p2 = Point(bounds[2,1], bounds[2,2])
+    p1 = Point(bounds.left, bounds.bottom)
+    p2 = Point(bounds.right, bounds.top)
     l1 = Line(p1, 0)
     l2 = Line(p1, pi/2)
     l3 = Line(p2, 0)
@@ -332,33 +338,55 @@ function displayPath(line::Line; bounds=[[0 0], [1 1]])
     i2,p2 = intersection(line, l2)
     i3,p3 = intersection(line, l3)
     i4,p4 = intersection(line, l4)
+ 
+    # if the line is parallel to a boundary
+    if i1==2
+        return [p1, Point(bounds.right, bounds.bottom)]
+    elseif i2==2
+        return [p1, Point(bounds.left, bounds.top)]
+    elseif i3==2
+        return [p2, Point(bounds.left, bounds.top)]
+    elseif i4==2
+        return [p3, Point(bounds.right, bounds.bottom)]
+    end
 
+    # if it intersects, then return the intersection points
     # choose the two points that are in the bounding rectangle
     P = []
-    if i1==1 && 
-        p1.x>=bounds[1,1] && p1.x<=bounds[2,1] &&
-        p1.y>=bounds[1,2] && p1.y<=bounds[2,2]
+    if i1==1 && isin(p1, bounds)[1]
         P = [P, p1]
     end
-    if i2==1 && 
-        p2.x>=bounds[1,1] && p2.x<=bounds[2,1] &&
-        p2.y>=bounds[1,2] && p2.y<=bounds[2,2]
+    if i2==1 && isin(p2, bounds)[1]
         P = [P, p2]
     end
-    if i3==1 && 
-        p3.x>=bounds[1,1] && p3.x<=bounds[2,1] &&
-        p3.y>=bounds[1,2] && p3.y<=bounds[2,2]
+    if i3==1 && isin(p3, bounds)[1]
         P = [P, p3]
     end
-    if i4==1 && 
-        p4.x>=bounds[1,1] && p4.x<=bounds[2,1] &&
-        p4.y>=bounds[1,2] && p4.y<=bounds[2,2]
+    if i4==1 && isin(p4, bounds)[1]
         P = [P, p4]
     end
     return unique(P) # doesn't eliminate all possible redundant points because of roundoff errors
 end
-function displayPath(r::Ray; bounds=[[0 0], [1 1]]) 
-    return [s.startpoint, s.startpoint + s.direction]
+
+function displayPath(r::Ray; bounds=default_bounds) 
+    in, edge = isin(r.startpoint, bounds)
+    if in && !edge
+        # the startpoint is inside the box, so only draw half a line
+        return [r.startpoint, r.startpoint + r.direction]
+    elseif edge
+        # startpoint is on the edge, so check if we are pointed in or out
+        in2,edge2 = isin(r.startpoint + 1.0e-6*r.direction, bounds) # prolly should do this with angle test
+        if in2
+            displayPath(convert(Line, r); bounds=bounds) 
+        else
+            return r.startpoint
+        end
+    else
+        # this is just the line drawing problem
+        return displayPath(convert(Line, r); bounds=bounds) 
+    end
 end
+
 displayPath(s::Segment) = [s.startpoint, s.endpoint]
+
 
