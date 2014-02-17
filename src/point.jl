@@ -3,7 +3,7 @@ export Point, Vect, PointArray
 
 export origin
 
-export points_x, points_y, isfinite, isinf, isnan, eltype, isless, isequal, convert, cmp, angle, abs, distance, distance2, ones, zeros, quadrant, sign, print, bounded, displayPath, closed, inner, length
+export points_x, points_y, isfinite, isinf, isnan, eltype, isless, isequal, convert, cmp, angle, abs, distance, distance2, ones, zeros, quadrant, sign, print, bounded, displayPath, closed, inner, length, acute
 
 # define a "point"
 immutable Point{T<:Number} <: G2dSimpleObject
@@ -107,6 +107,17 @@ function angle(p1::Point, p2::Point, p3::Point)
     tmp = minimum([tmp one(tmp)])
     tmp = maximum([tmp -one(tmp)])
     return acos( tmp )
+end
+# often don't need the actual angle, just whether it is accute, or obtuse
+#   this function returns 1 if the angle is acute, and 0 for a rightangle and -1 for obtuse
+function acute(p1::Point, p2::Point, p3::Point)
+    v1 = p2-p1
+    v2 = p2-p3
+    d1 = distance(v1)
+    d2 = distance(v2)
+    tmp = inner(v1,v2)
+    println(  " angle=$(angle(p1,p2,p3)/(pi/2)), acute=$(sign(tmp))")
+    return sign( tmp )
 end
 
 # distance and distance squared (default is distance from the origin) 

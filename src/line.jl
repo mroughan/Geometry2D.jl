@@ -178,8 +178,7 @@ end
 distance2(p::Point, line::Line) = distance(p, line)[1]^2 # this isn't more efficient, but to be consistent with point distances
 
 function distance(p::Point, r::Ray)
-    a = angle( r.startpoint+r.direction, r.startpoint, p)
-    if abs(a) < pi/2
+    if acute( r.startpoint+r.direction, r.startpoint, p) > 0
         # distance from p to equivalent line
         return distance(p, convert(Line, r))
     else
@@ -191,15 +190,15 @@ end
 distance2(p::Point, r::Ray) = distance(p, r::Ray)[1]^2 # this isn't more efficient, but to be consistent with point distances
 
 function distance(p::Point, s::Segment)
-    a1 = angle( p, s.startpoint, s.endpoint)
-    a2 = angle( p, s.endpoint, s.startpoint)
-    if abs(a1) < pi/2 && abs(a2) < pi/2
+    a1 = acute( p, s.startpoint, s.endpoint)
+    a2 = acute( p, s.endpoint, s.startpoint)
+    if a1 > 0 && a2 > 0
         # distance from p to equivalent line
         return distance(p, convert(Line, s))
-    elseif abs(a1) < pi/2  
+    elseif a1 >= 0
         d = distance(p, s.endpoint)
         return d, s.endpoint
-    elseif abs(a2) < pi/2
+    elseif a2 >= 0
         d = distance(p, s.startpoint)
         return d, s.startpoint
     else
@@ -372,7 +371,7 @@ function displayPath(r::Ray; bounds=default_bounds)
     in, edge = isin(r.startpoint, bounds)
     if in && !edge
         # the startpoint is inside the box, so only draw half a line
-        P = [startpoint]
+        P = [r.startpoint, r.startpoint+r.direction]
         
         # NEEDS intersection of ray and line routine
 
