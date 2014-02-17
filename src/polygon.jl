@@ -172,6 +172,7 @@ function angles(poly::Polygon)
         for i=1:n
             a[i] = angle( points[mod1(i-1,n)], points[i], points[mod1(i+1,n)]  )
         end
+        return a
     else
         error("might not give sensible results for non-convex polygons")
     end
