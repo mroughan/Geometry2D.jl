@@ -3,7 +3,7 @@ export Point, Vect, PointArray
 
 export origin
 
-export points_x, points_y, isfinite, isinf, isnan, eltype, isless, isequal, convert, cmp, angle, abs, distance, distance2, ones, zeros, quadrant, sign, print, bounded, displayPath, closed, inner, length, acute
+export points_x, points_y, isfinite, isinf, isnan, eltype, isless, isequal, convert, cmp, angle, abs, distance, distance2, ones, zeros, quadrant, sign, print, bounded, displayPath, displayPoints, closed, inner, length, acute
 
 # define a "point"
 immutable Point{T<:Number} <: G2dSimpleObject
@@ -134,7 +134,7 @@ points_y(p::Point) = p.y
 print(p::Point) = print("x=$(p.x), y=$(p.y)")
 
 # function for plotting
-displayPath(p::Point) = p
+displayPoints(p::Point) = p
 
 
 ###############################################################
@@ -193,9 +193,4 @@ eltype{T<:Number}(p::Array{Point{T}}) = Point{T}
 
 # function for plotting
 displayPath(P::Array{Point}) = P
-#   currently this is what would be used by default for any array of points
-#   which has some issues
-#      --  Triangle isn't actually a type, and as triangles are only storing three points
-#          this won't result in a closed triangle being draw
-#      -- By default, a 'path' will be drawn, but these might just be points, without connections
-#
+displayPoints(P::Array{Point}) = P

@@ -102,6 +102,17 @@ println("distance from p3 to la = $d")
 axis([-1.2, 2.2, -1.2, 2.2])
 grid(true)
 
+# look for intersections
+I,pI = intersection( l1, l0 )
+if I>0; plot(pI; marker="o", color="blue"); end
+I,pI = intersection( l1, la )
+if I>0; plot(pI; marker="o", color="blue"); end
+I,pI = intersection( l0, la )
+if I>0; plot(pI; marker="o", color="blue"); end
+
+I,pI = intersection( l1, l1 )
+if I>0; plot(pI; linestyle="--", color="red", bounds=b); end
+
 
 
 figure(22)
@@ -111,10 +122,17 @@ hold(true)
 b = Bounds(2, 0, -1, 2)
 l_test = Line( Point(0.60,0.56), pi/3.2)
 plot(l_test; label="line1", color="blue", bounds=b)
+l_rand = Line(Point(rand()+1, rand()+1), pi*rand()-pi/2)
 for i=1:30
     p_test = Point(rand(), rand())
     d,ps = distance(p_test, l_test)
     plot(Segment(p_test,ps); label="nearest", color="red")
+end
+for i=1:10
+    l_rand = Line(Point(rand()+1, rand()+1), pi*rand()-pi/2)
+    plot(l_rand; label="line1", color="green", bounds=b)
+    I,pI = intersection(l_rand,l_test)
+    if I>0; plot(pI; marker="o", color="green"); end
 end
 axis([-1.2, 2.2, -1.2, 2.2])
 grid(true) 
@@ -173,12 +191,37 @@ println("distance from (-0.25,0.5) to r3 = $d")
 d,ps = distance(Point(1.25,0.5), r3)
 plot(Segment(Point(1.25,0.5),ps); label="nearest", color="red", linestyle="-", marker="o")
 println("distance from (1.25,0.5) to r3 = $d")
- 
+
+I,pI = intersection(r1, r2)
+if I>0; plot(pI; marker="o", color="cyan"); end
+
+I,pI = intersection(r1, r3)
+if I>0; plot(pI; marker="o", color="cyan"); end
+
+I,pI = intersection(r2, r3)
+if I>0; plot(pI; marker="o", color="cyan"); end
+
 axis([-1.2, 2.2, -1.2, 2.2])
 # legend()
 grid(true)
 
-# test "isin"
+# test intersections
+figure(24)
+hold(false)
+plot(0,0)
+hold(true)
+r1 = Ray(p1, Vect(1,2))
+plot(p1; color="blue", marker="o")
+b = Bounds(2,-1,-1,2)
+plot(r1; label="ray1", color="blue", bounds=b)
+
+r_rand = Ray( Point(rand(),rand()), Point(rand(), rand()) )
+for i=1:10
+    r_rand = Ray( Point(rand(),rand()), Point(rand()-0.5, rand()-0.5) )
+    plot(r_rand; linestyle="-", marker="s", color="orange", bounds=b)
+    I,pI = intersection(r_rand, r1)
+    if I>0; plot(pI; marker="+", markersize=15, color="red"); end
+end
 
 
 ##########################################3
@@ -192,14 +235,23 @@ try
     s5 = Segment(p1, p4)
 catch err5
 end
-s5 = SegmentRand()
 
 figure(25)
+hold(false)
+plot(0,0)
+hold(true)
 plot(s1; marker="o", color="red")
 plot(s2; marker="o", color="green")
 plot(s3; marker="o", color="blue")
 plot(s4; marker="o", color="yellow")
-plot(s5; marker="o", color="orange")
+
+s5 = SegmentRand()
+for i=1:10
+    s5 = SegmentRand()
+    plot(s5; marker="", color="orange")
+    I,pI = intersection(s1, s5)
+    if I>0; plot(pI; marker="o", color="red"); end
+end
 
 figure(26)
 hold(false)

@@ -262,11 +262,51 @@ end
 
 # intersections of rays
 function intersection( r1::Ray, r2::Ray; tolerance=1.0e-12)
-    # NB: can do this just as in lines, but 
-    #    1 - need to keep track of sense, particularly for overlaps
-    #            could be in same direction, or opposite
-    #    2 - need the par[1:2] to both be positive
-    error("not implemented yet")
+    #OUTPUTS: 
+    #   intersect = 0 means segments don't intersect (i.e, they are parallel)
+    #             = 1 means 1 intersection
+    #             = 2 means they overlap (infinite intersections) 
+    #   point     = the intersection point if it exists
+    #                  if they don't intersect then return "nothing"
+    #                  if they are the same, then return the Ray
+    d1 = distance2(r1.startpoint, r2.startpoint)
+    d2 = distance2(r1.direction, r2.direction)
+    if d1 < tolerance
+        if d2 < tolerance            
+            return 2, r1
+        else
+            return 1, r1.startpoint
+        end
+    elseif isin(r1.startpoint, r2)[1]
+        if d2 < tolerance
+            return 2, r1
+        else
+            return 1, r1.startpoint
+        end
+    elseif isin(r2.startpoint, r1)[1]
+        if d2 < tolerance
+            return 2, r2
+        else
+            return 1, r2.startpoint
+        end
+    else
+        # neither end-point is on the other ray, so they intersect cleanly, or don't at all
+        l1 = convert(Line, r1)
+        l2 = convert(Line, r2)
+        I,p = intersection(l1,l2)
+        if I==1
+            # find out if p is on the rays
+            if isin(p,r1)[1] && isin(p,r2)[1]
+                return 1,p
+            else
+                return 0,nothing
+            end
+        elseif I>1
+            error("this shouldn't happen given previous tests")
+        else
+            return 0,nothing
+        end
+    end
 end
 
 # intersection of segments
@@ -307,13 +347,15 @@ function intersection( s1::Segment, s2::Segment; tolerance=1.0e-12 )
     l1 = convert(Line, s1)
     l2 = convert(Line, s2)
     I,p = intersection(l1,l2)
-    if I
+    if I==1
         # find out if p is on the segments
-        if isin(p,s1) && isin(p,s2)
+        if isin(p,s1)[1] && isin(p,s2)[1]
             return 1,p
         else
             return 0,nothing
         end
+    elseif I>1
+        error("this shouldn't happen given previous tests")
     else
         return 0,nothing
     end
@@ -367,6 +409,13 @@ function displayPath(line::Line; bounds=default_bounds)
     return unique(P) # doesn't eliminate all possible redundant points because of roundoff errors
 end
 
+function displayPoints(r::Ray; bounds=default_bounds)
+    if isin(r.startpoint, bounds)[1]
+        return [r.startpoint]
+    else
+        return []
+    end
+end
 function displayPath(r::Ray; bounds=default_bounds) 
     in, edge = isin(r.startpoint, bounds)
     if in && !edge
@@ -374,6 +423,8 @@ function displayPath(r::Ray; bounds=default_bounds)
         P = [r.startpoint, r.startpoint+r.direction]
         
         # NEEDS intersection of ray and line routine
+        #   will defer this until we can intersect a polygon and Line or Ray
+        #   at which point we just construct quadrilateral polygon for intersections
 
         return  P
     elseif edge
@@ -390,6 +441,7 @@ function displayPath(r::Ray; bounds=default_bounds)
     end
 end
 
+displayPoints(s::Segment) = [s.startpoint, s.endpoint]
 displayPath(s::Segment) = [s.startpoint, s.endpoint]
 
 

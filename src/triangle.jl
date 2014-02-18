@@ -106,4 +106,5 @@ end
 
 # function for plotting
 displayPath(t::Triangle) = [t.points, t.points[1]]
+displayPoints(t::Triangle) = [t.points]
 

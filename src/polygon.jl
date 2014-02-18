@@ -185,4 +185,5 @@ closed(::Polygon) = true
 
 # function for plotting
 displayPath(poly::Polygon) = [poly.points]
+displayPoints(poly::Polygon) = [poly.points[1:end-1]]
 

@@ -11,30 +11,51 @@ export plot
 #   varargs are the standard optional arguments for PyPlot
 #      color, marker, markersize, linestyle, linewidth, hold, ...
 #   http://matplotlib.org/api/axes_api.html#matplotlib.axes.Axes.plot
-function plot(O::G2dObject; bounds=default_bounds, label="G2dObject", varargs...)
+function plot(O::G2dObject; bounds=default_bounds, label="G2dObject", marker="o", linestyle="-", varargs...)
     if bounded(O)
-        P = displayPath(O)
+        if method_exists(displayPath, (typeof(O),))
+            P = displayPath(O)
+        else
+            P = []
+        end
+        if method_exists(displayPoints, (typeof(O),))
+            Po = displayPoints(O)
+        else
+            Po = []
+        end
     else
-        # for unbounded objects, give them a rectangle in which to be plotted
-        #    bounds = [ [x_0,y0], [x_1,y_1]]  where 
-        #                  (x_0,y_0) = bottom left
-        #                  (x_1,y_1) = top right
-        P = displayPath(O; bounds=bounds)
+        if method_exists(displayPath, (typeof(O),))
+            P = displayPath(O; bounds=bounds)
+        else
+            P = []
+        end
+        if method_exists(displayPoints, (typeof(O),))
+            Po = displayPoints(O; bounds=bounds)
+        else
+            Po = []
+        end
     end
     if (label=="G2dObject")
         label=string(typeof(O)) # default label is the type of the object being plotted
     end
-    # println(P)
     if length(P)>0
-        h = plot(points_x(P), points_y(P); label=label, varargs...)
-        return h
+        h = plot(points_x(P), points_y(P); label=label, linestyle=linestyle, varargs...)
     else
-        warn("empty set of plot points")
+        h = nothing
     end
+    if length(Po)>0
+        ho = plot(points_x(Po), points_y(Po); label=label, marker=marker, varargs...)
+    else 
+        ho = nothing
+    end
+
+    # could do something similar to "displayPoints" for the path
     # if ~bounded(O) && length(P)>1
     #     arrow(P[2].x, P[2].y, P[1].x, P[1].y, head_width=0.05, head_length=0.1)
     #     arrow(P[end-1].x, P[end-1].y, P[end].x, P[end].y, head_width=0.05, head_length=0.1)
     # end
+
+    return h, ho
 end
 
 # also need a nice "fill" routine
