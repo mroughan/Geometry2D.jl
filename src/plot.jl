@@ -49,7 +49,13 @@ function plot(O::G2dObject; bounds=default_bounds, label="G2dObject", marker="o"
         ho = nothing
     end
 
-    # could do something similar to "displayPoints" for the path
+    # textual labels on the points
+
+
+    # internal angles on the points
+
+
+    # could do something similar to "displayPoints" for the path to show an arrow?
     # if ~bounded(O) && length(P)>1
     #     arrow(P[2].x, P[2].y, P[1].x, P[1].y, head_width=0.05, head_length=0.1)
     #     arrow(P[end-1].x, P[end-1].y, P[end].x, P[end].y, head_width=0.05, head_length=0.1)
@@ -57,6 +63,7 @@ function plot(O::G2dObject; bounds=default_bounds, label="G2dObject", marker="o"
 
     return h, ho
 end
+
 
 # also need a nice "fill" routine
 #   basic approach similar to above

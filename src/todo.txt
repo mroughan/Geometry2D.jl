@@ -133,12 +133,7 @@ utilities.jl
 plot.jl
    conditionally include PyPlot?
 
-   perhaps have "displayPath" output 'points' and 'lines' for
-   different treatement
-        pass marker to one and linestyle to the other by separating
-          these from varargs...
-
-   -- also really need an optional "n" argument for plot and displayPath
+   really need an optional "n" argument for plot and displayPath
       so that the user can make a more or less exact approximation to
       the real curve
 
