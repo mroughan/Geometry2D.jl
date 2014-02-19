@@ -204,7 +204,7 @@ function isin(p::Point, poly::Polygon; test="winding", tolerance=1.0e-12)
 
     # if not on the boundary do the test
     if test=="winding"
-        if windingNumber(translate(poly, -p); tolerance=tolerance) > 0
+        if abs(windingNumber(p, poly; tolerance=tolerance)) > 0
             return true, false
         end
     elseif test=="scanline"
@@ -219,20 +219,19 @@ function isin(p::Point, poly::Polygon; test="winding", tolerance=1.0e-12)
 end
 
 # see for instance: http://geomalgorithms.com/a03-_inclusion.html
-function windingNumber(poly::Polygon; tolerance=1.0e-12)
-    # assumes we translated the polygon, so the point of interest is the origin
+function windingNumber(p::Point, poly::Polygon; tolerance=1.0e-12)
     n = length(poly)
-    R = Ray(Point(0,0), Vect(1,0)) # +ve x-axis
+    R = Ray(p, Vect(1,0)) # horizontal ray from the point
     count = 0
 
     # count the number of upward transitions into Q1
     for i=1:n
         S = Segment( poly.points[i], poly.points[i+1] )
         I,pi = intersection( S, R ; tolerance=tolerance )
-        if I==1 && pi.x > 0
-            if poly.points[i+1].y > poly.points[i].y && poly.points[i].y < 0
+        if I==1 && pi.x > p.x
+            if poly.points[i+1].y > poly.points[i].y 
                 count += 1
-            elseif poly.points[i+1].y < poly.points[i].y && poly.points[i].y > 0
+            elseif poly.points[i+1].y < poly.points[i].y
                 count -= 1
             end 
         end
