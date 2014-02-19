@@ -3,7 +3,7 @@ export Point, Vect, PointArray
 
 export origin
 
-export points_x, points_y, isfinite, isinf, isnan, eltype, isless, isequal, convert, cmp, angle, abs, distance, distance2, ones, zeros, quadrant, sign, print, bounded, displayPath, displayPoints, closed, inner, length, acute
+export points_x, points_y, isfinite, isinf, isnan, eltype, isless, isequal, convert, cmp, angle, abs, distance, distance2, ones, zeros, quadrant, sign, print, bounded, displayPath, displayPoints, closed, inner, length, acute, PointArrayRand
 
 # define a "point"
 immutable Point{T<:Number} <: G2dSimpleObject
@@ -36,6 +36,7 @@ promote_rule{T<:Integer,S<:FloatingPoint}(::Type{Point{Rational{T}}}, ::Type{Poi
 +(p1::Point, z::Number) = Point(p1.x+z, p1.y+z)
 +(p1::Point, p2::Point) = Point(p1.x+p2.x, p1.y+p2.y)
 -(p1::Point, p2::Point) = Point(p1.x-p2.x, p1.y-p2.y)
+-(p::Point) = Point(-p.x, -p.y)
 *(k::Number, p2::Point) = Point(k * p2.x, k * p2.y)
 *(p2::Point, k::Number) = Point(k * p2.x, k * p2.y)
 /(p2::Point, k::Number) = Point(p2.x/k, p2.y/k)
@@ -116,7 +117,7 @@ function acute(p1::Point, p2::Point, p3::Point)
     d1 = distance(v1)
     d2 = distance(v2)
     tmp = inner(v1,v2)
-    println(  " angle=$(angle(p1,p2,p3)/(pi/2)), acute=$(sign(tmp))")
+    # println(  " angle=$(angle(p1,p2,p3)/(pi/2)), acute=$(sign(tmp))")
     return sign( tmp )
 end
 
@@ -162,6 +163,7 @@ ones{T<:Number}(x::Array{Point{T}}) = PointArray(ones(T,size(x)), ones(T,size(x)
 
 # create a set of random points
 PointArrayRand(n::Integer, m::Integer) = PointArray(rand(n,m), rand(n,m))
+PointArrayRand(n::Integer) = PointArray(rand(n), rand(n))
 
 # return x or y coordinates
 points_x{T<:Number}(p::Array{Point{T},1}) = [p[i].x for i=1:length(p)]

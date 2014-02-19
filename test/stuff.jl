@@ -20,3 +20,14 @@ likewise for
 
 
 
+fieldtype
+getfield
+
+super
+subtypes
+subtypetree -- not defined?
+
+isimmutable
+isleaftype
+typejoin
+typeintersect

@@ -284,3 +284,23 @@ i12,p12 = intersection(l1, l2)
 i34,p34 = intersection(l3, l4)
 i16,p16 = intersection(l1, l6)
 
+
+figure(27)
+hold(false)
+plot(0,0)
+hold(true)
+S = Segment( Point(0.1,0.4), Point(0.8,0.2) )
+plot(S; color="green", marker="")
+axis("equal")
+n = 4000
+for i=1:n
+    p = Point(rand(), rand())
+    in,edge = isin(p, S; tolerance=1.0e-4)
+    if in && edge
+        plot(p; marker="o", color="red")
+    elseif in
+        plot(p; marker="o", color="green")        
+    else
+        plot(p; marker="o", color="blue")
+    end
+end

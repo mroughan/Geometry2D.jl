@@ -123,6 +123,10 @@ end
 function displayPath(c::Circle; n=100)
     P = approxpoly(c, n)
 end
+function displayPoints(c::Circle)
+    return c.center
+end
+
 
 #################################################################
 # Arcs
@@ -130,21 +134,19 @@ end
 immutable Arc{T<:Number} <: G2dCompoundObject
     center::Point{T} 
     radius::T  
-    theta0::T 
-    theta1::T
+    theta0::T # in [-pi,pi]
+    theta1::T # in (theta0,theta0+2*pi)
 
     function Arc(center::Point{T}, radius::T, theta0::T, theta1::T)
-        if theta0<-pi/2 || theta0>pi/2 ||
-           theta1<-pi/2 || theta1>pi/2
-            error("theta must, in radians in the interval [pi/2, -pi/2]")
+        if theta0<-pi || theta0>pi ||
+           theta1<-pi || theta1>pi
+            error("theta must, in radians in the interval [pi, -pi]")
         end
         if theta0==theta1
             error("theta0 must not be equal to theta1")
         end
-        if theta1>theta0
-            tmp = theta0
-            theta0 = theta1
-            theta1 = tmp
+        if theta1<theta0 || theta1>theta0+2*pi
+            theta1 = mod1(theta1-theta0, 2*pi) + theta0
         end
         if (radius <= 0)
             error("radius must be positive")
@@ -152,7 +154,7 @@ immutable Arc{T<:Number} <: G2dCompoundObject
         return new(center, radius, theta0, theta1)
     end
 end
-Arc{T<:Number}(center::Point{T}, radius::T) = Arc{T}(center, radius, theta0, theta1)
+Arc{T<:Number}(center::Point{T}, radius::T, theta0::T, theta1::T) = Arc{T}(center, radius, theta0, theta1)
 Arc{T<:Number, S<:Number}(center::Point{T}, radius::S, theta0, theta1) = Arc(convert(Point{promote_type(T,S)}, center), convert(promote_type(T,S),radius) )
 Arc(circle::Circle, theta0, theta1) = Arc( circle.center, circle.radius, theta0, theta1 )
 
@@ -166,12 +168,12 @@ closed(::Arc) = true
 area(::Arc) = Inf
 perimeter(a::Arc) = (theta1-theta0)*a.radius
 
-# approximate as a set of points
+# approximate as a set of n line segments
 function approxpoly(a::Arc, n::Integer)
-    dtheta = a.theta1 - a.theta0
-    theta = theta0 + dtheta*[0:n]
-    x = a.radius * cos(theta)
-    y = a.radius * sin(theta)
+    dtheta = (a.theta1 - a.theta0)/n
+    theta = a.theta0 + dtheta*[0:n]
+    x = a.center.x + a.radius * cos(theta)
+    y = a.center.y + a.radius * sin(theta)
     return PointArray(x,y)
 end
 
@@ -189,5 +191,8 @@ end
 # function for plotting
 function displayPath(a::Arc; n=100)
     P = approxpoly(a, n)
+end
+function displayPoints(a::Arc)
+    return a.center
 end
 

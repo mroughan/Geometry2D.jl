@@ -4,10 +4,10 @@ General
   - promotion rules: Circles, Lines, Bounds, Triangles, ...
      - have left them for the moment, as don't often do binary
        operations on these, but will need it for transformations (maybe)
-       and maybe for constructing arrays of these things
+       and maybe for constructing arrays of these things, or doing
+       intersections, ...
 
   - Tests
-     - put tests into a different directory from the sources
      - add more comprehensive tests, using @assert to check things are correct
      - perhaps put the tests that do plots in separate "examples"
          as these are no suitable for off-line testing?
@@ -57,9 +57,12 @@ triangle.jl
   intersections and unions -- by converting into a polygon
      (NB: triangles aren't polygons(type) because don't store 4 points
           cause its a waste)
+  distance and intersection routines
 
 circle.jl (center, radius)
-  arc (part of a circle)
+  arc (part of a circle) needs to be finished out
+  intersection and distance routines between circle/arc and line/ray/segment
+  
 
 transforms.jl
   scale
@@ -83,6 +86,12 @@ polygons.jl
    union/intersection/differences
      -- can I create a new operator 'u' or 'n' or using Unicode
      	-- would that even be wise
+ 
+   there is still a problem with "angles" where sometimes gets the
+   exterior angle when not convex
+      - perhaps is the problem of getting an angle > pi
+          - seems to fit the facts
+          - using atan to obtain angles, we can only get [-pi/2,pi/2]
 
    remove_colinear.m (from a path)
           including points that are really (floating point) the same

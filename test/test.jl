@@ -27,6 +27,9 @@ reload("test_circle")
 # test triangles
 reload("test_triangle")
 
+# test polygons
+reload("test_poly")
+
 # test the convex hull code
 
 

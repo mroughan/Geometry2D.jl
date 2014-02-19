@@ -36,6 +36,7 @@ include("line.jl")
 include("triangle.jl")
 include("circle.jl")
 include("polygon.jl")
+include("transform.jl")
 include("plot.jl")
 # include("convexhull.jl")
 

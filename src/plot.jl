@@ -11,7 +11,7 @@ export plot
 #   varargs are the standard optional arguments for PyPlot
 #      color, marker, markersize, linestyle, linewidth, hold, ...
 #   http://matplotlib.org/api/axes_api.html#matplotlib.axes.Axes.plot
-function plot(O::G2dObject; bounds=default_bounds, label="G2dObject", marker="o", linestyle="-", varargs...)
+function plot(O::G2dObject; anglesOn=false, vertexLabelsOn=false, bounds=default_bounds, label="G2dObject", marker="o", linestyle="-", varargs...)
     if bounded(O)
         if method_exists(displayPath, (typeof(O),))
             P = displayPath(O)
@@ -39,22 +39,51 @@ function plot(O::G2dObject; bounds=default_bounds, label="G2dObject", marker="o"
         label=string(typeof(O)) # default label is the type of the object being plotted
     end
     if length(P)>0
-        h = plot(points_x(P), points_y(P); label=label, linestyle=linestyle, varargs...)
+        h = plot(points_x(P), points_y(P); label=label, linestyle=linestyle, marker="", varargs...)
     else
         h = nothing
     end
     if length(Po)>0
-        ho = plot(points_x(Po), points_y(Po); label=label, marker=marker, varargs...)
+        ho = plot(points_x(Po), points_y(Po); hold=true, label=label, marker=marker, linestyle="", varargs...)
     else 
         ho = nothing
     end
 
     # textual labels on the points
+    if vertexLabelsOn
+        for i=1:length(Po)
+            tmp = @sprintf("%d", i)
+            text(P[i].x, P[i].y, tmp; va="center")
+        end
+    end
 
+    # plot angles
+    if anglesOn && length(P)>2
+        # calculate the angles
+        a = angles(Polygon(P))
+        for i=1:length(a)
+            r = 0.1
+            
+            # draw an arc for each angle -- requires a bit of work
+            theta1 = angle( P[mod1(i+1,length(a))], P[i] )
+            theta0 = angle( P[mod1(i-1,length(a))], P[i] )
+            if ccw(P[mod1(i-1,length(a))],  P[i],  P[mod1(i+1,length(a))] )<=0
+                arc = Arc(P[i], r, theta0, theta1)
+                plot(arc; linestyle=":", hold=true, varargs...)
+                mid_angle = (arc.theta1+arc.theta0)/2
+            else
+                arc = Arc(P[i], r, theta1, theta0)
+                plot(arc; linestyle=":", hold=true, varargs...)
+                mid_angle = (arc.theta1+arc.theta0)/2
+            end
 
-    # internal angles on the points
-
-
+            # write the angle
+            tmp = @sprintf("%.1f\u00B0", 180.0*a[i]/pi)
+            text(P[i].x + (r/3.0)*cos(mid_angle), P[i].y + (r/2.0)*sin(mid_angle), tmp; va="center", ha="center")
+            plot(P[i].x + (r/3.0)*cos(mid_angle), P[i].y + (r/2.0)*sin(mid_angle); marker="x", hold=true)
+       end
+    end
+    
     # could do something similar to "displayPoints" for the path to show an arrow?
     # if ~bounded(O) && length(P)>1
     #     arrow(P[2].x, P[2].y, P[1].x, P[1].y, head_width=0.05, head_length=0.1)
@@ -78,37 +107,4 @@ end
 #
 #   what should be the default for a "PointArray"?
 #
-
-
-#####################################################
-# various attempts at automating function creation
-#   none of which is working as yet
-
-# function plot(c::Circle, plotargs...)
-#     println("plot(circle)")
-#     for x in plotargs
-#         println("    $x")
-#     end
-#     n = 100
-#     P = approxpoly(c, n)
-#     plot(points_x(P), points_y(P), plotargs...)
-# end
-
-# arglist2 = "color=color, linewidth=3"
-# arglist = "color=\"blue\", linewidth=3"
-# arglist = "test1"
-# eval(quote 
-#     plot2(c::Circle, symbol($arglist)) = 1 
-#     end)
-
-
-# @eval plot2(c::Circle; quote($arglist)) = 1 
-
-# eval(quote
-#     function plot2(c:Circle; $arglist)
-#         n = 100
-#         P = approxpoly(c, n)
-#         plot(points_x(P), points_y(P); $arglist2)
-#     end
-#     end)
 

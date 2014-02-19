@@ -6,7 +6,7 @@ p3 = Point(0.33,0.9)
 t1 = Triangle([p1,p2,p3])
 println("area of t1 = $(area(t1))")
 
-figure(15)
+figure(30)
 hold(false)
 plot(0,0)
 hold(true)
@@ -31,3 +31,5 @@ for i=1:n
         plot(p; marker="o", color="blue")
     end
 end
+
+

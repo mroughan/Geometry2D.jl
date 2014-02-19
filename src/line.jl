@@ -361,7 +361,54 @@ function intersection( s1::Segment, s2::Segment; tolerance=1.0e-12 )
     end
 end
 
-# prolly should add Ray-Line, Ray-Segment, and Line-Segment intersections as well
+
+# intersection of rays with segments
+function intersection( s::Segment, r::Ray; tolerance=1.0e-12 )
+    #OUTPUTS: 
+    #   intersect = 0 means segments don't intersect
+    #             = 1 means 1 intersection
+    #             = 2 means they overlap (infinite intersections) 
+    #             
+    #   point     = the intersection point if it exists
+    #                  if they don't intersect then return "nothing"
+    #                  if the segments overlap then return the overlapping Segment
+    #               note that for floating point calculations we could be a little more sophisticated
+    #               about these tests, but at the moment just test equality with respect to tolerance
+
+    r1 = convert(Ray, s)
+    r2 = Ray( s.endpoint, s.startpoint-s.endpoint)
+
+    I1,p1 = intersection(r1, r)
+    I2,p2 = intersection(r2, r)
+    
+    # what if they overlap
+    if I1==2 && I2==2
+        if isin(s.startpoint, r)[1] && isin(s.endpoint, r)[1]
+            return 2, s
+        elseif isin(s.startpoint, r)[1]
+            return 2, Segment(r.startpoint, s.startpoint)
+        elseif isin(s.endpoint, r)[1]
+            return 2, Segment(r.startpoint, s.endpoint)
+        else
+            error("this case shouldn't happen")
+        end
+    elseif I1==2
+        return 0, nothing
+    elseif I2==2
+        return 0, nothing
+    end
+
+    # normal intersections
+    if I1==1 && I2==1
+        return 1, p1
+    else
+        return 0, nothing
+    end
+end
+intersection( r::Ray, s::Segment; tolerance=1.0e-12 ) =  intersection( s, r; tolerance=tolerance )
+
+
+# prolly should add Ray-Line, and Line-Segment intersections as well
 
 
 # function for plotting
