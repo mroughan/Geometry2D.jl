@@ -118,6 +118,10 @@ polygons.jl
 
    monotone test http://en.wikipedia.org/wiki/Monotone_polygon
 
+   tests
+      isregular
+      nearvertex
+
 bounds
    could make Bounds a special case of a rectangle???
    add standard functions to bounds???

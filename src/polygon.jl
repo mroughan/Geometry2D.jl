@@ -83,6 +83,9 @@ function closepoly{T<:Number}( points::Vector{Point{T}}; tolerance=1.0e-12 )
     end
 end
 
+###########################################################
+#   tests
+
 # check if a set of vertices forms a convex polygon
 function isconvex{T<:Number}( points::Vector{Point{T}}; tolerance=1.0e-12  ) 
     # points could be in clockwise or counter-clockwise order
@@ -153,52 +156,6 @@ function isregular(poly::Polygon; tolerance=1.0e-12 )
     end
     return true
 end
-
-# utilities
-length(poly::Polygon) = length(poly.points) - 1
-bounded(poly::Polygon) = true
-function area(poly::Polygon)
-    # http://mathworld.wolfram.com/PolygonArea.html
-    # note that this will return a positive value if the points are in 
-    # counter-clockwise order, and negative otherwise
-    #   all convex polys should be in ccw order, so that's easy
-    if poly.class == ConvexPoly || poly.class == SimplePoly
-        result = 0
-        n = length(poly)
-        for i=1:n
-            A = [[poly.points[i].x poly.points[i+1].y],[poly.points[i].y poly.points[i+1].y]]
-            result += det(A)
-        end
-        return result/2
-    else
-        error("can't currently calculate areas of non-simple polygons")
-    end 
-end
-function perimeter(poly::Polygon)
-    if poly.class == ConvexPoly || poly.class == SimplePoly
-        result = 0
-        n = length(poly)
-        for i=1:n
-            result += distance(poly.points[i], poly.points[i+1])
-        end
-        return result
-    else
-        error("can't currently calculate perimeter of non-simple polygons")
-    end 
-end
-function angles(poly::Polygon)
-    n = length(poly)
-    a = Array(Float64,n)
-    for i=1:n
-        a[i] = angle( poly.points[mod1(i-1,n)], poly.points[i], poly.points[mod1(i+1,n)]  )
-    end
-    return a
-end
-
-bounds(poly::Polygon) = Bounds(poly.points)
-
-# does the shape define an "inside" and "outside" of the plane
-closed(::Polygon) = true
 
 function nearvertex(p::Point, poly::Polygon; tolerance=1.0e-12)
     n = length(poly)
@@ -275,6 +232,54 @@ end
 #     return count
 # end
 
+
+###########################################################
+#   useful functions
+
+length(poly::Polygon) = length(poly.points) - 1
+bounded(poly::Polygon) = true
+function area(poly::Polygon)
+    # http://mathworld.wolfram.com/PolygonArea.html
+    # note that this will return a positive value if the points are in 
+    # counter-clockwise order, and negative otherwise
+    #   all convex polys should be in ccw order, so that's easy
+    if poly.class == ConvexPoly || poly.class == SimplePoly
+        result = 0
+        n = length(poly)
+        for i=1:n
+            A = [[poly.points[i].x poly.points[i+1].y],[poly.points[i].y poly.points[i+1].y]]
+            result += det(A)
+        end
+        return result/2
+    else
+        error("can't currently calculate areas of non-simple polygons")
+    end 
+end
+function perimeter(poly::Polygon)
+    if poly.class == ConvexPoly || poly.class == SimplePoly
+        result = 0
+        n = length(poly)
+        for i=1:n
+            result += distance(poly.points[i], poly.points[i+1])
+        end
+        return result
+    else
+        error("can't currently calculate perimeter of non-simple polygons")
+    end 
+end
+function angles(poly::Polygon)
+    n = length(poly)
+    a = Array(Float64,n)
+    for i=1:n
+        a[i] = angle( poly.points[mod1(i-1,n)], poly.points[i], poly.points[mod1(i+1,n)]  )
+    end
+    return a
+end
+
+bounds(poly::Polygon) = Bounds(poly.points)
+
+# does the shape define an "inside" and "outside" of the plane
+closed(::Polygon) = true
 
 # function for plotting
 displayPath(poly::Polygon) = [poly.points]
