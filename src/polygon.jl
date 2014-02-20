@@ -3,7 +3,7 @@
 #
 export Polygon, ComplexPolygon
 export PolygonType, ConvexPoly, ConcavePoly, SimplePoly, AlmostSimplePoly, ComplexPoly
-export PolygonRand, isin, bounded, bounds, area, perimeter, displayPath, closed, isregular, isconvex, issimple, closepoly, length
+export PolygonRand, isin, bounded, bounds, area, perimeter, displayPath, closed, isregular, isconvex, issimple, closepoly, length, nearvertex
 
 abstract ComplexPolygon <: G2dCompoundObject
 # we need a second type for this (as yet unimplemented) as it can have multiple curves
@@ -143,6 +143,17 @@ function issimple{T<:Number}( points::Vector{Point{T}}; tolerance=1.0e-12  )
 end
 issimple(poly::Polygon) = issimple(poly.points) # could interogate the class, but I use this for debugging
 
+function isregular(poly::Polygon; tolerance=1.0e-12 )
+    a = angles(poly)
+    n = length(poly)
+    for i=1:n
+        if abs(a[1] - [i]) > tolerance
+            return false
+        end
+    end
+    return true
+end
+
 # utilities
 length(poly::Polygon) = length(poly.points) - 1
 bounded(poly::Polygon) = true
@@ -188,6 +199,16 @@ bounds(poly::Polygon) = Bounds(poly.points)
 
 # does the shape define an "inside" and "outside" of the plane
 closed(::Polygon) = true
+
+function nearvertex(p::Point, poly::Polygon; tolerance=1.0e-12)
+    n = length(poly)
+    for i=1:n
+        if distance2(p, poly.points[i]) < tolerance
+            return true
+        end
+    end
+    return false 
+end
 
 # isin using a couple of different approaches
 function isin(p::Point, poly::Polygon; test="winding", tolerance=1.0e-12)

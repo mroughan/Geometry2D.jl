@@ -97,12 +97,9 @@ polygons.jl
    minkowski sum
    medial axis
 
-   isregular
    isalmostsimple 
 
    not complex (no holes, can be drawn with one continous line)
-
-   nearvertex
 
    implicit_vertices -- implict vertices in complex polygon
 
@@ -119,7 +116,7 @@ polygons.jl
    use a polygon as a clipping region for drawing some other object
       - maybe of use in filling?
 
-   monotone test
+   monotone test http://en.wikipedia.org/wiki/Monotone_polygon
 
 bounds
    could make Bounds a special case of a rectangle???
