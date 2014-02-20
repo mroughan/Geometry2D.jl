@@ -62,19 +62,11 @@ triangle.jl
 circle.jl (center, radius)
   arc (part of a circle) needs to be finished out
   intersection and distance routines between circle/arc and line/ray/segment
-  
+  tests of distance routines
 
 transforms.jl
-  scale
-  translate
-  rotate
   shear
   ???
-
-  probably start with a transform for a "point" and "line" and build up
-  do we want transforms to be "objects", with functions/operators to
-     apply them, or do we just want functions?
-
 
 polygons.jl
    simple OK
@@ -126,6 +118,8 @@ polygons.jl
 
    use a polygon as a clipping region for drawing some other object
       - maybe of use in filling?
+
+   monotone test
 
 bounds
    could make Bounds a special case of a rectangle???

@@ -14,7 +14,7 @@ export tolerance
  
 abstract G2dObject
 
-abstract G2dTransform <: G2dObject
+# abstract G2dTransform <: G2dObject
 abstract G2dSimpleObject <: G2dObject # objects for which area,perimeter,isin, make no sense
 abstract G2dCompoundObject <: G2dObject
 

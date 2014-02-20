@@ -10,8 +10,14 @@ immutable Line{T<:Number} <: G2dCompoundObject
     theta::T        # the angle of the line to the x-axis, in radians [0,2 pi)
 
     function Line(point::Point{T}, theta::T)
-        if theta<-pi/2 || theta>pi/2
-            error("theta must be the angle of the line to the x-axis, in radians [pi/2, -pi/2]")
+        if theta < -pi/2
+            while theta < -pi/2
+                theta += pi
+            end
+        elseif theta > pi/2
+            while theta > pi/2
+                theta -= pi
+            end
         end
         return new(point, theta)
     end

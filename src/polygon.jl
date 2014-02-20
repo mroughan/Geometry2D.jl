@@ -207,12 +207,12 @@ function isin(p::Point, poly::Polygon; test="winding", tolerance=1.0e-12)
         if abs(windingNumber(p, poly; tolerance=tolerance)) > 0
             return true, false
         end
-    elseif test=="scanline"
-        if isodd(scanLineNumber(translate(poly, -p); tolerance=tolerance))
-            return true, false
-        end
+    # elseif test=="scanline"
+    #     if isodd(scanLineNumber(translate(poly, -p); tolerance=tolerance))
+    #         return true, false
+    #     end
     else 
-        error("only tests defined are the 'scanline', and 'winding' number")
+        error("only test defined is the 'winding' number")
     end
 
     return false, false
@@ -240,19 +240,19 @@ function windingNumber(p::Point, poly::Polygon; tolerance=1.0e-12)
     return count
 end
 
-function scanLineNumber(poly::Polygon; tolerance=1.0e-12)
-    # assumes we translated the polygon, so the point of interest is the origin
-    #    need to be careful about vertices as these cases are different
-    # 
-    #          \                 /\
-    #           \               /  \
-    #           /              /    \
-    #          /             count as 2
-    #     count as 1          
-    count = 0
-    error("no implemented yet")
-    return count
-end
+# function scanLineNumber(poly::Polygon; tolerance=1.0e-12)
+#     # assumes we translated the polygon, so the point of interest is the origin
+#     #    need to be careful about vertices as these cases are different
+#     # 
+#     #          \                 /\
+#     #           \               /  \
+#     #           /              /    \
+#     #          /             count as 2
+#     #     count as 1          
+#     count = 0
+#     error("no implemented yet")
+#     return count
+# end
 
 
 # function for plotting

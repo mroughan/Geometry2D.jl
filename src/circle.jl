@@ -5,7 +5,7 @@ export isequal, center, radius, area, perimeter, isin, bounded, approxpoly, disp
 #################################################################
 # Circles
 
-immutable Circle{T<:Number} <: G2dCompoundObject
+immutable Circle{T<:Number} <: G2dCompoundObject 
     center::Point{T} 
     radius::T  
 
@@ -138,9 +138,16 @@ immutable Arc{T<:Number} <: G2dCompoundObject
     theta1::T # in (theta0,theta0+2*pi)
 
     function Arc(center::Point{T}, radius::T, theta0::T, theta1::T)
-        if theta0<-pi || theta0>pi ||
-           theta1<-pi || theta1>pi
-            error("theta must, in radians in the interval [pi, -pi]")
+        if theta0 < -pi
+            while theta0 < -pi
+                theta0 += 2*pi
+                theta1 += 2*pi
+            end
+        elseif theta0 > pi
+            while theta0 > pi
+                theta0 -= 2*pi
+                theta1 -= 2*pi
+            end
         end
         if theta0==theta1
             error("theta0 must not be equal to theta1")
@@ -177,17 +184,6 @@ function approxpoly(a::Arc, n::Integer)
     return PointArray(x,y)
 end
 
-function distance(p::Point, c::Circle)
-    d = distance(p,c.center)
-    if (d - c.radius > 0)
-        direction = p - c.center
-        p = c.center + (c.radius/d)*direction
-        return d - c.radius, p
-    else
-        return zero(d),d
-    end
-end
-
 # function for plotting
 function displayPath(a::Arc; n=100)
     P = approxpoly(a, n)
@@ -195,4 +191,35 @@ end
 function displayPoints(a::Arc)
     return a.center
 end
+
+
+#############################
+# distance functions
+
+function distance(p::Point, c::Circle)
+    d = distance(p,c.center)
+    if (d - c.radius > 0)
+        direction = p - c.center
+        p = c.center + (c.radius/d)*direction
+        return d - c.radius, p
+    else
+        return zero(d),nothing
+    end
+end
+distance2(p::Point, c::Circle) = distance(p, c)[1]^2
+
+function distance(c1::Circle, c2::Circle)
+    d = distance(c1.center,c2.center)
+    if (d - c1.radius - c2.radius > 0)
+        direction = c2.center - c1.center
+        p1 = c1.center + (c1.radius/d)*direction
+        p2 = c2.center - (c2.radius/d)*direction
+        return d - c1.radius - c2.radius, p1, p2
+    else
+        return zero(d),nothing,nothing
+    end
+end
+distance2(c1::Circle, c2::Circle) = distance(c1,c2)[1]^2
+
+# should be some distance functions for Arcs as well???
 
