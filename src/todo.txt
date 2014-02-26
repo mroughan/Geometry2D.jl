@@ -68,7 +68,6 @@ triangle.jl
 circle.jl (center, radius)
   arc (part of a circle) needs to be finished out
   intersection and distance routines between circle/arc and line/ray/segment
-  incircle of a triangle - http://en.wikipedia.org/wiki/Incircle_and_excircles_of_a_triangle
 
 transforms.jl
   shear
@@ -84,7 +83,7 @@ polygons.jl
       it makes some logic easier (always at least a triangle, so area
          calc is easier)
       but other bits, e.g. return value from convex hulls area harder
-
+ 
    constructors
    union/intersection/differences
      -- can I create a new operator 'u' or 'n' or using Unicode
@@ -100,11 +99,19 @@ polygons.jl
           including points that are really (floating point) the same
 
    generators
-       random (convex, simple, almostsimple, ...)       
-
+       random (convex, simple, almostsimple, ...)      
+ 
    centroid
+      - for simple polygon directly
+      - for others by triangulation? holes as negatives?
+      - can also have a simple such method for other closed shapes,
+              e.g., circles
+
    minkowski sum
    medial axis
+
+   vertices = length (explicit vertices, not implicit vertices of complex polys)
+   edges = length (for simple -- not sure what to return for complex)
 
    isalmostsimple 
        simplify -- turn an "almostsimple" polygon into a simple one

@@ -35,7 +35,7 @@ Triangle{T<:Number, S<:Number}(x::Vector{T}, y::Vector{S}) = Triangle(promote(x,
 Triangle{T<:Number}(p1::Point{T}, p2::Point{T}, p3::Point{T}) = Triangle( [p1,p2,p3] )
 Triangle() = PointArray(3)
 TriangleRand(n::Integer) = Triangle(rand(3,1), rand(3,1))
-
+ 
 # promotion/conversion functions
 
 # utilities

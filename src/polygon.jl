@@ -400,7 +400,7 @@ function area(poly::Polygon)
         result = 0
         n = length(poly)
         for i=1:n
-            A = [[poly.points[i].x poly.points[i+1].y],[poly.points[i].y poly.points[i+1].y]]
+            A = [[poly.points[i].x poly.points[i+1].y], [poly.points[i].y poly.points[i+1].y]]
             result += det(A)
         end
         return result/2
