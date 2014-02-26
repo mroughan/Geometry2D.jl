@@ -1,6 +1,11 @@
 # test various functions related to circles
 #
 #
+using Geometry2D
+using PyPlot
+
+srand(1)
+
 c1 = Circle(Point(1,1), 1.0)
 @assert c1.center==Point(1,1)
 
@@ -42,3 +47,17 @@ for i=1:10
 end
 axis("equal")
 
+# test circum- and incircles
+p1 = Point(rand(), rand())
+p2 = Point(rand(), rand())
+p3 = Point(rand(), rand())
+t1 = Triangle(p1,p2,p3)
+c1 = Circle(t1)
+c2 = incircle(t1)
+figure(13)
+hold(false)
+plot(0,0)
+hold(true)
+plot(t1)
+plot(c1)
+plot(c2)

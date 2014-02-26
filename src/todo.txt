@@ -58,10 +58,17 @@ triangle.jl
           cause its a waste, and we will need lots of triangles at
           some points)
   distance and intersection routines
-
+  generators for 
+     equilitaral
+     isosoles   
+  isin (for circumcircle)
+      - slightly different from isin(triangle)
+      -  (p1,p2,p3) and (Points) and (t1) versions
+  
 circle.jl (center, radius)
   arc (part of a circle) needs to be finished out
   intersection and distance routines between circle/arc and line/ray/segment
+  incircle of a triangle - http://en.wikipedia.org/wiki/Incircle_and_excircles_of_a_triangle
 
 transforms.jl
   shear
@@ -127,6 +134,8 @@ polygons.jl
    tests
       isregular
       nearvertex
+      congruence, similarity
+            http://en.wikipedia.org/wiki/Congruence_%28geometry%29
 
 bounds
    could make Bounds a special case of a rectangle???

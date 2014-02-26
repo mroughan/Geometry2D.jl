@@ -1,6 +1,6 @@
 export Circle, Arc
 
-export isequal, center, radius, area, perimeter, isin, bounded, approxpoly, displayPath, closed, distance
+export isequal, center, radius, area, perimeter, isin, bounded, approxpoly, displayPath, closed, distance, incircle
 
 #################################################################
 # Circles
@@ -23,6 +23,9 @@ Circle{T<:Number, S<:Number}(center::Point{T}, radius::S) = Circle(convert(Point
 #   this is going to be a floating point calculation, so don't bother subtyping inputs
 #   this is probably not the fastest way to solve this, but does a bit of checking
 function Circle(a::Point, b::Point, c::Point; tolerance=1.0e-12)
+    # could probably improve this:
+    #   http://en.wikipedia.org/wiki/Circumscribed_circle#Triangle_centers_on_the_circumcircle_of_triangle_ABC
+
     clockwise = ccw(a, b, c)
     if abs(clockwise) <= tolerance
         error("input points are close to colinear")
@@ -85,6 +88,20 @@ function Circle(a::Point, b::Point, c::Point; tolerance=1.0e-12)
     radius = (radius_a + radius_b + radius_c)/3
  
     return Circle(center, radius)
+end
+# create the circumcircle of a triangle
+Circle(t::Triangle; tolerance=1.0e-12) = Circle(t.points[1], t.points[2], t.points[3]; tolerance=tolerance)
+# "incircle" of a triangle?
+function incircle(t::Triangle; tolerance=1.0e-12)
+#   http://en.wikipedia.org/wiki/Incircle_and_excircles_of_a_triangle
+    a = distance(t.points[2], t.points[3])
+    b = distance(t.points[1], t.points[3])
+    c = distance(t.points[1], t.points[2])
+    P = a + b + c
+    incenter = (a*t.points[1] + b*t.points[2] + c*t.points[3]) / P  
+    circumcircle = Circle(t,tolerance=tolerance)
+    inradius = a*b*c / (2*(a+b+c)*circumcircle.radius)
+    return Circle(incenter, inradius)
 end
 
 # promotion/conversion functions?

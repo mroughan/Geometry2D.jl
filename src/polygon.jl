@@ -121,6 +121,7 @@ function PolygonStar(n::Integer, m::Integer; scale=1, center=originF, theta0=0)
     #    http://en.wikipedia.org/wiki/Star_polygon
     #    http://en.wikipedia.org/wiki/Schl%C3%A4fli_symbol
     #    http://en.wikipedia.org/wiki/List_of_regular_polytopes#Two-dimensional_regular_polytopes
+    # see also  "Stellation", e.g., http://en.wikipedia.org/wiki/Stellation
     if n<3
         error("a regular polygon must have at least 3 vertices")
     end

@@ -9,7 +9,13 @@ concave
     complex (holes or some other? unremovable overlap)
 
 
+cyclic polygon -- has a circumcircle (through all the points)
+   http://en.wikipedia.org/wiki/Circumscribed_circle
 
+monotone polygon -- WRT to a line, if every perpendicular to the line intersects polygon at most once
+   http://en.wikipedia.org/wiki/Monotone_polygon
+   see also "sweepable"
+   see also "polar analogue" star shaped  ...
 
 some of the mappings logical operators do
    union
