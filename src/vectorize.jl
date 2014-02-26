@@ -25,7 +25,7 @@ for f in (:isequal, )
 end
 
 # point to object operators
-for f in (:isin, :distance, )
+for f in (:isin, :distance, :distance2)
     @eval begin
         function ($f)(p::Point,O::Array{G2dCompoundObject})
             return reshape( [($f)(p,O[i]) for i=1:length(O)], size(O) )

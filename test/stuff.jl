@@ -17,7 +17,7 @@ likewise for
     area
     ...
 
-
+whos with regular expression to list methods, ...
 
 
 fieldtype

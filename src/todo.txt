@@ -25,14 +25,13 @@ General
 	 	 https://groups.google.com/forum/#!topic/julia-dev/lYBoGV_iK1g
 		 https://groups.google.com/forum/#!topic/econforge/SW_PbHh_OCE
      - Ellipses (and arcs)
-     - other mathsy shapes/curves
+     - Other mathsy shapes/curves?
 
-  - most of my types have been made "immutable" by presumably don't
+  - Most of my types have been made "immutable" by presumably don't
     want to do that for polygons
      - maybe not for circles? maybe not for others
 
-  - vectorised versions of functions such as "bounded" "closed"
-    vector/array versions of "isin"
+  - copy methods?
 
 point.jl
   - currently have Point and Vect as aliases for each other
@@ -42,8 +41,8 @@ point.jl
                   thought strictly should only be done with vectors
 
 line.jl
-  Haven't really implemented much of "Ray" yet 
-  Conversions between Line -> Ray -> Segment (with extra information)???
+  Haven't really implemented all of "Ray" yet 
+  Conversions from Line -> Ray -> Segment (with extra information)???
   Intersections between mixed Line, Ray and Segment
   Arrays of lines, rays and segments???
   Many of the constructors for a "Line" push them towards being Float64
@@ -56,13 +55,13 @@ line.jl
 triangle.jl
   intersections and unions -- by converting into a polygon
      (NB: triangles aren't polygons(type) because don't store 4 points
-          cause its a waste)
+          cause its a waste, and we will need lots of triangles at
+          some points)
   distance and intersection routines
 
 circle.jl (center, radius)
   arc (part of a circle) needs to be finished out
   intersection and distance routines between circle/arc and line/ray/segment
-  tests of distance routines
 
 transforms.jl
   shear
@@ -73,6 +72,11 @@ polygons.jl
    almost simple, almost OK
    complex not implemented at all
       do we need a "path" made up of line segments?
+
+   do I really want to enforce that polygons have 3 points
+      it makes some logic easier (always at least a triangle, so area
+         calc is easier)
+      but other bits, e.g. return value from convex hulls area harder
 
    constructors
    union/intersection/differences
@@ -89,8 +93,6 @@ polygons.jl
           including points that are really (floating point) the same
 
    generators
-       regular (see Circles)
-       star_poly
        random (convex, simple, almostsimple, ...)       
 
    centroid
@@ -98,6 +100,12 @@ polygons.jl
    medial axis
 
    isalmostsimple 
+       simplify -- turn an "almostsimple" polygon into a simple one
+         -- possible triangulated version?
+
+   smooth edges
+       -- remove some almost colinear points
+       -- even just remove colinear, with tolerance
 
    not complex (no holes, can be drawn with one continous line)
 
@@ -105,8 +113,6 @@ polygons.jl
 
    triangulation -- decompose into triangles
       -- and ideally put it back together again as well
-
-   simplify -- smooth edges
 
    distances from various objects (e.g. point, line)
    nearest vertex, nearest point, tangent vertex
@@ -130,20 +136,24 @@ bounds
 
 utilities.jl
    convex hulls
-   triangulations
-   distance functions (calculate distances between two objects, and
-                       closest points)   
+   delaunay triangulation / Voronoi diagram
+   distance functions 
+    - calculate distances between two disparate objects, along with closest points
 
 plot.jl
    conditionally include PyPlot?
+       allow for alternatives to PyPlot?
+
+   add an plot routine that iterates over an array of objects, giving
+   (by default) each a different color
 
    really need an optional "n" argument for plot and displayPath
       so that the user can make a more or less exact approximation to
       the real curve
+         - only matters for circles and arcs at the moment
+	 - would be important for Splines, etc.
 
-   add labels to vertices of a plot
-   draw internal angles
-   draw arrows for unbounded bits
+   draw arrows for unbounded bits?
 
    fill routine
       using matplotlib to start, but then
@@ -160,8 +170,7 @@ other issues
       "Vect"?
 
    -- make sure to vectorize a lot of the basic functions, e.g., area,
-      perimeter, ...
-
+      perimeter, bounded, closed, isin
 
 
 

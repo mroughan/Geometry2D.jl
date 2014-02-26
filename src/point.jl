@@ -1,18 +1,23 @@
 
 export Point, Vect, PointArray
 
-export origin
+export origin, originF
 
 export points_x, points_y, isfinite, isinf, isnan, eltype, isless, isequal, convert, cmp, angle, abs, distance, distance2, ones, zeros, quadrant, sign, print, bounded, displayPath, displayPoints, closed, inner, length, acute, PointArrayRand
 
-# define a "point"
-immutable Point{T<:Number} <: G2dSimpleObject
+# define a "point" temporarily with "type" instead of "immutable" to avoid a bug
+type Point{T<:Number} <: G2dSimpleObject
     x::T
     y::T
 end
 # convenience constructor
 Point{T<:Number, S<:Number}(x::T, y::S) = Point(promote(x,y)...)
-const origin = Point(0,0)
+
+# various ways of constructing the origin
+const originF =  Point(0.0,0.0) # for using in defaults for keyword arguments
+origin() = Point(0,0) # default to the exact origin
+origin(T::DataType) = Point(convert(T,0),  convert(T,0))
+origin{T<:Number}(::Point{T}) = Point(convert(T,0),  convert(T,0))
 
 # at the moment I'm not making a distinction between a point and vector
 #   just have the alias to make some nomenclature easier
@@ -97,7 +102,7 @@ end
 
 # angle WRT x-axis, as implied b the (potentially user defined) origin "o"
 angle(p::Point, o::Point) = atan2( p.y-o.y, p.x-o.x )
-angle(p::Point) = angle(p, origin) # default is o=(0,0)
+angle(p::Point) = angle(p, origin(p)) # default is o=(0,0)
 # angle between three points
 function angle(p1::Point, p2::Point, p3::Point)
     v1 = p2-p1
@@ -180,13 +185,19 @@ for f in (:abs, :sign, :quadrant, :angle, :distance2, :distance)
     end
 end
 
-for f in (:angle, :distance2, :distance)
+for f in (:angle, :distance, :distance2)
     @eval begin
-        function ($f){T<:Number,S<:Number}(p1::Array{Point{T},1},p2::Array{Point{S},1})
+        function ($f){T<:Number,S<:Number}(p1::Array{Point{T},1}, p2::Array{Point{S},1})
             if size(p1) != size(p2)
                 error("arrays must be the same size")
             end
             return reshape( [($f)(p1[i],p2[i]) for i=1:length(p1)], size(p1) )
+        end
+        function ($f){T<:Number,S<:Number}(p1::Point{T}, p2::Array{Point{S},1})
+            return reshape( [($f)(p1,p2[i]) for i=1:length(p2)], size(p2) )
+        end
+        function ($f){T<:Number,S<:Number}(p1::Array{Point{T},1}, p2::Point{S})
+            return reshape( [($f)(p1[i],p2) for i=1:length(p1)], size(p1) )
         end
     end
 end

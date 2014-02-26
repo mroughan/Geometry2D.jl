@@ -3,8 +3,8 @@
 #
 export Polygon, ComplexPolygon
 export PolygonType, ConvexPoly, ConcavePoly, SimplePoly, AlmostSimplePoly, ComplexPoly
-export PolygonRand, isin, bounded, bounds, area, perimeter, displayPath, closed, isregular, isconvex, issimple, closepoly, length, nearvertex
-
+export PolygonRand, PolygonRegular, Pentagon, Hexagon, Octagon, PolygonStar, PolygonSimpleStar, Pentagram, Octogram
+export isin, bounded, bounds, area, perimeter, displayPath, closed, isregular, isconvex, issimple, closepoly, length,  nearvertex, copy, simplify
 abstract ComplexPolygon <: G2dCompoundObject
 # we need a second type for this (as yet unimplemented) as it can have multiple curves
 
@@ -31,7 +31,7 @@ type Polygon{T<:Number} <:  G2dCompoundObject
         if class <: ConvexPoly
             # check its convex, and make sure points are stored in counter-clockwise order
             c = isconvex(points)
-            if c==1
+            if c==1 
                 return new(ConvexPoly, points)
             elseif c==-1
                 return new(ConvexPoly, flipud(points))
@@ -55,8 +55,11 @@ type Polygon{T<:Number} <:  G2dCompoundObject
         end
     end
 end
+
+#####################################3
+# constructors
 Polygon{T<:Number}(class::DataType, points::Vector{Point{T}}) = Polygon{T}(class::DataType, points::Vector{Point{T}})
-function Polygon{T <: Number}(points::Vector{Point{T}})
+function Polygon{T<:Number}(points::Vector{Point{T}})
     # this constructor works out the correct class
     if (length(points) < 3)
         error("polygons must have at least three vertices")
@@ -73,6 +76,8 @@ function Polygon{T <: Number}(points::Vector{Point{T}})
         return Polygon(AlmostSimplePoly, points)
     end
 end
+Polygon{T<:Number,S<:Number}(x::Vector{T}, y::Vector{S}) = Polygon(PointArray(x,y))
+copy{T<:Number}(p::Polygon{T}) = Polygon( copy(p.points) )
 
 # make sure it is closed, i.e., first point equals the last
 function closepoly{T<:Number}( points::Vector{Point{T}}; tolerance=1.0e-12 )
@@ -81,6 +86,152 @@ function closepoly{T<:Number}( points::Vector{Point{T}}; tolerance=1.0e-12 )
     else
         return [points, points[1]]
     end
+end
+
+# create a simple polygon from an almost simple one
+function simplify(poly::Polygon; tolerance=1.0e-12)
+    # look for all the intersection points, which should include vertices
+
+    # classify the intersection points as internal, or on the edge
+
+    # rebuild the polygon around the edge points
+    #    getting the order right is tricky
+    
+
+end
+
+# generate certain types of polygon
+function PolygonRegular(n::Integer; scale=1, center=originF, theta0=0)
+    # n is the number of vertices
+    if n<3
+        error("a regular polygon must have at least 3 vertices")
+    end
+    theta = theta0 + [0:n-1]*2.0*pi/n
+    x = center.x + scale*cos(theta)
+    y = center.y + scale*sin(theta)
+    return Polygon(x,y)
+end
+Pentagon(; scale=1, center=originF, theta0=0) = PolygonRegular(5; scale=scale, center=center, theta0=theta0)
+Hexagon(; scale=1, center=originF, theta0=0) = PolygonRegular(6; scale=scale, center=center, theta0=theta0)
+Octagon(; scale=1, center=originF, theta0=0) = PolygonRegular(8; scale=scale, center=center, theta0=theta0)
+
+function PolygonStar(n::Integer, m::Integer; scale=1, center=originF, theta0=0)
+    # generate a star polygon with Schlafli symbol (n/m), where n specifies the number of outer
+    # vertices, and m-1 specifies the number of skipped vertices between each adjacent vertex
+    #    http://en.wikipedia.org/wiki/Star_polygon
+    #    http://en.wikipedia.org/wiki/Schl%C3%A4fli_symbol
+    #    http://en.wikipedia.org/wiki/List_of_regular_polytopes#Two-dimensional_regular_polytopes
+    if n<3
+        error("a regular polygon must have at least 3 vertices")
+    end
+
+    # note that n/m star is the same as n/(n-m), so always use smaller M
+    if m > n/2
+        m = n-m
+    end
+    r = gcd(n,m) # number of unconnected (n/r) / (m/r) polygons
+    N = int(n/r)
+    M = int(m/r)
+
+    # calculate the internal angles
+    int_angle = pi*(n-2*m)/n
+
+    # angles WRT to origin of each point
+    theta = theta0 + [0:n-1]*2.0*pi/n
+    x = center.x + scale*cos(theta)
+    y = center.y + scale*sin(theta)
+    P = Array(Polygon, r)
+    for i=1:r 
+        ind = Array(Int64, N)
+        for j=1:N
+            ind[j] = mod1(i + (j-1)*m, n)
+        end
+        tmpx = x[ind] 
+        tmpy = y[ind]
+        P[i] = Polygon(tmpx, tmpy)
+    end
+    return P
+end
+Pentagram(; scale=1, center=originF, theta0=0) = PolygonStar(5,2;scale=scale, center=center, theta0=theta0)
+Octogram(; scale=1, center=originF, theta0=0) = PolygonStar(8,3;scale=scale, center=center, theta0=theta0)
+
+function PolygonSimpleStar(n::Integer, m::Integer; scale=1, center=originF, theta0=0)
+    # simplified version of the stars created in StarPolygon
+
+    # create a set of star polygons (but these are complex)
+    star = PolygonStar(n, m; scale=scale, center=center, theta0=theta0)
+    r = length(star)
+    N = int(n/r)
+
+#    println(" n=$n, m=$m, r=$r, N=$N")
+
+    # find intersections between pairs of edges
+    pu = []
+    for i=1:r
+        star1 = star[i].points
+        for j=i:r
+            star2 = star[j].points
+            for k=1:N
+                for l=1:N
+                    if i==j && k==l
+                        # don't compare a line segment with itself
+                    else
+                        # println("  i=$i, j=$j, k=$k, l=$l, $(length(star1)), $(length(star2))") 
+                        # dump(star1)
+                        # dump(star2)
+
+                        s1 = Segment(star[i].points[k], star[i].points[k+1])
+                        s2 = Segment(star[j].points[l], star[j].points[l+1])
+                        I,pI = intersection(s1, s2)
+                        if I==1
+                            pu = [pu,pI]
+                        end
+                    end
+                end
+            end
+        end
+    end
+
+    # the following code snippetsegfaults ????
+    # d = distance2(center, points)
+    # println("d = $d")
+    # dump(d)
+    # maxd = maximum(d) 
+    # maxd2 = maximum( d[ d .< maxd - 1.0e-6 ] )
+    # k = d .> maxd2 - 1.0e-6
+    # points = points[k]
+ 
+    # take the outmost points, and the next level as well
+    points = unique(pu)
+    maxd = 0.0
+    for i=1:length(points)
+        d = distance2(points[i], center)
+        if d > maxd
+            maxd = d
+        end
+    end
+    maxd2 = 0.0
+    for i=1:length(points)
+        d = distance2(points[i], center)
+        if d > maxd2 && d < maxd-1.0e-6
+            maxd2 = d
+        end
+    end
+    d = distance2(center, points)
+    k = d .> maxd2 - 1.0e-6
+    points = points[k]
+
+    a = angle(points, center)
+    k = sortperm(a)
+    points = points[k]
+
+    # only include the outermost intersections
+
+    # sort their vertices, and intersections in angular order
+
+    # create a polygon from the result
+
+    return Polygon(points)
 end
 
 ###########################################################
@@ -147,6 +298,7 @@ end
 issimple(poly::Polygon) = issimple(poly.points) # could interogate the class, but I use this for debugging
 
 function isregular(poly::Polygon; tolerance=1.0e-12 )
+    # at the moment just checking that all the internal angles are the same -- is this enough?
     a = angles(poly)
     n = length(poly)
     for i=1:n

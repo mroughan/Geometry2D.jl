@@ -7,6 +7,8 @@ export plot
 #    NB: should define "displayPath" and "bounded" for all objects that need be plotted
 #           
 
+# add a plot routine for A::Array{G2dObject}, that iterates over the array
+
 # approach is to convert into a standard path form, and plot
 #   varargs are the standard optional arguments for PyPlot
 #      color, marker, markersize, linestyle, linewidth, hold, ...
