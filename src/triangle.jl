@@ -2,7 +2,7 @@
 # An assortment of routines related to triangles
 #
 export Triangle
-export TriangleRand, isin, bounded, bounds, area, perimeter, angles, displayPath, closed, distance
+export TriangleRand, isin, bounded, bounds, area, perimeter, angles, displayPath, closed, distance, centroid, incircumcircle
 
 immutable Triangle{T<:Number} <:  G2dCompoundObject
     points::Vector{Point{T}}
@@ -34,7 +34,7 @@ end
 Triangle{T<:Number, S<:Number}(x::Vector{T}, y::Vector{S}) = Triangle(promote(x,y)...)
 Triangle{T<:Number}(p1::Point{T}, p2::Point{T}, p3::Point{T}) = Triangle( [p1,p2,p3] )
 Triangle() = PointArray(3)
-TriangleRand(n::Integer) = Triangle(rand(3,1), rand(3,1))
+TriangleRand() = Triangle(rand(3), rand(3))
  
 # promotion/conversion functions
 
@@ -55,6 +55,14 @@ function isin(p::Point, t::Triangle; tolerance=1.0e-12)
         return false, false
     end
 end
+function incircumcircle(p::Point, t::Triangle; tolerance=1.0e-12)
+    A = [[t.points[1].x t.points[1].y distance2(t.points[1]) 1.0],
+         [t.points[2].x t.points[2].y distance2(t.points[2]) 1.0],
+         [t.points[3].x t.points[3].y distance2(t.points[3]) 1.0],
+         [p.x           p.y           distance2(p) 1.0]
+         ]
+    return det(A) > 0
+end
 function area(t::Triangle)
     a = t.points[1]
     b = t.points[2]
@@ -66,6 +74,7 @@ function area(t::Triangle)
             ) / 2.0
 end
 perimeter(t::Triangle) = distance(t.points[1],t.points[2]) + distance(t.points[2],t.points[3]) + distance(t.points[3],t.points[1]) 
+centroid(t::Triangle) = (t.points[1] + t.points[2] + t.points[3])/3.0
 
 bounds(t::Triangle) = Bounds(t.points)
 function angles(t::Triangle)
@@ -82,27 +91,18 @@ closed(::Triangle) = true
 function distance(p::Point, t::Triangle)
     n = 3
 
-    # compute the distance to each vertex
-    d = Array(Float64,n)
-    for i=1:n
-        d[i] = distance(p, t.points[i])
+    if isin(p,t)[1]
+        return 0,p
     end
-    Id = indmin(d)
 
     # compute distance to each edge, and take the smallest
     s = Array(Float64,n)
-    p = PointArray(3)
+    ps = PointArray(n)
     for i=1:n
-      s[i],p[i] = distance(p, Segment(t.points[i],t.points[mod1(i+1,n)]) )  
+      s[i],ps[i] = distance(p, Segment(t.points[i],t.points[mod1(i+1,n)]) )  
     end
     Is = indmin(s)
-
-    # take the smallest one
-    if d[Id] <= s[Is]
-        return d[Id], t.points[Id]
-    else
-        return s[Is], p[Is]
-    end
+    return  s[Is], ps[Is]
 end
 
 # function for plotting

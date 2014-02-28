@@ -4,6 +4,8 @@
 
 export closed
 
+# should write this using meta-programming rules, to extend to all functions that
+#   only work on closed objects
 function closed(c::Bool)
     if method_exists()
 
@@ -22,3 +24,5 @@ end
 
 
 ## similar for bounded, ...
+
+## similar for centroid????

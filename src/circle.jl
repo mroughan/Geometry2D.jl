@@ -1,6 +1,6 @@
 export Circle, Arc
 
-export isequal, center, radius, area, perimeter, isin, bounded, approxpoly, displayPath, closed, distance, incircle
+export isequal, center, radius, area, perimeter, isin, bounded, approxpoly, displayPath, closed, distance, incircle, centroid
 
 #################################################################
 # Circles
@@ -112,6 +112,7 @@ center(c::Circle) = c.center
 radius(c::Circle) = c.radius
 area(c::Circle) = pi*c.radius*c.radius
 perimeter(c::Circle) = 2*pi*c.radius
+centroid(c::Circle) = c.center
 function isin(p::Point, c::Circle; tolerance=1.0e-12)
     d = distance(p, c.center)
     if distance < radius - tolerance

@@ -4,7 +4,7 @@
 export Polygon, ComplexPolygon
 export PolygonType, ConvexPoly, ConcavePoly, SimplePoly, AlmostSimplePoly, ComplexPoly
 export PolygonRand, PolygonRegular, Pentagon, Hexagon, Octagon, PolygonStar, PolygonSimpleStar, Pentagram, Octogram
-export isin, bounded, bounds, area, perimeter, displayPath, closed, isregular, isconvex, issimple, closepoly, length,  nearvertex, copy, simplify
+export isin, bounded, bounds, area, perimeter, displayPath, closed, isregular, isconvex, issimple, closepoly, length,  nearvertex, copy, simplify, centroid, distance
 abstract ComplexPolygon <: G2dCompoundObject
 # we need a second type for this (as yet unimplemented) as it can have multiple curves
 
@@ -394,13 +394,13 @@ bounded(poly::Polygon) = true
 function area(poly::Polygon)
     # http://mathworld.wolfram.com/PolygonArea.html
     # note that this will return a positive value if the points are in 
-    # counter-clockwise order, and negative otherwise
+    #   counter-clockwise order, and negative otherwise
     #   all convex polys should be in ccw order, so that's easy
     if poly.class == ConvexPoly || poly.class == SimplePoly
         result = 0
         n = length(poly)
         for i=1:n
-            A = [[poly.points[i].x poly.points[i+1].y], [poly.points[i].y poly.points[i+1].y]]
+            A = [[poly.points[i].x poly.points[i+1].x], [poly.points[i].y poly.points[i+1].y]]
             result += det(A)
         end
         return result/2
@@ -420,6 +420,28 @@ function perimeter(poly::Polygon)
         error("can't currently calculate perimeter of non-simple polygons")
     end 
 end
+function centroid(poly::Polygon)
+    if poly.class == ConvexPoly || poly.class == SimplePoly
+        area = 0.0
+        p = Point(0.0,0.0)
+        n = length(poly)
+        for i=1:n
+            A = [[poly.points[i].x poly.points[i+1].x], [poly.points[i].y poly.points[i+1].y]]
+            a = det(A) 
+            area += a/2.0
+            p += a * Point((poly.points[i].x + poly.points[i+1].x),
+                           (poly.points[i].y + poly.points[i+1].y) )
+        end
+        return p/(6.0*area)
+    else
+        error("can't currently calculate centroid of non-simple polygons")
+        # could exploit decomposition
+        #   centroid(X) = weightedcentroid(  centroids(x_i) )
+        # http://en.wikipedia.org/wiki/Centroid
+    end 
+end
+
+# internal angles of the polygon
 function angles(poly::Polygon)
     n = length(poly)
     a = Array(Float64,n)
@@ -430,6 +452,25 @@ function angles(poly::Polygon)
 end
 
 bounds(poly::Polygon) = Bounds(poly.points)
+
+# distance from point to Polygon
+#    should be possible to do this faster for a big convex polygon, by searching
+function distance(p::Point, poly::Polygon)
+    n = length(poly)
+
+    if isin(p,poly)[1]
+        return 0,p
+    end
+
+    # compute distance to each edge, and take the smallest
+    s = Array(Float64,n)
+    ps = PointArray(n)
+    for i=1:n
+      s[i],ps[i] = distance(p, Segment(poly.points[i],poly.points[i+1]) )  
+    end
+    Is = indmin(s)
+    return  s[Is], ps[Is]
+end
 
 # does the shape define an "inside" and "outside" of the plane
 closed(::Polygon) = true

@@ -58,6 +58,7 @@ triangle.jl
           cause its a waste, and we will need lots of triangles at
           some points)
   distance and intersection routines
+     distance from point to triangle isn't working yet
   generators for 
      equilitaral
      isosoles   
@@ -84,7 +85,8 @@ polygons.jl
          calc is easier)
       but other bits, e.g. return value from convex hulls area harder
  
-   constructors
+   constructors for random polygons with given properties
+
    union/intersection/differences
      -- can I create a new operator 'u' or 'n' or using Unicode
      	-- would that even be wise
@@ -102,7 +104,7 @@ polygons.jl
        random (convex, simple, almostsimple, ...)      
  
    centroid
-      - for simple polygon directly
+      - for simple polygon directly is done
       - for others by triangulation? holes as negatives?
       - can also have a simple such method for other closed shapes,
               e.g., circles
@@ -128,8 +130,8 @@ polygons.jl
    triangulation -- decompose into triangles
       -- and ideally put it back together again as well
 
-   distances from various objects (e.g. point, line)
-   nearest vertex, nearest point, tangent vertex
+   distances from various objects (other than a point)
+     -- nearest vertex, nearest point, tangent vertex
 
    generate sample points on a polygon
 
@@ -144,7 +146,7 @@ polygons.jl
       congruence, similarity
             http://en.wikipedia.org/wiki/Congruence_%28geometry%29
 
-bounds
+bounds.jl
    could make Bounds a special case of a rectangle???
    add standard functions to bounds???
       maybe doesn't make sense if its an abstract, but 'isin' at least
@@ -152,7 +154,7 @@ bounds
 
 utilities.jl
    convex hulls
-   delaunay triangulation / Voronoi diagram
+   delauna ytriangulation / Voronoi diagram
    distance functions 
     - calculate distances between two disparate objects, along with closest points
 
@@ -187,8 +189,6 @@ other issues
 
    -- make sure to vectorize a lot of the basic functions, e.g., area,
       perimeter, bounded, closed, isin
-
-
 
 
 

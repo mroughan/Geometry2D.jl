@@ -179,7 +179,7 @@ function distance(p::Point, line::Line)
         ss = s2 + s*cos(line.theta)*cos(line.theta)        
     end
     ps = line.point + ss*Point(cos(line.theta), sin(line.theta))
-    return d, ps
+    return abs(d), ps  # should check why I need to get abs distances?
 end
 distance2(p::Point, line::Line) = distance(p, line)[1]^2 # this isn't more efficient, but to be consistent with point distances
 
