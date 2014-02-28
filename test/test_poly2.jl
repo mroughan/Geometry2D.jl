@@ -103,3 +103,16 @@ end
 axis("equal")
 
 
+
+figure(64)
+hold(false)
+plot(0,0)
+hold(true)
+star1 = PolygonStar(7,3; center=Point(0.0,0.0))
+star2 = PolygonSimpleStar(7,2; center=Point(1.0,1.0))
+fill(star1[1]; label="star1", color="red")
+fill(star2; label="star2", color="orange", alpha=0.5)
+legend()
+axis("equal")
+
+

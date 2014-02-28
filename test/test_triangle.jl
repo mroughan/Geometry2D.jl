@@ -82,3 +82,12 @@ axis("equal")
 println("max differece in distances estimates = $(max_diff)")
 
 
+
+figure(33)
+hold(false)
+plot(0,0)
+hold(true)
+# plot(t2; vertexLabelsOn=true)
+fill(t2; label="t2", color="red")
+legend()
+

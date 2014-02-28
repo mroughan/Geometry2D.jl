@@ -1,5 +1,5 @@
 
-export plot
+export plot, fill
 
 
 ######################################################
@@ -93,6 +93,45 @@ function plot(O::G2dObject; anglesOn=false, vertexLabelsOn=false, bounds=default
     # end
 
     return h, ho
+end
+
+function fill(O::G2dObject; label="G2dObject", 
+              pattern="", linestyle="-", angle=45, width=10, 
+              varargs...)
+    if closed(O)
+        if method_exists(displayPath, (typeof(O),))
+            P = displayPath(O)
+        else
+            error("haven't implemented displayPath for objects of type $(typeof(O)) yet")
+        end
+        if (label=="G2dObject")
+            label=string(typeof(O)) # default label is the type of the object being plotted
+        end
+    else
+        error("can only 'fill' a closed object")
+    end
+    if length(P)>0
+        if pattern==""
+            h = fill(points_x(P), points_y(P); label=label, varargs...)
+        elseif pattern=="speckled"
+            # options: specksize, marker, color
+
+        elseif pattern=="checked"
+            # options: checksize, checkfg, checkbg
+
+        elseif pattern=="lines"
+            # options: linestyle, linewidth, angle, width, color
+
+        elseif pattern=="striped" 
+            # options: stripecolors, angle, width
+
+        else
+            error("unimplemented type of pattern")
+        end 
+    else
+        h = nothing
+    end
+    return h
 end
 
 

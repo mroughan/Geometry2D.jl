@@ -1,7 +1,7 @@
 module Geometry2D
 
 using PyPlot 
-import PyPlot: plot
+import PyPlot: plot, fill
 
 import Base: convert, length, promote, promote_rule, sort, sort!, sortperm, unique, isfinite, isnan, copy, Array, eltype, abs, isequal, isless, ones, zeros, angle, sign, print, rationalize
 import Base: !, !=, $, %, .%, &, *, +, -, .!=, .+, .-, .*, ./, .<, .<=, .==, .>,
