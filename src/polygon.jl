@@ -4,7 +4,7 @@
 export Polygon, ComplexPolygon
 export PolygonType, ConvexPoly, ConcavePoly, SimplePoly, AlmostSimplePoly, ComplexPoly
 export PolygonRand, PolygonRegular, Pentagon, Hexagon, Octagon, PolygonStar, PolygonSimpleStar, Pentagram, Octogram
-export isin, bounded, bounds, area, perimeter, displayPath, closed, isregular, isconvex, issimple, closepoly, length,  nearvertex, copy, simplify, centroid, distance
+export isin, bounded, bounds, area, perimeter, displayPath, closed, isregular, isconvex, issimple, closepoly, length,  nearvertex, copy, simplify, centroid, distance, intersection
 abstract ComplexPolygon <: G2dCompoundObject
 # we need a second type for this (as yet unimplemented) as it can have multiple curves
 
@@ -181,8 +181,8 @@ function PolygonSimpleStar(n::Integer, m::Integer; scale=1, center=originF, thet
                         # dump(star1)
                         # dump(star2)
 
-                        s1 = Segment(star[i].points[k], star[i].points[k+1])
-                        s2 = Segment(star[j].points[l], star[j].points[l+1])
+                        s1 = edge(star[i], k) 
+                        s2 = edge(star[j], l)
                         I,pI = intersection(s1, s2)
                         if I==1
                             pu = [pu,pI]
@@ -327,7 +327,7 @@ function isin(p::Point, poly::Polygon; test="winding", tolerance=1.0e-12)
 
     # check if we are on the boundary
     for i=1:n
-        I,E = isin(p, Segment(poly.points[i], poly.points[i+1]); tolerance=tolerance)
+        I,E = isin(p, edge(poly, i); tolerance=tolerance)
         if I
             return true, true
         end
@@ -357,7 +357,7 @@ function windingNumber(p::Point, poly::Polygon; tolerance=1.0e-12)
 
     # count the number of upward transitions into Q1
     for i=1:n
-        S = Segment( poly.points[i], poly.points[i+1] )
+        S = edge(poly, i) 
         I,pi = intersection( S, R ; tolerance=tolerance )
         if I==1 && pi.x > p.x
             if poly.points[i+1].y > poly.points[i].y 
@@ -385,10 +385,55 @@ end
 #     return count
 # end
 
+function intersection{T<:Number}( ray::Ray{T}, poly::Polygon{T}; tolerance=1.0e-12)
+    #OUTPUTS: 
+    #   intersect = 0 means segments don't intersect (i.e, they are parallel)
+    #             = 1 means intersections at a finite series of points
+    #             = 2 means they overlap (infinite intersections) 
+    #   points    = an array of intersection points sorted in order along the ray
+    #  
+    
+    # look for intersections which each edge
+    n = length(poly)
+    p = Array(Point{T},0)
+    for i=1:n
+        S = edge(poly, i) 
+        I,pi = intersection( ray, S ; tolerance=tolerance ) 
+        if I==2
+            return 2, []
+        elseif I==1
+            p = [p, pi]
+        end
+    end
+
+    # convert them to parametric form, and sort (in order along the ray)
+    q = (p - ray.startpoint) 
+    thetas = atan2( points_y(q), points_x(q) )
+    s = distance(q)
+    order = sortperm(s)
+    s = s[order]
+
+    # remove repeated points
+    i=1
+    while i<length(s) 
+        if  abs(s[i]-s[i+1]) < tolerance
+            splice!(s, i+1) 
+        else
+            i+=1
+        end
+    end
+
+    # output the results as an array of points
+    return ray.startpoint + PointArray( s.*cos(thetas[1]), s.*sin(thetas[1]) )
+
+end
+intersection{T<:Number}(poly::Polygon{T}, ray::Ray{T}; tolerance=1.0e-12) = intersection( ray, poly; tolerance=tolerance)
+
 
 ###########################################################
 #   useful functions
 
+edge(poly, i) = Segment(poly.points[i], poly.points[i+1])
 length(poly::Polygon) = length(poly.points) - 1
 bounded(poly::Polygon) = true
 function area(poly::Polygon)
@@ -466,7 +511,7 @@ function distance(p::Point, poly::Polygon)
     s = Array(Float64,n)
     ps = PointArray(n)
     for i=1:n
-      s[i],ps[i] = distance(p, Segment(poly.points[i],poly.points[i+1]) )  
+      s[i],ps[i] = distance(p, edge(poly, i) )  
     end
     Is = indmin(s)
     return  s[Is], ps[Is]

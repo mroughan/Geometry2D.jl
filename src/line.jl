@@ -478,7 +478,7 @@ function displayPath(r::Ray; bounds=default_bounds)
         # NEEDS intersection of ray and line routine
         #   will defer this until we can intersect a polygon and Line or Ray
         #   at which point we just construct quadrilateral polygon for intersections
-
+ 
         return  P
     elseif edge
         # startpoint is on the edge, so check if we are pointed in or out
@@ -493,7 +493,7 @@ function displayPath(r::Ray; bounds=default_bounds)
         return displayPath(convert(Line, r); bounds=bounds) 
     end
 end
-
+ 
 displayPoints(s::Segment) = [s.startpoint, s.endpoint]
 displayPath(s::Segment) = [s.startpoint, s.endpoint]
 

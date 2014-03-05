@@ -116,3 +116,32 @@ legend()
 axis("equal")
 
 
+figure(65)
+hold(false)
+plot(0,0)
+hold(true)
+star1 = PolygonStar(7,3; center=Point(0.0,0.0))
+plot(star1[1]; label="star1", marker="", color="blue")
+
+r1 = Ray(Point(-1,0.0), Point(1.0,0.0))  
+p1 = intersection( r1, star1[1])
+println("p1 = $p1")
+plot(r1; label="ray 1", color="green", bounds=Bounds(1, -1, -1, 1))
+plot(p1; label="intersection points 1", color="red")
+ 
+r2 = Ray(Point(-1,0.24), Point(1.0,1/3.0))  
+p2 = intersection( r2, star1[1])
+println("p2 = $p2")
+plot(r2; label="ray 2", color="green", bounds=Bounds(1, -1, -1, 1))
+plot(p2; label="intersection points 2", color="red")
+ 
+r3 = Ray(Point(-1,-0.24), Point(1.0,0.0))  
+p3 = intersection( r3, star1[1]; tolerance=1.0e-2)
+println("p3 = $p3")
+plot(r3; label="ray 3", color="green", bounds=Bounds(1, -1, -1, 1))
+plot(p3; label="intersection points 3", color="red")
+ 
+# legend()
+axis("equal")
+
+

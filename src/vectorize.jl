@@ -23,7 +23,7 @@ for f in (:isequal, )
         end
     end
 end
-
+ 
 # point to object operators
 for f in (:isin, :distance, :distance2)
     @eval begin
@@ -36,3 +36,5 @@ for f in (:isin, :distance, :distance2)
         # may there should be a function that lets you put in a vector if each?
     end
 end
+
+

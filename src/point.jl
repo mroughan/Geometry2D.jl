@@ -185,7 +185,7 @@ for f in (:abs, :sign, :quadrant, :angle, :distance2, :distance)
     end
 end
 
-for f in (:angle, :distance, :distance2)
+for f in (:angle, :distance, :distance2, :+, :-, :.*, :inner, :cmp, :isless, :isequal)
     @eval begin
         function ($f){T<:Number,S<:Number}(p1::Array{Point{T},1}, p2::Array{Point{S},1})
             if size(p1) != size(p2)
@@ -204,6 +204,6 @@ end
 
 eltype{T<:Number}(p::Array{Point{T}}) = Point{T}
 
-# function for plotting
+#  function for plotting
 displayPath(P::Array{Point}) = P
 displayPoints(P::Array{Point}) = P

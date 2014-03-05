@@ -94,6 +94,10 @@ function plot(O::G2dObject; anglesOn=false, vertexLabelsOn=false, bounds=default
 
     return h, ho
 end
+# vectorise separately from other code to allow for varargs???
+#   really would like this to be a more generic type, e.g., G2dObject, but they aren't parameterised, and it
+#   seems to need that to find it
+plot{T<:Number}(A::Array{Point{T}}; varargs...) = reshape( [plot(A[i]; varargs...) for i=1:length(A)], size(A) )
 
 function fill(O::G2dObject; label="G2dObject", 
               pattern="", linestyle="-", angle=45, width=10, 
