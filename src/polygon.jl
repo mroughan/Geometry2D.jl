@@ -4,7 +4,7 @@
 export Polygon, ComplexPolygon
 export PolygonType, ConvexPoly, ConcavePoly, SimplePoly, AlmostSimplePoly, ComplexPoly
 export PolygonRand, PolygonRegular, Pentagon, Hexagon, Octagon, PolygonStar, PolygonSimpleStar, Pentagram, Octogram
-export isin, bounded, bounds, area, perimeter, displayPath, closed, isregular, isconvex, issimple, closepoly, length,  nearvertex, copy, simplify, centroid, distance, intersection
+export isin, bounded, bounds, area, perimeter, displayPath, closed, isregular, isconvex, issimple, closepoly, length,  nearvertex, copy, simplify, centroid, distance, intersection, edgeintersection, edge
 abstract ComplexPolygon <: G2dCompoundObject
 # we need a second type for this (as yet unimplemented) as it can have multiple curves
 
@@ -385,7 +385,7 @@ end
 #     return count
 # end
 
-function intersection{T<:Number}( ray::Ray{T}, poly::Polygon{T}; tolerance=1.0e-12)
+function edgeintersection{T<:Number}( l::LINETYPE, poly::Polygon{T}; tolerance=1.0e-12)
     #OUTPUTS: 
     #   intersect = 0 means segments don't intersect (i.e, they are parallel)
     #             = 1 means intersections at a finite series of points
@@ -395,19 +395,26 @@ function intersection{T<:Number}( ray::Ray{T}, poly::Polygon{T}; tolerance=1.0e-
     
     # look for intersections which each edge
     n = length(poly)
-    p = Array(Point{T},0)
+    p = Array(Point{T},0) 
     for i=1:n
         S = edge(poly, i) 
-        I,pi = intersection( ray, S ; tolerance=tolerance ) 
-        if I==2
-            return 2, []
-        elseif I==1
+        I,pi = intersection( l, S ; tolerance=tolerance ) 
+        m = 0
+        dir = 1.0e6*tolerance*Vect(rand()-0.5, rand()-0.5) 
+        while I==2
+            # deal with overlapping edges by adding jitter, which means they may drop in or out
+            l += dir
+            I,pi = intersection( l, S ; tolerance=tolerance ) 
+            m+=1
+            println("  jittering m=$m")
+        end
+        if I==1
             p = [p, pi]
         end
     end
 
     # convert them to parametric form, and sort (in order along the ray)
-    q = (p - ray.startpoint) 
+    q = (p - l.startpoint) 
     thetas = atan2( points_y(q), points_x(q) )
     s = distance(q)
     order = sortperm(s)
@@ -422,12 +429,11 @@ function intersection{T<:Number}( ray::Ray{T}, poly::Polygon{T}; tolerance=1.0e-
             i+=1
         end
     end
-
+ 
     # output the results as an array of points
-    return ray.startpoint + PointArray( s.*cos(thetas[1]), s.*sin(thetas[1]) )
-
+    return l.startpoint + PointArray( s.*cos(thetas[1]), s.*sin(thetas[1]) )
 end
-intersection{T<:Number}(poly::Polygon{T}, ray::Ray{T}; tolerance=1.0e-12) = intersection( ray, poly; tolerance=tolerance)
+intersection{T<:Number}(poly::Polygon{T}, l::LINETYPE; tolerance=1.0e-12) = intersection( l, poly; tolerance=tolerance)
 
 
 ###########################################################

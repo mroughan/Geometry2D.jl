@@ -1,12 +1,12 @@
 
-export Line, Ray, Segment
-
+export Line, Ray, Segment, LINETYPE
+ 
 export slope, invslope, yint, xint, isequal, isparallel, intersection, isin, SegmentRand, displayPath, bounded, bounds, closed, area, perimeter, convert, flip, distance
 
 # general representation of a line that avoids problems with infinite slope
 #   at the cost of storing three values instead of just slope and intercept
 immutable Line{T<:Number} <: G2dCompoundObject
-    point::Point{T} # an arbitrary point on the line
+    startpoint::Point{T} # an arbitrary point on the line
     theta::T        # the angle of the line to the x-axis, in radians [0,2 pi)
 
     function Line(point::Point{T}, theta::T)
@@ -73,6 +73,8 @@ Segment{T<:Number}(startpoint::Point{T}, endpoint::Point{T}) = Segment{T}(promot
 Segment{T<:Number, S<:Number}(startpoint::Point{T}, endpoint::Point{S}) = Segment(promote(startpoint, endpoint)...)
 SegmentRand() = Segment(Point(rand(),rand()), Point(rand(),rand()))
 
+LINETYPE = Union(Line, Ray, Segment)
+
 # lots of alternate representations we could build constructors for
 #    ray constructed using two points (with one as start), or point and a slope (and + or -)
 #    segment constructed with point, and direction, and distance
@@ -111,20 +113,20 @@ convert{T<:Number}(::Type{Line}, r::Ray{T}) = Line(r.startpoint, atan(r.directio
 # can't convert back the other way without providing extra information
 
 # useful functions
-slope(p::Line) = ( tan(p.theta) )
-slope(p::Ray) = ( p.direction.y / p.direction.x )
-slope(p::Segment) = ( (p.endpoint.y-p.startpoint.y) / (p.endpoint.x-p.startpoint.x) )
-invslope(p::Line) = ( cot(p.theta) )
-invslope(p::Ray) = ( p.direction.x / p.direction.y )
-invslope(p::Segment) = ( (p.endpoint.x-p.startpoint.x) / (p.endpoint.y-p.startpoint.y) )
+slope(l::Line) = ( tan(l.theta) )
+slope(r::Ray) = ( r.direction.y / r.direction.x )
+slope(s::Segment) = ( (s.endpoint.y-s.startpoint.y) / (s.endpoint.x-s.startpoint.x) )
+invslope(l::Line) = ( cot(l.theta) )
+invslope(r::Ray) = ( r.direction.x / r.direction.y )
+invslope(s::Segment) = ( (s.endpoint.x-s.startpoint.x) / (s.endpoint.y-s.startpoint.y) )
 
-xint(p::Line) = ( p.point.x - p.point.y * cot(p.theta) )
-yint(p::Line) = ( p.point.y - p.point.x * tan(p.theta) )
+xint(l::Line) = ( l.startpoint.x - l.startpoint.y * cot(l.theta) )
+yint(l::Line) = ( l.startpoint.y - l.startpoint.x * tan(l.theta) )
 
 bounded(::Line) = false
 bounded(::Ray) = false
 bounded(::Segment) = true
-bounds(p::Segment) = Bounds(p.endpoint.y, p.startpoint.y, p.startpoint.x, p.endpoint.x)
+bounds(s::Segment) = Bounds(s.endpoint.y, s.startpoint.y, s.startpoint.x, s.endpoint.x)
 bounds(::Line) = Bounds(Inf, Inf, Inf, Inf)
 function bounds(r::Ray)
     if quadrant(direction)==1
@@ -152,25 +154,25 @@ perimeter(::Ray) = Inf
 perimeter(s::Segment) = distance( s.startpoint, s.endpoint )
 
 # comparisons
-isequal(p1::Line, p2::Line) = ( p1.point==p2.point && p1.theta==p2.theta )
-isequal(p1::Ray, p2::Ray) = ( p1.startpoint==p2.startpoint && p1.direction==p2.direction )
-isequal(p1::Segment, p2::Segment) = ( p1.startpoint==p2.startpoint && p1.endpoint==p2.endpoint )
+isequal(l1::Line, l2::Line) = ( l1.startpoint==l2.startpoint && l1.theta==l2.theta )
+isequal(r1::Ray, r2::Ray) = ( r1.startpoint==r2.startpoint && r1.direction==r2.direction )
+isequal(s1::Segment, s2::Segment) = ( s1.startpoint==s2.startpoint && s1.endpoint==s2.endpoint )
 
-isparallel(p1::Line, p2::Line) = ( p1.theta == p2.theta )  
-isparallel(p1::Ray, p2::Ray) = ( p1.direction == p2.direction )
-isparallel(p1::Segment, p2::Segment) = ( slope(p1) == slope(p2) )
+isparallel(l1::Line, l2::Line) = ( l1.theta == l2.theta )  
+isparallel(r1::Ray, r2::Ray) = ( r1.direction == r2.direction )
+isparallel(s1::Segment, s2::Segment) = ( slope(s1) == slope(s2) )
 
 # distance returns the distance to the nearest point on the object, and that point
 function distance(p::Point, line::Line)
     if abs( abs(line.theta) - pi/2 ) < tolerance
         # vertical line
-        return abs(p.x - line.point.x), Point(line.point.x,p.y)
+        return abs(p.x - line.startpoint.x), Point(line.startpoint.x,p.y)
     elseif  abs(line.theta) < tolerance
         # horizontal line
-        return abs(p.y - line.point.y), Point(p.x,line.point.y)
+        return abs(p.y - line.startpoint.y), Point(p.x,line.startpoint.y)
     end
-    s1 = (p.x - line.point.x) / cos(line.theta)
-    s2 = (p.y - line.point.y) / sin(line.theta)
+    s1 = (p.x - line.startpoint.x) / cos(line.theta)
+    s2 = (p.y - line.startpoint.y) / sin(line.theta)
     s = abs(s1 - s2)
     d = s*cos(line.theta)*sin(line.theta)
     if (s1 <= s2)
@@ -178,7 +180,7 @@ function distance(p::Point, line::Line)
     else
         ss = s2 + s*cos(line.theta)*cos(line.theta)        
     end
-    ps = line.point + ss*Point(cos(line.theta), sin(line.theta))
+    ps = line.startpoint + ss*Point(cos(line.theta), sin(line.theta))
     return abs(d), ps  # should check why I need to get abs distances?
 end
 distance2(p::Point, line::Line) = distance(p, line)[1]^2 # this isn't more efficient, but to be consistent with point distances
@@ -245,7 +247,7 @@ function intersection( line1::Line, line2::Line; tolerance=1.0e-12)
     #                  if they don't intersect then return "nothing"
     #                  if they are the same, then return the Line
     if abs(line1.theta - line2.theta) < tolerance
-        if distance2(line1.point,line2.point) < tolerance
+        if distance2(line1.startpoint,line2.startpoint) < tolerance
             return 2, line1     # lines are the same
         else
             return 0, nothing   # lines are parallel
@@ -253,12 +255,12 @@ function intersection( line1::Line, line2::Line; tolerance=1.0e-12)
     else
         A = [[cos(line1.theta) -cos(line2.theta)]
              [sin(line1.theta) -sin(line2.theta)]]
-        b = [line2.point.x - line1.point.x,
-             line2.point.y - line1.point.y,
+        b = [line2.startpoint.x - line1.startpoint.x,
+             line2.startpoint.y - line1.startpoint.y,
              ]
         par = A \ b
-        p1 = line1.point + par[1]*Point(cos(line1.theta), sin(line1.theta))
-        p2 = line2.point + par[2]*Point(cos(line2.theta), sin(line2.theta))
+        p1 = line1.startpoint + par[1]*Point(cos(line1.theta), sin(line1.theta))
+        p2 = line2.startpoint + par[2]*Point(cos(line2.theta), sin(line2.theta))
 
         # println("p1 = $p1")
         # println("p2 = $p2")

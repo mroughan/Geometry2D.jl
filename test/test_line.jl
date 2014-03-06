@@ -1,3 +1,6 @@
+using Geometry2D
+using PyPlot
+
 print("\n==========================================\n lines \n")
 
 # some points to use below

@@ -14,7 +14,7 @@ translate(p::Point, d::Vect) = p + d
 translate{T<:Number}(P::Array{Point{T}}, d::Vect) = reshape( [(P[i]+d) for i=1:length(P)], size(P) )
 translate(c::Circle, d::Vect) = Circle(c.center+d, c.radius)
 translate(a::Arc, d::Vect) = Arc(a.center+d, a.radius, a.theta0, a.theta1)
-translate(l::Line, d::Vect) = Line(l.point+d, l.theta)
+translate(l::Line, d::Vect) = Line(l.startpoint+d, l.theta)
 translate(r::Ray, d::Vect) = Ray(r.startpoint+d, r.direction)
 translate(s::Segment, d::Vect) = Segment(s.startpoint+d, s.endpoint+d)
 translate(t::Triangle, d::Vect) = Triangle(translate(t.points,d))
@@ -54,7 +54,7 @@ rotate(p::Point, angle::Float64) = Point(cos(angle)*p.x - sin(angle)*p.y, sin(an
 rotate{T<:Number}(P::Array{Point{T}}, angle::Float64) = reshape( [rotate(P[i],angle) for i=1:length(P)], size(P) )
 rotate(c::Circle, angle::Float64) = Circle(rotate(c.center,angle), c.radius)
 rotate(a::Arc, angle::Float64) = Arc(rotate(a.center,angle), a.radius, a.theta0+angle, a.theta1+angle)
-rotate(l::Line, angle::Float64) = Line(rotate(l.point,angle), l.theta + angle)
+rotate(l::Line, angle::Float64) = Line(rotate(l.startpoint,angle), l.theta + angle)
 rotate(r::Ray, angle::Float64) = Ray(rotate(r.startpoint,angle), rotate(r.direction,angle))
 rotate(s::Segment, angle::Float64) = Segment(rotate(s.startpoint,angle), rotate(s.endpoint,angle))
 rotate(t::Triangle, angle::Float64) = Triangle(rotate(t.points,angle))
@@ -71,7 +71,7 @@ reflect(p::Point) = -p
 reflect{T<:Number}(P::Array{Point{T}}) = reshape( [reflect(P[i]) for i=1:length(P)], size(P) )
 reflect(c::Circle) = Circle(reflect(c.center), c.radius)
 reflect(a::Arc) = Arc(reflect(a.center), a.radius, pi-a.theta1, pi-a.theta0)
-reflect(l::Line) = Line(reflect(l.point), l.theta)
+reflect(l::Line) = Line(reflect(l.startpoint), l.theta)
 reflect(r::Ray) = Ray(reflect(r.startpoint), reflect(r.direction))
 reflect(s::Segment) = Segment(reflect(s.startpoint), reflect(s.endpoint))
 reflect(t::Triangle) = Triangle(reflect(t.points))
@@ -93,7 +93,7 @@ function reflect(p::Point, l::Line)
     lr = rotate(l, -l.theta)
 
     # reflect
-    pr = Point(pr.x, lr.point.y - (pr.y-lr.point.y))
+    pr = Point(pr.x, lr.startpoint.y - (pr.y-lr.startpoint.y))
 
     # rotate back
     return rotate(pr, l.theta)
@@ -101,7 +101,7 @@ end
 reflect{T<:Number}(P::Array{Point{T}}, line::Line) = reshape( [reflect(P[i],line) for i=1:length(P)], size(P) )
 reflect(c::Circle, line::Line) = Circle(reflect(c.center,line), c.radius)
 reflect(a::Arc, line::Line) = Arc(reflect(a.center,line), a.radius, 2*line.theta-a.theta1, 2*line.theta-a.theta0)
-reflect(l::Line, line::Line) = Line(reflect(l.point,line), 2*line.theta - l.theta)
+reflect(l::Line, line::Line) = Line(reflect(l.startpoint,line), 2*line.theta - l.theta)
 function reflect(r::Ray, line::Line)
     refstartpoint = reflect(r.startpoint,line)
     midstartpoint = (r.startpoint + refstartpoint)/2.0
