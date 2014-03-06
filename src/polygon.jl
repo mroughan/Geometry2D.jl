@@ -433,7 +433,7 @@ function edgeintersection{T<:Number}( l::LINETYPE, poly::Polygon{T}; tolerance=1
     # output the results as an array of points
     return l.startpoint + PointArray( s.*cos(thetas[1]), s.*sin(thetas[1]) )
 end
-intersection{T<:Number}(poly::Polygon{T}, l::LINETYPE; tolerance=1.0e-12) = intersection( l, poly; tolerance=tolerance)
+edgeintersection{T<:Number}(poly::Polygon{T}, l::LINETYPE; tolerance=1.0e-12) = edgeintersection( l, poly; tolerance=tolerance)
 
 
 ###########################################################

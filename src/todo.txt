@@ -68,7 +68,8 @@ triangle.jl
   
 circle.jl (center, radius)
   arc (part of a circle) needs to be finished out
-  intersection and distance routines between circle/arc and line/ray/segment
+  edgeintersection routines between arc and line/ray/segment
+  intersection and distance between acr/circle and line/ray/segment
 
 transforms.jl
   shear
@@ -96,7 +97,7 @@ polygons.jl
       - perhaps is the problem of getting an angle > pi
           - seems to fit the facts
           - using atan to obtain angles, we can only get [-pi/2,pi/2]
-
+ 
    remove_colinear.m (from a path)
           including points that are really (floating point) the same
 
@@ -139,6 +140,14 @@ polygons.jl
       - maybe of use in filling?
 
    monotone test http://en.wikipedia.org/wiki/Monotone_polygon
+
+   edgeintersection jittering needs a little work to deal with
+     segment/segment overlaps
+       - also need line/segment intersection routine
+
+   also need a proper "intersection" between lines and polygons to
+     allow for filling with lines
+       - needs to return a list of arrays
 
    tests
       isregular
@@ -190,5 +199,18 @@ other issues
    -- make sure to vectorize a lot of the basic functions, e.g., area,
       perimeter, bounded, closed, isin
 
+
+   -- basic issue of 
+         Array{Point} <: Array{GeomObject} is false
+              if think this is why doesn't work to find this routine
+                sometimes
+
+         but want to have a routine that plots and array of objects
+
+         could be issue for other cases as well
+
+
+       typealias Vector{T} Array{T,1}
+         should be helpful???
 
 

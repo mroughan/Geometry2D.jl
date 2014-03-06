@@ -73,6 +73,7 @@ Segment{T<:Number}(startpoint::Point{T}, endpoint::Point{T}) = Segment{T}(promot
 Segment{T<:Number, S<:Number}(startpoint::Point{T}, endpoint::Point{S}) = Segment(promote(startpoint, endpoint)...)
 SegmentRand() = Segment(Point(rand(),rand()), Point(rand(),rand()))
 
+# could have done this with an abstract type above the three, but wanted to try out Unions
 LINETYPE = Union(Line, Ray, Segment)
 
 # lots of alternate representations we could build constructors for

@@ -130,7 +130,7 @@ plot(r1; label="ray 1", color="green", bounds=Bounds(1, -1, -1, 1))
 plot(p1; label="intersection points 1", color="red")
  
 r2 = Ray(Point(-1,0.24), Point(1.0,1/3.0))  
-p2 = edgeintersection( r2, star1[1])
+p2 = edgeintersection(star1[1], r2)
 println("p2 = $p2")
 plot(r2; label="ray 2", color="green", bounds=Bounds(1, -1, -1, 1))
 plot(p2; label="intersection points 2", color="red")
