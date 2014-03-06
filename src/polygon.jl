@@ -78,6 +78,10 @@ function Polygon{T<:Number}(points::Vector{Point{T}})
 end
 Polygon{T<:Number,S<:Number}(x::Vector{T}, y::Vector{S}) = Polygon(PointArray(x,y))
 copy{T<:Number}(p::Polygon{T}) = Polygon( copy(p.points) )
+Polygon(b::Bounds) = Polygon([b.left, b.right, b.right, b.left], [b.bottom, b.bottom, b.top, b.top])
+Polygon(t::Triangle) = Polygon(t.points)
+convert{T<:Number}(::Type{Polygon}, b::Bounds{T}) = Polygon(b)
+convert{T<:Number}(::Type{Polygon}, t::Triangle{T}) = Polygon(t)
 
 # make sure it is closed, i.e., first point equals the last
 function closepoly{T<:Number}( points::Vector{Point{T}}; tolerance=1.0e-12 )

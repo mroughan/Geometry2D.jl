@@ -1,6 +1,6 @@
 export Bounds
 
-export isin
+export isin, convert
 
 export default_bounds
 
@@ -35,8 +35,6 @@ function Bounds(P::Array{Point})
     return Bounds(maximum(y), minimum(y), minimum(x), maximum(x))
 end
 const default_bounds = Bounds(1,0, 0, 1)
-
-# promotion rules
 
 
 # useful to have various functions, as if Bounds was an object
