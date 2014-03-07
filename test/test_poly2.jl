@@ -151,9 +151,7 @@ r5 = edge(star1[1], 1)
 p5 = edgeintersection( r5, star1[1])
 println("p5 = $p5")
 plot(r5; label="segment 5", color="orange", bounds=Bounds(1, -1, -1, 1))
-plot(p5; label="intersection points 5", color="cyan")
-
-
+plot(p5; label="intersection points 5", color="blue", marker="x", markersize=12)
 
 # legend()
 axis("equal")

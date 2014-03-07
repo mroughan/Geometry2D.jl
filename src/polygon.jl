@@ -403,24 +403,27 @@ function edgeintersection{T<:Number}( l::LINETYPE, poly::Polygon{T}; tolerance=1
     for i=1:n
         S = edge(poly, i) 
         I,pi = intersection( l, S ; tolerance=tolerance ) 
-        m = 0
-        dir = 1.0e6*tolerance*Vect(rand()-0.5, rand()-0.5) 
-        while I==2
-            # deal with overlapping edges by adding jitter, which means they may drop in or out
-            l += dir
-            I,pi = intersection( l, S ; tolerance=tolerance ) 
-            m+=1
-            println("  jittering m=$m")
-        end
         if I==1
             p = [p, pi]
+        elseif I==2
+            # include end points, if appropriate
+            if !(typeof(l)<:Line) && isin(l.startpoint, S)[1]
+                p = [p, l.startpoint]
+            end
+            if typeof(l)<:Segment && isin(l.endpoint, S)[1]
+                p = [p, l.endpoint]
+            end
         end
     end
 
     # convert them to parametric form, and sort (in order along the ray)
     q = (p - l.startpoint) 
     thetas = atan2( points_y(q), points_x(q) )
+    k = indmax(abs(thetas))
+    theta = thetas[k] # really just trying to avoid 0's
     s = distance(q)
+    println("q = $q, thetas=$thetas, s=$s")
+
     order = sortperm(s)
     s = s[order]
 
@@ -435,7 +438,7 @@ function edgeintersection{T<:Number}( l::LINETYPE, poly::Polygon{T}; tolerance=1
     end
  
     # output the results as an array of points
-    return l.startpoint + PointArray( s.*cos(thetas[1]), s.*sin(thetas[1]) )
+    return l.startpoint + PointArray( s.*cos(theta), s.*sin(theta) )
 end
 edgeintersection{T<:Number}(poly::Polygon{T}, l::LINETYPE; tolerance=1.0e-12) = edgeintersection( l, poly; tolerance=tolerance)
 
