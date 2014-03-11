@@ -100,7 +100,7 @@ end
 plot{T<:Number}(A::Array{Point{T}}; varargs...) = reshape( [plot(A[i]; varargs...) for i=1:length(A)], size(A) )
 
 function fill(O::G2dObject; label="G2dObject", 
-              pattern="", linestyle="-", angle=45, width=10, 
+              pattern="", linestyle="-", angle=45, separation=10, marker=".", markersize=10, offset=0, 
               varargs...)
     if closed(O)
         if method_exists(displayPath, (typeof(O),))
@@ -117,14 +117,20 @@ function fill(O::G2dObject; label="G2dObject",
     if length(P)>0
         if pattern==""
             h = fill(points_x(P), points_y(P); label=label, varargs...)
-        elseif pattern=="speckled"
-            # options: specksize, marker, color
+        elseif pattern=="squarespec"
+            # options: markersize, marker, color, angle, separation, offset
+
+        elseif pattern=="trispec"
+            # options: markersize, marker, color, angle, separation,, offset 
+
+        elseif pattern=="lines"
+            # options: linestyle, linewidth, angle, separaion, color, offset
+
+        elseif pattern=="grid"
+            # options: linestyle, linewidth, angle, separation, color, offset
 
         elseif pattern=="checked"
             # options: checksize, checkfg, checkbg
-
-        elseif pattern=="lines"
-            # options: linestyle, linewidth, angle, width, color
 
         elseif pattern=="striped" 
             # options: stripecolors, angle, width

@@ -89,5 +89,21 @@ plot(0,0)
 hold(true)
 # plot(t2; vertexLabelsOn=true)
 fill(t2; label="t2", color="red")
-legend()
+
+r1 = Ray(Point(0.0,0.3), Point(1.0,0.2))  
+plot(r1; label="ray 1", color="green", bounds=Bounds(1, -1, -1, 1))
+p1 = edgeintersection( r1, t2)
+plot(p1; label="intersection points 1", color="red")
+
+r4 = Segment(Point(0.2, 0.6), Point(0.7,0.3))  
+plot(r4; label="segment 4", color="orange", bounds=Bounds(1, -1, -1, 1))
+p4 = edgeintersection( t2, r4; tolerance=1.0e-2)
+plot(p4; label="intersection points 4", color="red")
+
+r5 = Segment(Point(0.2, 0.2), Point(0.7,0.3))  
+plot(r5; label="segment 4", color="orange", bounds=Bounds(1, -1, -1, 1))
+p5 = edgeintersection( t2, r5; tolerance=1.0e-2)
+plot(p5; label="intersection points 5", color="red")
+
+# legend()
 

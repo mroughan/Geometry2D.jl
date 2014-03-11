@@ -69,8 +69,9 @@ triangle.jl
 circle.jl (center, radius)
   arc (part of a circle) needs to be finished out
   edgeintersection routines between arc and line/ray/segment
+  edgeintersection routines between two circles
   intersection and distance between acr/circle and line/ray/segment
-
+  
 transforms.jl
   shear
   ???
@@ -160,6 +161,8 @@ bounds.jl
    add standard functions to bounds???
       maybe doesn't make sense if its an abstract, but 'isin' at least
           would be useful
+   test edgeintersection, and replace path for lines, using this,
+      instead of hand written code
 
 utilities.jl
    convex hulls

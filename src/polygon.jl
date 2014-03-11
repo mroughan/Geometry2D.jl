@@ -417,13 +417,16 @@ function edgeintersection{T<:Number}( l::LINETYPE, poly::Polygon{T}; tolerance=1
     end
 
     # convert them to parametric form, and sort (in order along the ray)
+    if length(p) == 0
+        return []
+    end
     q = (p - l.startpoint) 
     thetas = atan2( points_y(q), points_x(q) )
     k = indmax(abs(thetas))
     theta = thetas[k] # really just trying to avoid 0's
     s = distance(q)
-    println("q = $q, thetas=$thetas, s=$s")
-
+    # println("q = $q, thetas=$thetas, s=$s")
+ 
     order = sortperm(s)
     s = s[order]
 
@@ -440,7 +443,14 @@ function edgeintersection{T<:Number}( l::LINETYPE, poly::Polygon{T}; tolerance=1
     # output the results as an array of points
     return l.startpoint + PointArray( s.*cos(theta), s.*sin(theta) )
 end
-edgeintersection{T<:Number}(poly::Polygon{T}, l::LINETYPE; tolerance=1.0e-12) = edgeintersection( l, poly; tolerance=tolerance)
+edgeintersection{T<:Number}(poly::Polygon{T}, l::LINETYPE; tolerance=1.0e-12) = edgeintersection(l, poly; tolerance=tolerance)
+
+# edge intersections for others that can be obtained by converting to polygons (though there are more efficient ways maybe)
+edgeintersection(l::LINETYPE, b::Bounds; tolerance=1.0e-12) = edgeintersection(l,Polygon(b); tolerance=tolerance)
+edgeintersection(b::Bounds, l::LINETYPE; tolerance=1.0e-12) = edgeintersection(l,Polygon(b); tolerance=tolerance)
+edgeintersection(l::LINETYPE, t::Triangle; tolerance=1.0e-12) = edgeintersection(l,Polygon(t); tolerance=tolerance)
+edgeintersection(t::Triangle, l::LINETYPE; tolerance=1.0e-12) = edgeintersection(l,Polygon(t); tolerance=tolerance)
+
 
 
 ###########################################################
