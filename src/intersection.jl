@@ -366,7 +366,20 @@ function intersection{T<:Number}( l::LINETYPE, poly::Polygon{T}; tolerance=1.0e-
     #  
     
     # look for intersections which each edge
-    n = length(poly)
-
-
+    p = edgeintersection( l, poly; tolerance=tolerance)
+    n = length(p)
+    S = Array(Segment{T}, 0)
+    if n >= 2 
+        for i=1:n-1
+            # see if the mid-point is in the polygon
+            mid = (p[i]+p[i+1])/2.0
+            I,E = isin(mid, poly; tolerance=tolerance)
+            if I
+                s = Segment{T}(convert(Point{T},p[i]),convert(Point{T},p[i+1])) 
+                S = [S, s]
+            end 
+        end
+    end
+    return S
 end
+intersection{T<:Number}(poly::Polygon{T}, l::LINETYPE; tolerance=1.0e-12) = intersection( l, poly; tolerance=1.0e-12)

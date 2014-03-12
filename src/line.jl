@@ -1,7 +1,7 @@
 
 export Line, Ray, Segment, LINETYPE
  
-export slope, invslope, yint, xint, isequal, isparallel, intersection, isin, SegmentRand, displayPath, bounded, bounds, closed, area, perimeter, convert, flip, distance
+export slope, invslope, yint, xint, isequal, isparallel,  isin, SegmentRand, displayPath, bounded, bounds, closed, area, perimeter, convert, flip, distance
 
 # general representation of a line that avoids problems with infinite slope
 #   at the cost of storing three values instead of just slope and intercept
@@ -9,16 +9,17 @@ immutable Line{T<:Number} <: G2dCompoundObject
     startpoint::Point{T} # an arbitrary point on the line
     theta::T        # the angle of the line to the x-axis, in radians [0,2 pi)
 
+    # remember this creates inner constructer Line{T}     
     function Line(point::Point{T}, theta::T)
         if theta < -pi/2
             while theta < -pi/2
-                theta += pi
+                theta += pi 
             end
         elseif theta > pi/2
             while theta > pi/2
                 theta -= pi
             end
-        end
+        end 
         return new(point, theta)
     end
 end
@@ -52,8 +53,8 @@ immutable Segment{T<:Number} <: G2dCompoundObject
     startpoint::Point{T}
     endpoint::Point{T}
 
-    # rememeber this creates inner constructer Segment{T}
-    function Segment(startpoint,  endpoint)
+    # remember this creates inner constructer Segment{T}
+    function Segment(startpoint::Point{T},  endpoint::Point{T})
         # always have the points lexicographically sorted,
         #   which makes comparisons and slope calculations easier
         if startpoint.x < endpoint.x 
@@ -67,7 +68,7 @@ immutable Segment{T<:Number} <: G2dCompoundObject
         else 
             error("the two points must be distinct")
         end
-    end
+   end
 end
 Segment{T<:Number}(startpoint::Point{T}, endpoint::Point{T}) = Segment{T}(promote(startpoint, endpoint)...)
 Segment{T<:Number, S<:Number}(startpoint::Point{T}, endpoint::Point{S}) = Segment(promote(startpoint, endpoint)...)
@@ -86,8 +87,13 @@ promote_rule{T<:Number,S<:Number}(::Type{Line{T}}, ::Type{Line{S}})  = Line{prom
 promote_rule{T<:Number,S<:Number}(::Type{Ray{T}}, ::Type{Ray{S}})  = Ray{promote_type(T,S)}
 promote_rule{T<:Number,S<:Number}(::Type{Segment{T}}, ::Type{Segment{S}})  = Segment{promote_type(T,S)}
 
-convert(::Type{Segment{Float64}}, s::Segment) = Segment(convert(Float64,startpoint), convert(Float64,endpoint))
+convert(::Type{Segment{Float64}}, s::Segment) = Segment(convert(Point{Float64},s.startpoint), convert(Point{Float64},s.endpoint))
 # need some more here
+
+copy(l::Line) = Line(l.startpoint, l.theta) 
+copy(r::Ray) = Ray(r.startpoint, r.direction)
+copy(s::Segment) = Segment(s.startpoint, s.endpoint)
+
 
 # promote_rule{T<:Integer,S<:FloatingPoint}(::Type{Line{T}}, ::Type{Line{S}} ) = Line{S}
 # promote_rule{T<:Integer}(::Type{Line{Rational{T}}}, ::Type{Line{T}}) = Line{Rational{T}}

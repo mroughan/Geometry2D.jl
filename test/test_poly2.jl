@@ -20,6 +20,25 @@ plot(poly1; color="green")
 plot(poly2; marker="s", color="blue")
 plot(poly3; marker="d", color="red")
 plot(poly4; marker="", color="magenta")
+fill(poly1; color="green", alpha=0.2)
+fill(poly2; color="blue", alpha=0.2)
+fill(poly3; color="red", alpha=0.2)
+fill(poly4; color="magenta", alpha=0.2)
+
+axis("equal")
+
+figure(61)
+hold(false)
+plot(0,0)
+hold(true)
+plot(poly1; marker="", color="green")
+plot(poly2; marker="", color="blue")
+plot(poly3; marker="", color="red")
+plot(poly4; marker="", color="magenta")
+fill(poly1; color="green", alpha=0.2)
+fill(poly2; color="blue", alpha=0.2)
+fill(poly3; color="red", alpha=0.2)
+fill(poly4; color="magenta", alpha=0.2)
 
 axis("equal")
 
@@ -53,7 +72,7 @@ Schlafli = [[3 1],
             [11 5],
             ]
 
-figure(61) 
+figure(62) 
 hold(false)
 plot(0,0)
 hold(true)
@@ -69,7 +88,7 @@ axis("equal")
 
 
 #### test simplified star polygons
-figure(62) 
+figure(63) 
 hold(false)
 plot(0,0)
 hold(true)
@@ -88,7 +107,7 @@ plot(star1; color="blue")
 axis("equal")
 
 
-figure(63) 
+figure(64) 
 hold(false)
 plot(0,0)
 hold(true)
@@ -104,7 +123,7 @@ axis("equal")
 
 
 
-figure(64)
+figure(65)
 hold(false)
 plot(0,0)
 hold(true)
@@ -116,7 +135,7 @@ legend()
 axis("equal")
 
 
-figure(65)
+figure(66)
 hold(false)
 plot(0,0)
 hold(true)
@@ -152,6 +171,57 @@ p5 = edgeintersection( r5, star1[1])
 println("p5 = $p5")
 plot(r5; label="segment 5", color="orange", bounds=Bounds(1, -1, -1, 1))
 plot(p5; label="intersection points 5", color="blue", marker="x", markersize=12)
+
+# legend()
+axis("equal")
+
+
+figure(67)
+hold(false)
+plot(0,0)
+hold(true)
+star1 = PolygonStar(7,3; center=Point(0.0,0.0))
+plot(star1[1]; label="star1", marker="", color="blue")
+
+r1 = Ray(Point(-1,0.0), Point(1.0,0.0))  
+p1 = intersection( r1, star1[1])
+println("p1 = $p1")
+plot(r1; label="ray 1", color="green", bounds=Bounds(1, -1, -1, 1))
+for i=1:length(p1)
+    plot(p1[i]; label="intersection points 1", color="red", marker="")
+ end
+
+r2 = Ray(Point(-1,0.24), Point(1.0,1/3.0))  
+p2 = intersection(star1[1], r2)
+println("p2 = $p2")
+plot(r2; label="ray 2", color="green", bounds=Bounds(1, -1, -1, 1))
+for i=1:length(p2)
+    plot(p2[i]; label="intersection points 2", color="red", marker="")
+end
+
+r3 = Ray(Point(-1,-0.24), Point(1.0,0.0))  
+p3 = intersection( r3, star1[1]; tolerance=1.0e-12)
+println("p3 = $p3")
+plot(r3; label="ray 3", color="green", bounds=Bounds(1, -1, -1, 1))
+for i=1:length(p3)
+    plot(p3[i]; label="intersection points 3", color="red", marker="")
+ end
+
+r4 = Segment(Point(-0.7,-0.6), Point(0.7,-0.5))  
+p4 = intersection( r4, star1[1]; tolerance=1.0e-4)
+println("p4 = $p4")
+plot(r4; label="segment 4", color="black", bounds=Bounds(1, -1, -1, 1))
+for i=1:length(p4)
+    plot(p4[i]; label="intersection points 4", color="red", marker="")
+ end
+
+r5 = edge(star1[1], 1)
+p5 = intersection( r5, star1[1])
+println("p5 = $p5")
+plot(r5; label="segment 5", color="orange", bounds=Bounds(1, -1, -1, 1))
+for i=1:length(p5)
+    plot(p5[i]; label="intersection points 5", color="red", marker="", markersize=12)
+end
 
 # legend()
 axis("equal")

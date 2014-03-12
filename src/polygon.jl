@@ -4,7 +4,7 @@
 export Polygon, ComplexPolygon
 export PolygonType, ConvexPoly, ConcavePoly, SimplePoly, AlmostSimplePoly, ComplexPoly
 export PolygonRand, PolygonRegular, Pentagon, Hexagon, Octagon, PolygonStar, PolygonSimpleStar, Pentagram, Octogram
-export isin, bounded, bounds, area, perimeter, displayPath, closed, isregular, isconvex, issimple, closepoly, length,  nearvertex, copy, simplify, centroid, distance, intersection, edgeintersection, edge
+export isin, bounded, bounds, area, perimeter, displayPath, closed, isregular, isconvex, issimple, closepoly, length,  nearvertex, copy, simplify, centroid, distance, edge
 abstract ComplexPolygon <: G2dCompoundObject
 # we need a second type for this (as yet unimplemented) as it can have multiple curves
 
