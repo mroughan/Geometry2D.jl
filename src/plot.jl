@@ -100,7 +100,7 @@ end
 plot{T<:Number}(A::Array{Point{T}}; varargs...) = reshape( [plot(A[i]; varargs...) for i=1:length(A)], size(A) )
 
 function fill(O::G2dObject; label="G2dObject", 
-              pattern="", linestyle="-", angle=45, separation=10, marker=".", markersize=10, offset=0, 
+              pattern="", angle=45, separation=1.0, offset=0.0, 
               varargs...)
     if closed(O)
         if method_exists(displayPath, (typeof(O),))
@@ -116,27 +116,89 @@ function fill(O::G2dObject; label="G2dObject",
     end
     if length(P)>0
         if pattern==""
+            # block colors
             h = fill(points_x(P), points_y(P); label=label, varargs...)
-        elseif pattern=="squarespec"
-            # options: markersize, marker, color, angle, separation, offset
-
-        elseif pattern=="trispec"
-            # options: markersize, marker, color, angle, separation,, offset 
-
-        elseif pattern=="lines"
-            # options: linestyle, linewidth, angle, separaion, color, offset
-
-        elseif pattern=="grid"
-            # options: linestyle, linewidth, angle, separation, color, offset
-
-        elseif pattern=="checked"
-            # options: checksize, checkfg, checkbg
-
-        elseif pattern=="striped" 
-            # options: stripecolors, angle, width
-
         else
-            error("unimplemented type of pattern")
+            # fill with a pattern
+
+            # rotate so that pattern is horizontal/vertical
+            O2 = rotate(O, -angle)
+
+            # find the bounding region
+            b = quantise(bounds(O2), separation, offset)
+            
+            # generate points or lines inside the object
+            if pattern=="squarespec"
+                x = [b.left  : separation : b.right]
+                y = [b.bottom: separation : b.top]
+                P2 = Array(Point{Float64}, (length(x),length(y)))
+                I2 = Array(Bool, (length(x),length(y)))
+                for i=1:length(x) 
+                    for j=1:length(y)
+                        P2[i,j] = Point(x[i], y[j])
+                        I2[i,j] = isin(P2[i,j], O2)[1]
+                    end 
+                end
+            elseif pattern=="trispec"
+                x = [b.left-separation/2 : separation : b.right]
+                y = [b.bottom: separation/sqrt(2) : b.top]
+                P2 = Array(Point{Float64}, (length(x),length(y)))
+                I2 = Array(Bool, (length(x),length(y)))
+                for i=1:length(x)
+                    for j=1:length(y)
+                        if mod(j,2) == 0
+                           P2[i,j] = Point(x[i], y[j])
+                        else
+                           P2[i,j] = Point(x[i]+separation/2, y[j])
+                        end
+                        I2[i,j] = isin(P2[i,j], O2)[1]
+                    end 
+                end
+            elseif pattern=="lines"
+                y = [b.bottom: separation : b.top]
+                P2 = []
+                I2 = []
+                for i=1:length(y) 
+                    r = Ray(Point(b.left,y[i]), Point(1.0,0.0))
+                    s = intersection(r, O2)
+                    P2 = [P2, s]
+                    I2 = [I2, trues(length(s))]
+                end
+            elseif pattern=="grid"
+                y = [b.bottom: separation : b.top]
+                P2 = []
+                I2 = []
+                for i=1:length(y) 
+                    r = Ray(Point(b.left,y[i]), Point(1.0,0.0))
+                    s = intersection(r, O2)
+                    P2 = [P2, s]
+                    I2 = [I2, trues(length(s))]
+                end
+                x = [b.left: separation : b.right]
+                for i=1:length(x) 
+                    r = Ray(Point(x[i],b.bottom), Point(0.0,1.0))
+                    s = intersection(r, O2)
+                    P2 = [P2, s] 
+                    I2 = [I2, trues(length(s))]
+                end
+            elseif pattern=="checked"
+                error("not implemented yet")                
+            elseif pattern=="striped" 
+                error("not implemented yet")
+            else
+                error("unimplemented type of pattern")
+            end
+
+            # rotate back to original frame, and plot
+            # P = similar(P2, length(O2))
+            h = Array(Any,0)
+            for i=1:length(P2)
+                if I2[i]
+                    h1 = plot(rotate(P2[i], angle); varargs...)
+                    h = [h, h1]
+                end
+            end
+            
         end 
     else
         h = nothing

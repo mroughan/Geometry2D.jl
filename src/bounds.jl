@@ -58,3 +58,23 @@ function isin(p::Point, b::Bounds; tolerance=1.0e-12)
     return true, true
 end
 
+# create bounds outside a set of bounds, quantised onto a grid
+function quantise(b::Bounds, x::Number)
+    top    = ceil( b.top   /x) * x
+    bottom = floor(b.bottom/x) * x
+    left   = floor(b.left  /x) * x
+    right  = ceil( b.right /x) * x
+
+    return Bounds(top, bottom, left, right)
+end
+
+# create bounds outside a set of bounds, quantised onto a grid, which is offset
+function quantise(b::Bounds, x::Number, offset::Number)
+    top    = ceil( (b.top    - offset)/x) * x + offset
+    bottom = floor((b.bottom - offset)/x) * x + offset
+    left   = floor((b.left   - offset)/x) * x + offset
+    right  = ceil( (b.right  - offset)/x) * x + offset
+
+    return Bounds(top, bottom, left, right)
+end
+

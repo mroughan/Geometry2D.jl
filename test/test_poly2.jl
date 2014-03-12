@@ -35,10 +35,10 @@ plot(poly1; marker="", color="green")
 plot(poly2; marker="", color="blue")
 plot(poly3; marker="", color="red")
 plot(poly4; marker="", color="magenta")
-fill(poly1; color="green", alpha=0.2)
-fill(poly2; color="blue", alpha=0.2)
-fill(poly3; color="red", alpha=0.2)
-fill(poly4; color="magenta", alpha=0.2)
+fill(poly1; color="green", pattern="squarespec", angle=pi/3, separation=0.1, marker="o")
+fill(poly2; color="blue", pattern="squarespec", angle=-pi/3, separation=0.075, marker=".")
+fill(poly3; color="red", pattern="lines", alpha=0.2, angle=pi/6, separation=0.15, linestyle="--", marker="")
+fill(poly4; color="magenta", pattern="squarespec", angle=pi/3, separation=0.15, marker=".", offset=0.05)
 
 axis("equal")
 
@@ -222,6 +222,30 @@ plot(r5; label="segment 5", color="orange", bounds=Bounds(1, -1, -1, 1))
 for i=1:length(p5)
     plot(p5[i]; label="intersection points 5", color="red", marker="", markersize=12)
 end
+
+# legend()
+axis("equal")
+
+
+s = star1[1]
+figure(68)
+hold(false)
+plot(0,0)
+hold(true)
+fill(s; label="star1", alpha=0.2, color="blue")
+fill(s; color="magenta", pattern="squarespec", angle=pi/3, separation=0.075, marker="+", offset=0.05)
+fill(s; color="red", pattern="grid", angle=pi/3, separation=0.3, marker="", offset=0.05, linewidth=3)
+# fill(s; color="orange", pattern="lines", angle=pi/3, separation=0.15, marker="", linestyle="--", linewidth=3, offset=0.05)
+
+# legend()
+axis("equal")
+
+figure(69)
+hold(false)
+plot(0,0)
+hold(true)
+fill(s; label="star1", alpha=0.2, color="blue")
+fill(s; color="magenta", pattern="trispec", angle=0.0, separation=0.075, marker=".", offset=0.0)
 
 # legend()
 axis("equal")

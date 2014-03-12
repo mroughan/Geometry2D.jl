@@ -176,6 +176,9 @@ points_y{T<:Number}(p::Array{Point{T},1}) = [p[i].y for i=1:length(p)]
 points_x{T<:Number}(p::Array{Point{T}}) = reshape( [p[i].x for i=1:length(p)], size(p) )
 points_y{T<:Number}(p::Array{Point{T}}) = reshape( [p[i].y for i=1:length(p)], size(p) )
 
+# bounds of an array of points
+bounds{T<:Number}(p::Array{Point{T}}) = Bounds( maximum(points_y(p)), minimum(points_y(p)), minimum(points_x(p)), maximum(points_x(p)) )
+
 # extend functions on a Point, to an array of Points
 for f in (:abs, :sign, :quadrant, :angle, :distance2, :distance)
     @eval begin
