@@ -57,8 +57,6 @@ triangle.jl
      (NB: triangles aren't polygons(type) because don't store 4 points
           cause its a waste, and we will need lots of triangles at
           some points)
-  distance and intersection routines
-     distance from point to triangle isn't working yet
   generators for 
      equilitaral
      isosoles   
@@ -68,10 +66,9 @@ triangle.jl
   
 circle.jl (center, radius)
   arc (part of a circle) needs to be finished out
-  edgeintersection routines between arc and line/ray/segment
-  edgeintersection routines between two circles
-  intersection and distance between acr/circle and line/ray/segment
-  
+     -- edgeintersection routines between arc and line/ray/segment
+     
+
 transforms.jl
   shear
   ???
@@ -138,17 +135,8 @@ polygons.jl
    generate sample points on a polygon
 
    use a polygon as a clipping region for drawing some other object
-      - maybe of use in filling?
 
    monotone test http://en.wikipedia.org/wiki/Monotone_polygon
-
-   edgeintersection jittering needs a little work to deal with
-     segment/segment overlaps
-       - also need line/segment intersection routine
-
-   also need a proper "intersection" between lines and polygons to
-     allow for filling with lines
-       - needs to return a list of arrays
 
    tests
       isregular
@@ -161,21 +149,18 @@ bounds.jl
    add standard functions to bounds???
       maybe doesn't make sense if its an abstract, but 'isin' at least
           would be useful
-   test edgeintersection, and replace path for lines, using this,
-      instead of hand written code
+   edgeintersection should replace hand written code for plotting
+       - can do the same for rays, and other unbounded objects
 
 utilities.jl
    convex hulls
-   delauna ytriangulation / Voronoi diagram
+   delaunay triangulation / Voronoi diagram
    distance functions 
     - calculate distances between two disparate objects, along with closest points
 
 plot.jl
    conditionally include PyPlot?
        allow for alternatives to PyPlot?
-
-   add an plot routine that iterates over an array of objects, giving
-   (by default) each a different color
 
    really need an optional "n" argument for plot and displayPath
       so that the user can make a more or less exact approximation to
@@ -184,15 +169,6 @@ plot.jl
 	 - would be important for Splines, etc.
 
    draw arrows for unbounded bits?
-
-   fill routine
-      using matplotlib to start, but then
-        solid color
-	shading
-	stripes
-	cross-hatching
-	speckled
-	checkerboard
 
 other issues
 
@@ -215,19 +191,3 @@ other issues
 
        typealias Vector{T} Array{T,1}
          should be helpful???
-
-
-   -- prolly put "intersection" code into its own file
-          as there's quite a lot of cases
-	  it needs multiple definitions of objects, which can't be in
-             each file
-
-          -- should basic "line" intersections be there, or still in
-             line.jl
-	  -- should we continue, and put polygon/polygon intersection
-             code in there? or is that a purely polygon thing?
-
-          leaning towards all edge- and normal intersections being in
-          here
-
-
