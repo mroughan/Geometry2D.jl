@@ -94,13 +94,15 @@ function plot(O::G2dObject; anglesOn=false, vertexLabelsOn=false, bounds=default
 
     return h, ho
 end
-# vectorise separately from other code to allow for varargs???
-#   really would like this to be a more generic type, e.g., G2dObject, but they aren't parameterised, and it
-#   seems to need that to find it
-plot{T<:Number}(A::Array{Point{T}}; varargs...) = reshape( [plot(A[i]; varargs...) for i=1:length(A)], size(A) )
+
+
+
+
+#############################################333
+# filling functionality
 
 function fill(O::G2dObject; label="G2dObject", 
-              pattern="", angle=45, separation=1.0, offset=0.0, 
+              pattern="", angle=pi/6.0, separation=1.0, offset=0.0, 
               varargs...)
     if closed(O)
         if method_exists(displayPath, (typeof(O),))
@@ -205,19 +207,4 @@ function fill(O::G2dObject; label="G2dObject",
     end
     return h
 end
-
-
-# also need a nice "fill" routine
-#   basic approach similar to above
-#       used "closed" instead of "bounded" to decide how to plot
-#       define a "boundingPath" function for each type to create a closed polygon approximating it
-#       fill the polygon
-#   will need a "fill" command: maybe matplotlib to start, but then my own for patterns
-#   will need to know something about convexity/simplicity to fill?
-#   
-#   somethings: Point, Line, ...
-#     aren't fillable
-#
-#   what should be the default for a "PointArray"?
-#
 

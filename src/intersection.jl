@@ -248,7 +248,7 @@ function edgeintersection(c::Circle, l::LINETYPE; tolerance=1.0e-12)
     end
     return p2
 end
-edgeintersection(l::LINETYPE, c::Circle) = edgeintersection(c, l)
+edgeintersection(l::LINETYPE, c::Circle; tolerance=1.0e-12) = edgeintersection(c, l; tolerance=tolerance)
 
 
 function edgeintersection{T<:Number}( l::LINETYPE, poly::Polygon{T}; tolerance=1.0e-12)
@@ -360,8 +360,6 @@ end
 
 function intersection{T<:Number}( l::LINETYPE, poly::Polygon{T}; tolerance=1.0e-12)
     #OUTPUTS: 
-    #   intersect = 0 means no intersection
-    #             = 1 means intersections
     #   segments  = an array of line segments that overlap
     #  
     
@@ -383,3 +381,27 @@ function intersection{T<:Number}( l::LINETYPE, poly::Polygon{T}; tolerance=1.0e-
     return S
 end
 intersection{T<:Number}(poly::Polygon{T}, l::LINETYPE; tolerance=1.0e-12) = intersection( l, poly; tolerance=1.0e-12)
+
+function intersection( l::LINETYPE, c::Circle; tolerance=1.0e-12)
+    #OUTPUTS: 
+    #   segments  = an array of line segments that overlap
+    #  
+    
+    # look for intersections which each edge
+    p = edgeintersection( l, c; tolerance=tolerance)
+    n = length(p)
+    if n == 2 
+        return [Segment(p[1], p[2])]
+    else
+        return []
+    end
+end
+intersection(c::Circle, l::LINETYPE; tolerance=1.0e-12) = intersection( l, c; tolerance=1.0e-12)
+
+# intersections for others that can be obtained by converting to polygons (though there are more efficient ways maybe)
+intersection(l::LINETYPE, b::Bounds; tolerance=1.0e-12) = intersection(l,Polygon(b); tolerance=tolerance)
+intersection(b::Bounds, l::LINETYPE; tolerance=1.0e-12) = intersection(l,Polygon(b); tolerance=tolerance)
+intersection(l::LINETYPE, t::Triangle; tolerance=1.0e-12) = intersection(l,Polygon(t); tolerance=tolerance)
+intersection(t::Triangle, l::LINETYPE; tolerance=1.0e-12) = intersection(l,Polygon(t); tolerance=tolerance)
+
+

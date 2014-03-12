@@ -149,3 +149,24 @@ plot(c1)
 plot(c2)
 axis("equal")
 
+figure(17)
+hold(false)
+plot(0,0)
+hold(true)
+c = [Circle(Point(0.0,0.0), 1.0), Circle(Point(1.2,0.0), 1.0), Circle(Point(0.6,1.0), 1.0)]
+h = fill(c; alpha=0.3)
+axis("equal")
+
+figure(18)
+hold(false)
+plot(0,0)
+hold(true)
+c = [Circle(Point(0.0,0.0), 1.0), Circle(Point(1.2,0.0), 1.0), Circle(Point(0.6,1.0), 1.0)]
+plot(c[1]; color="red", marker="")
+fill(c[1]; pattern="lines", color="red", marker="", angle=0.0, separation=0.1, linewidth=3, offset=0.0)
+plot(c[2]; color="blue", marker="")
+fill(c[2]; pattern="grid", color="blue", marker="", angle=pi/6, separation=0.05, offset=0.0, alpha=0.5)
+plot(c[3]; color="green", marker="")
+fill(c[3]; pattern="trispec", color="green", marker=".", markersize=3, angle=pi/3, separation=0.1, offset=0.0)
+axis("equal")
+

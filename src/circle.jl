@@ -115,12 +115,14 @@ perimeter(c::Circle) = 2*pi*c.radius
 centroid(c::Circle) = c.center
 function isin(p::Point, c::Circle; tolerance=1.0e-12)
     d = distance(p, c.center)
-    if distance < radius - tolerance
+    if d < c.radius - tolerance
         return true, false
-    elseif distance <= radius + tolerance
+    elseif d <= c.radius + tolerance
         return true, true
+    else
+        return false, false
     end
-end 
+end
 bounded(c::Circle) = true
 bounds(c::Circle) = Bounds(c.center.y+c.radius, c.center.y-c.radius, c.center.x-c.radius, c.center.x+c.radius)
 

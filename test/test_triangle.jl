@@ -107,3 +107,29 @@ plot(p5; label="intersection points 5", color="red")
 
 # legend()
 
+
+
+figure(34)
+hold(false)
+plot(0,0)
+hold(true)
+t = [TriangleRand(), TriangleRand(), TriangleRand(), TriangleRand()]
+h = fill(t; alpha=0.3)
+axis("equal")
+
+
+figure(35)
+hold(false)
+plot(0,0)
+hold(true)
+plot(t[1]; color="red", marker="")
+fill(t[1]; pattern="lines", color="red", marker="", angle=0.0, separation=0.05, offset=0.0)
+plot(t[2]; color="blue", marker="")
+fill(t[2]; pattern="grid", color="blue", marker="", angle=pi/6, separation=0.02, offset=0.0, alpha=0.5)
+plot(t[3]; color="green", marker="")
+fill(t[3]; pattern="squarespec", color="green", marker="o", markersize=1, angle=pi/3, separation=0.02, offset=0.0, alpha=0.5)
+plot(t[4]; color="yellow", marker="")
+fill(t[4]; pattern="trispec", color="yellow", marker="o", markersize=2, angle=0.0, separation=0.03, offset=0.0)
+axis("equal")
+
+ 

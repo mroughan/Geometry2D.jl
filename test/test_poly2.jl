@@ -250,4 +250,8 @@ fill(s; color="magenta", pattern="trispec", angle=0.0, separation=0.075, marker=
 # legend()
 axis("equal")
 
+figure(691)
+star3 = PolygonStar(9,3; center=Point(0.0,0.0))
+fill(star3; alpha=0.3)
+axis("equal")
 

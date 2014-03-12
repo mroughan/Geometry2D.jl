@@ -29,7 +29,7 @@ function Bounds(p1::Point, p2::Point)
     # two points define extremes of rectangle
     return new(p2.y, p1.y, p1.x, p2.x)
 end
-function Bounds(P::Array{Point})
+function Bounds{T<:Number}(P::Array{Point{T}})
     x = points_x(P)
     y = points_y(P)
     return Bounds(maximum(y), minimum(y), minimum(x), maximum(x))
