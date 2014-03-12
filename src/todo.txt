@@ -217,3 +217,17 @@ other issues
          should be helpful???
 
 
+   -- prolly put "intersection" code into its own file
+          as there's quite a lot of cases
+	  it needs multiple definitions of objects, which can't be in
+             each file
+
+          -- should basic "line" intersections be there, or still in
+             line.jl
+	  -- should we continue, and put polygon/polygon intersection
+             code in there? or is that a purely polygon thing?
+
+          leaning towards all edge- and normal intersections being in
+          here
+
+

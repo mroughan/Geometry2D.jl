@@ -389,68 +389,6 @@ end
 #     return count
 # end
 
-function edgeintersection{T<:Number}( l::LINETYPE, poly::Polygon{T}; tolerance=1.0e-12)
-    #OUTPUTS: 
-    #   intersect = 0 means segments don't intersect (i.e, they are parallel)
-    #             = 1 means intersections at a finite series of points
-    #             = 2 means they overlap (infinite intersections) 
-    #   points    = an array of intersection points sorted in order along the ray
-    #  
-    
-    # look for intersections which each edge
-    n = length(poly)
-    p = Array(Point{T},0) 
-    for i=1:n
-        S = edge(poly, i) 
-        I,pi = intersection( l, S ; tolerance=tolerance ) 
-        if I==1
-            p = [p, pi]
-        elseif I==2
-            # include end points, if appropriate
-            if !(typeof(l)<:Line) && isin(l.startpoint, S)[1]
-                p = [p, l.startpoint]
-            end
-            if typeof(l)<:Segment && isin(l.endpoint, S)[1]
-                p = [p, l.endpoint]
-            end
-        end
-    end
-
-    # convert them to parametric form, and sort (in order along the ray)
-    if length(p) == 0
-        return []
-    end
-    q = (p - l.startpoint) 
-    thetas = atan2( points_y(q), points_x(q) )
-    k = indmax(abs(thetas))
-    theta = thetas[k] # really just trying to avoid 0's
-    s = distance(q)
-    # println("q = $q, thetas=$thetas, s=$s")
- 
-    order = sortperm(s)
-    s = s[order]
-
-    # remove repeated points
-    i=1
-    while i<length(s) 
-        if  abs(s[i]-s[i+1]) < tolerance
-            splice!(s, i+1) 
-        else
-            i+=1
-        end
-    end
- 
-    # output the results as an array of points
-    return l.startpoint + PointArray( s.*cos(theta), s.*sin(theta) )
-end
-edgeintersection{T<:Number}(poly::Polygon{T}, l::LINETYPE; tolerance=1.0e-12) = edgeintersection(l, poly; tolerance=tolerance)
-
-# edge intersections for others that can be obtained by converting to polygons (though there are more efficient ways maybe)
-edgeintersection(l::LINETYPE, b::Bounds; tolerance=1.0e-12) = edgeintersection(l,Polygon(b); tolerance=tolerance)
-edgeintersection(b::Bounds, l::LINETYPE; tolerance=1.0e-12) = edgeintersection(l,Polygon(b); tolerance=tolerance)
-edgeintersection(l::LINETYPE, t::Triangle; tolerance=1.0e-12) = edgeintersection(l,Polygon(t); tolerance=tolerance)
-edgeintersection(t::Triangle, l::LINETYPE; tolerance=1.0e-12) = edgeintersection(l,Polygon(t); tolerance=tolerance)
-
 
 
 ###########################################################

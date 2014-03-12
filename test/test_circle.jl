@@ -41,6 +41,7 @@ l = Line(Point(0,0), 0.0 )
 p = []
 for i=1:10
     plot(l; bounds=Bounds(2.2, -0.5, -0.5, 2.2))
+    p = edgeintersection(c1, l; tolerance=1.0e-12)
     for i=1:length(p)
         plot(p[i])
     end
@@ -71,9 +72,53 @@ for i=1:20
 end
 axis("equal")
 
+# do circle-circle intersections
+figure(15) 
+hold(false)
+plot(0,0)
+hold(true)
+plot(c1; color="blue", marker="")
+c4 = Circle(Point(-1,1), 1.0)
+plot(c4; color="red", marker="")
+P14 = edgeintersection(c1, c4; tolerance=1.0e-12)
+plot(P14; color="red")
+
+c5 = Circle(Point(1.0,1.55), 0.45)
+plot(c5; color="orange", marker="")
+P15 = edgeintersection(c1, c5; tolerance=1.0e-12)
+plot(P15; color="orange")
+P51 = edgeintersection(c5, c1; tolerance=1.0e-12)
+plot(P51; color="black", marker="+")
+
+c6 = Circle(Point(1.0,0.55), 0.45)
+plot(c6; color="green", marker="")
+P16 = edgeintersection(c1, c6; tolerance=1.0e-12)
+plot(P16; color="green")
+
+c7 = Circle(Point(1.0,2.55), 0.45)
+plot(c7; color="magenta", marker="")
+P17 = edgeintersection(c1, c7; tolerance=1.0e-12)
+plot(P17; color="magenta")
+
+c8 = Circle(Point(-0.8,1.55), 0.65)
+plot(c8; color="brown", marker="")
+P48 = edgeintersection(c4, c8; tolerance=1.0e-12)
+plot(P48; color="brown")
+P84 = edgeintersection(c8, c4; tolerance=1.0e-12)
+plot(P84; color="red", marker="+")
+
+c9 = Circle(Point(-1.2,2.55), 1.2)
+plot(c9; color="black", marker="")
+P49 = edgeintersection(c4, c9; tolerance=1.0e-12)
+plot(P49; color="black")
+P94 = edgeintersection(c9, c4; tolerance=1.0e-12)
+plot(P94; color="red", marker="+")
+
+axis("equal")
+
 
 #### Need some tests for Arc as well
-figure(15)
+figure(16)
 hold(false)
 plot(0,0)
 hold(true)

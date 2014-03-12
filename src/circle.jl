@@ -127,66 +127,6 @@ bounds(c::Circle) = Bounds(c.center.y+c.radius, c.center.y-c.radius, c.center.x-
 # does the shape define an "inside" and "outside" of the plane
 closed(::Circle) = true
 
-# intersections with lines
-function edgeintersection(c::Circle, l::LINETYPE; tolerance=1.0e-12)
-    line = convert(Line, l)
-    if abs(line.theta - pi/2.0) < tolerance || abs(line.theta + pi/2.0) < tolerance
-        # nearly vertical line
-        z = line.startpoint.x - c.center.x
-        if abs(z) - c.radius > tolerance
-            p = []
-        elseif abs(z) - c.radius > -tolerance
-            p = [ Point(line.startpoint.x, c.center.y) ]
-        else
-            y = sqrt(c.radius*c.radius - z*z)
-            p = [Point(line.startpoint.x, c.center.y - y), 
-                 Point(line.startpoint.x, c.center.y + y) ]
-        end
-    else
-        m = tan(line.theta)
-        m2 = m*m
-        r2 = c.radius * c.radius
-
-        # translate the problem back so that line.startpoint is the origin
-        tmp = line.startpoint
-        c -= tmp
-        line -= tmp
-
-        # check discriminant of quadratic problem to see how many solutions
-        A = (1 + m2)
-        Bd = -(c.center.x + m*c.center.y)
-        C = c.center.x*c.center.x + c.center.y*c.center.y - r2
-        D = (Bd*Bd - A*C)
-        if D > tolerance
-            # two solutions
-            x1 = ( -Bd - sqrt(D)) / A
-            x2 = ( -Bd + sqrt(D)) / A
-            y1 = m*x1
-            y2 = m*x2
-            p = tmp + [Point(x1,y1), Point(x2,y2)]
-        elseif D > -tolerance
-            # one solution
-            x = -Bd / A
-            y = m*x
-            p = tmp + [Point(x,y)]
-        else
-            # no solutions
-            p = []
-        end
-
-    end
-    # check intersection points are on the original object
-    p2 = []
-    for i=1:length(p)
-        I,E = isin(p[i], l)
-        if I
-            p2 = [p2, p[i]]
-        end
-    end
-    return p2
-end
-edgeintersection(l::LINETYPE, c::Circle) = edgeintersection(c, l)
-
 # approximate as a regular polygon
 function approxpoly(c::Circle, n::Integer)
     dtheta = 2.0*pi/n
@@ -287,7 +227,7 @@ distance2(p::Point, c::Circle) = distance(p, c)[1]^2
 
 function distance(c1::Circle, c2::Circle)
     d = distance(c1.center,c2.center)
-    if (d - c1.radius - c2.radius > 0)
+    if d - c1.radius - c2.radius >= 0
         direction = c2.center - c1.center
         p1 = c1.center + (c1.radius/d)*direction
         p2 = c2.center - (c2.radius/d)*direction
