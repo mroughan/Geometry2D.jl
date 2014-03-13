@@ -3,8 +3,8 @@ export Point, Vect, PointArray
 
 export origin, originF
 
-export points_x, points_y, isfinite, isinf, isnan, eltype, isless, isequal, convert, cmp, angle, abs, distance, distance2, ones, zeros, quadrant, sign, print, bounded, displayPath, displayPoints, closed, inner, length, acute, PointArrayRand
-
+export points_x, points_y, isfinite, isinf, isnan, eltype, isless, isequal, convert, cmp, angle, abs, distance, distance2, ones, zeros, quadrant, sign, print, bounded, displayPath, displayPoints, closed, inner, length, acute, PointArrayRand, polar, polar2
+ 
 # define a "point" temporarily with "type" instead of "immutable" to avoid a bug
 type Point{T<:Number} <: G2dSimpleObject
     x::T
@@ -132,6 +132,25 @@ distance(p1::Point) = sqrt( distance2(p1) )
 distance2(p1::Point, p2::Point) = distance2(p2 - p1)
 distance(p1::Point, p2::Point) = sqrt( distance2(p1,p2) )
 
+# polar coordinates
+polar2(p::Point) = [ angle(p), distance(p) ]
+function polar(p::Point; tolerance=1.0e-12)
+    a,d = polar2(p)
+    if abs(d) < tolerance
+        return 0.0, 0.0
+    elseif abs(a-pi/2) < tolerance 
+        return pi/2, d
+    elseif abs(a+pi/2) < tolerance 
+        return pi/2, -d
+    elseif a>pi/2
+        return a-pi, -d
+    elseif a<-pi/2
+        return a+pi, -d 
+    else
+        return a,d
+    end
+end
+
 # functions to get x and y coordinates
 points_x(p::Point) = p.x
 points_y(p::Point) = p.y
@@ -180,7 +199,7 @@ points_y{T<:Number}(p::Array{Point{T}}) = reshape( [p[i].y for i=1:length(p)], s
 bounds{T<:Number}(p::Array{Point{T}}) = Bounds( maximum(points_y(p)), minimum(points_y(p)), minimum(points_x(p)), maximum(points_x(p)) )
 
 # extend functions on a Point, to an array of Points
-for f in (:abs, :sign, :quadrant, :angle, :distance2, :distance)
+for f in (:abs, :sign, :quadrant, :angle, :distance2, :distance, )
     @eval begin
         function ($f){T<:Number}(p::Array{Point{T},1})
             return reshape( [($f)(p[i]) for i=1:length(p)], size(p) )

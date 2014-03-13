@@ -307,3 +307,19 @@ for i=1:n
         plot(p; marker="o", color="blue")
     end
 end
+
+s = Segment( Point(0.1,0.1), Point(0.8,0.2) )
+l = convert(Line, s)
+l2 = Line( Point(0.2,-0.2), pi/2)
+i,p = intersection(l, l2)
+
+figure(28)
+hold(false)
+plot(0,0)
+hold(true)
+plot(l; color="red", marker="")
+plot(l2; color="red", marker="")
+plot(s; color="green", marker=".")
+plot(p)
+axis("equal")
+

@@ -87,7 +87,7 @@ promote_rule{T<:Number,S<:Number}(::Type{Line{T}}, ::Type{Line{S}})  = Line{prom
 promote_rule{T<:Number,S<:Number}(::Type{Ray{T}}, ::Type{Ray{S}})  = Ray{promote_type(T,S)}
 promote_rule{T<:Number,S<:Number}(::Type{Segment{T}}, ::Type{Segment{S}})  = Segment{promote_type(T,S)}
 
-convert(::Type{Segment{Float64}}, s::Segment) = Segment(convert(Point{Float64},s.startpoint), convert(Point{Float64},s.endpoint))
+
 # need some more here
 
 copy(l::Line) = Line(l.startpoint, l.theta) 
@@ -115,10 +115,12 @@ copy(s::Segment) = Segment(s.startpoint, s.endpoint)
 
 # conversion of one type to another: note though that these loose information
 convert{T<:Number}(::Type{Ray}, s::Segment{T}) = Ray(s.startpoint, s.endpoint-s.startpoint)
-convert{T<:Number}(::Type{Line}, s::Segment{T}) = Line(s.startpoint, atan( (s.endpoint.y-s.startpoint.y)/(s.endpoint.x-s.startpoint.x) ))
+convert{T<:Number}(::Type{Line}, s::Segment{T}) = Line(s.startpoint, atan( (s.endpoint.y-s.startpoint.y)/(s.endpoint.x-s.startpoint.x) ) ) 
 convert{T<:Number}(::Type{Line}, r::Ray{T}) = Line(r.startpoint, atan(r.direction.y / r.direction.x) )
 # can't convert back the other way without providing extra information
 
+convert(::Type{Segment{Float64}}, s::Segment) = Segment(convert(Point{Float64},s.startpoint), convert(Point{Float64},s.endpoint))
+ 
 # useful functions
 slope(l::Line) = ( tan(l.theta) )
 slope(r::Ray) = ( r.direction.y / r.direction.x )

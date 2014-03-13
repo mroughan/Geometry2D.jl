@@ -43,15 +43,13 @@ point.jl
 line.jl
   Haven't really implemented all of "Ray" yet 
   Conversions from Line -> Ray -> Segment (with extra information)???
-  Intersections between mixed Line, Ray and Segment
-  Arrays of lines, rays and segments???
   Many of the constructors for a "Line" push them towards being Float64
      which will then have an impact on later algorithms
      -- could have specialised algorithms to deal with Rationals (say)
      -- similar issues with circles etc
   intersections for Rays and Segments probably aren't done the most
      efficient way, and this is worth a little more time
- 
+
 triangle.jl
   intersections and unions -- by converting into a polygon
      (NB: triangles aren't polygons(type) because don't store 4 points
@@ -191,3 +189,7 @@ other issues
 
        typealias Vector{T} Array{T,1}
          should be helpful???
+
+  -- look into vectorisation templates for function with 2 outputs
+        e.g., polar, polar2, isin, 
+

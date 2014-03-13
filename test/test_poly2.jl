@@ -172,9 +172,20 @@ println("p5 = $p5")
 plot(r5; label="segment 5", color="orange", bounds=Bounds(1, -1, -1, 1))
 plot(p5; label="intersection points 5", color="blue", marker="x", markersize=12)
 
+r6 = Line(Point(0.0,0.0), pi/3)
+p6 = edgeintersection( r6, star1[1]; tolerance=1.0e-12)
+println("p6 = $p6")
+plot(r6; label="ray 6", color="brown", bounds=Bounds(1, -1, -1, 1))
+plot(p6; label="intersection points 6", color="red", marker="o")
+
+r7 = Line(Point(0.05,0.0), pi/2)
+p7 = edgeintersection( r7, star1[1]; tolerance=1.0e-12)
+println("p7 = $p7")
+plot(r7; label="ray 7", color="brown", bounds=Bounds(1, -1, -1, 1))
+plot(p7; label="intersection points 7", color="red", marker="o")
+
 # legend()
 axis("equal")
-
 
 figure(67)
 hold(false)
@@ -205,7 +216,7 @@ println("p3 = $p3")
 plot(r3; label="ray 3", color="green", bounds=Bounds(1, -1, -1, 1))
 for i=1:length(p3)
     plot(p3[i]; label="intersection points 3", color="red", marker="")
- end
+end
 
 r4 = Segment(Point(-0.7,-0.6), Point(0.7,-0.5))  
 p4 = intersection( r4, star1[1]; tolerance=1.0e-4)
@@ -213,8 +224,8 @@ println("p4 = $p4")
 plot(r4; label="segment 4", color="black", bounds=Bounds(1, -1, -1, 1))
 for i=1:length(p4)
     plot(p4[i]; label="intersection points 4", color="red", marker="")
- end
-
+end
+ 
 r5 = edge(star1[1], 1)
 p5 = intersection( r5, star1[1])
 println("p5 = $p5")
@@ -222,6 +233,19 @@ plot(r5; label="segment 5", color="orange", bounds=Bounds(1, -1, -1, 1))
 for i=1:length(p5)
     plot(p5[i]; label="intersection points 5", color="red", marker="", markersize=12)
 end
+
+r6 = Line(Point(0.0,0.0), pi/3)
+p6 = intersection( r6, star1[1]; tolerance=1.0e-12)
+println("p6 = $p6")
+plot(r6; label="ray 6", color="brown", bounds=Bounds(1, -1, -1, 1))
+plot(p6; label="intersection points 6", color="red", marker="")
+
+r7 = Line(Point(0.05,0.0), pi/2)
+p7 = intersection( r7, star1[1]; tolerance=1.0e-12)
+println("p7 = $p7")
+plot(r7; label="ray 7", color="brown", bounds=Bounds(1, -1, -1, 1))
+plot(p7; label="intersection points 7", color="red", marker="")
+
 
 # legend()
 axis("equal")

@@ -1,6 +1,6 @@
 
 export intersection, edgeintersection
-
+export RayOrSegment
 
 #######################################################################
 #  intersections of objects LINETYPES with LINETYPES
@@ -69,10 +69,10 @@ function intersection( r1::Ray, r2::Ray; tolerance=1.0e-12)
         # neither end-point is on the other ray, so they intersect cleanly, or don't at all
         l1 = convert(Line, r1)
         l2 = convert(Line, r2)
-        I,p = intersection(l1,l2)
+        I,p = intersection(l1,l2; tolerance=tolerance)
         if I==1
             # find out if p is on the rays
-            if isin(p,r1)[1] && isin(p,r2)[1]
+            if isin(p,r1; tolerance=tolerance)[1] && isin(p,r2; tolerance=tolerance)[1]
                 return 1,p
             else
                 return 0,nothing
@@ -122,10 +122,10 @@ function intersection( s1::Segment, s2::Segment; tolerance=1.0e-12 )
     # now check if lines overlap
     l1 = convert(Line, s1)
     l2 = convert(Line, s2)
-    I,p = intersection(l1,l2)
+    I,p = intersection(l1,l2; tolerance=tolerance)
     if I==1
         # find out if p is on the segments
-        if isin(p,s1)[1] && isin(p,s2)[1]
+        if isin(p,s1; tolerance=tolerance)[1] && isin(p,s2; tolerance=tolerance)[1]
             return 1,p
         else
             return 0,nothing
@@ -154,16 +154,16 @@ function intersection( s::Segment, r::Ray; tolerance=1.0e-12 )
     r1 = convert(Ray, s)
     r2 = Ray( s.endpoint, s.startpoint-s.endpoint)
 
-    I1,p1 = intersection(r1, r)
-    I2,p2 = intersection(r2, r)
+    I1,p1 = intersection(r1, r; tolerance=tolerance)
+    I2,p2 = intersection(r2, r; tolerance=tolerance)
     
     # what if they overlap
     if I1==2 && I2==2
-        if isin(s.startpoint, r)[1] && isin(s.endpoint, r)[1]
+        if isin(s.startpoint, r; tolerance=tolerance)[1] && isin(s.endpoint, r)[1]
             return 2, s
-        elseif isin(s.startpoint, r)[1]
+        elseif isin(s.startpoint, r; tolerance=tolerance)[1]
             return 2, Segment(r.startpoint, s.startpoint)
-        elseif isin(s.endpoint, r)[1]
+        elseif isin(s.endpoint, r; tolerance=tolerance)[1]
             return 2, Segment(r.startpoint, s.endpoint)
         else
             error("this case shouldn't happen")
@@ -183,8 +183,36 @@ function intersection( s::Segment, r::Ray; tolerance=1.0e-12 )
 end
 intersection( r::Ray, s::Segment; tolerance=1.0e-12 ) =  intersection( s, r; tolerance=tolerance )
 
+# intersection of lines with segments or Rays
+RayOrSegment = Union(Ray, Segment)
+function intersection( s::RayOrSegment, l::Line; tolerance=1.0e-12 )
+    #OUTPUTS: 
+    #   intersect = 0 means no intersection
+    #             = 1 means 1 intersection
+    #             = 2 means they overlap (infinite intersections) 
+    #             
+    #   point     = the intersection point if it exists
+    #                  if they don't intersect then return "nothing"
+    #                  if they overlap, return overlapping part
+    #               note that for floating point calculations we could be a little more sophisticated
+    #               about these tests, but at the moment just test equality with respect to tolerance
 
-# prolly should add Ray-Line, and Line-Segment intersections as well
+    sl = convert(Line, s)
+    I,p = intersection(sl, l; tolerance=tolerance)
+    # what if they overlap
+    if I==2
+        return 2, s
+    elseif I==1
+        if isin(p, s; tolerance=tolerance)[1]
+            return 1, p
+        else
+            return 0, nothing
+        end
+    elseif I==0
+        return 0, nothing
+    end
+end
+intersection( l::Line, s::RayOrSegment; tolerance=1.0e-12 ) =  intersection( s, l; tolerance=tolerance )
 
 
 #######################################################################
@@ -260,47 +288,56 @@ function edgeintersection{T<:Number}( l::LINETYPE, poly::Polygon{T}; tolerance=1
     n = length(poly)
     p = Array(Point{T},0) 
     for i=1:n
-        S = edge(poly, i) 
-        I,pi = intersection( l, S ; tolerance=tolerance ) 
+        s = edge(poly, i) 
+        I,pi = intersection( l, s ; tolerance=tolerance ) 
         if I==1
             p = [p, pi]
         elseif I==2
             # include end points, if appropriate
-            if !(typeof(l)<:Line) && isin(l.startpoint, S)[1]
+            if !(typeof(l)<:Line) && isin(l.startpoint, s)[1]
                 p = [p, l.startpoint]
             end
-            if typeof(l)<:Segment && isin(l.endpoint, S)[1]
+            if typeof(l)<:Segment && isin(l.endpoint, s)[1]
                 p = [p, l.endpoint]
             end
+            if isin(s.startpoint, l)[1]
+                p = [p, s.startpoint]
+            end
+            if isin(s.endpoint, l)[1]
+                p = [p, s.endpoint]
+            end
         end
-    end
-
+    end 
+    
     # convert them to parametric form, and sort (in order along the ray)
     if length(p) == 0
         return []
     end
-    q = (p - l.startpoint) 
-    thetas = atan2( points_y(q), points_x(q) )
-    k = indmax(abs(thetas))
-    theta = thetas[k] # really just trying to avoid 0's
-    s = distance(q)
+    q = (p - l.startpoint)
+    thetas = Array(Float64, length(q))
+    s = Array(Float64, length(q))
+    for i=1:length(q)
+        thetas[i], s[i] = polar(q[i])
+    end
     # println("q = $q, thetas=$thetas, s=$s")
- 
+  
     order = sortperm(s)
     s = s[order]
-
+    thetas = thetas[order] 
+    
     # remove repeated points
     i=1
     while i<length(s) 
         if  abs(s[i]-s[i+1]) < tolerance
             splice!(s, i+1) 
-        else
+            splice!(thetas, i+1) 
+       else
             i+=1
         end
     end
  
     # output the results as an array of points
-    return l.startpoint + PointArray( s.*cos(theta), s.*sin(theta) )
+    return l.startpoint + PointArray( s.*cos(thetas), s.*sin(thetas) )
 end
 edgeintersection{T<:Number}(poly::Polygon{T}, l::LINETYPE; tolerance=1.0e-12) = edgeintersection(l, poly; tolerance=tolerance)
 
