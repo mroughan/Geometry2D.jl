@@ -24,7 +24,6 @@ General
          already some dicussion of B-Splines
 	 	 https://groups.google.com/forum/#!topic/julia-dev/lYBoGV_iK1g
 		 https://groups.google.com/forum/#!topic/econforge/SW_PbHh_OCE
-     - Ellipses (and arcs)
      - Other mathsy shapes/curves?
 
   - Most of my types have been made "immutable" by presumably don't
@@ -32,6 +31,11 @@ General
      - maybe not for circles? maybe not for others
 
   - copy methods?
+
+  - at the moment most types are parameterised by T<:Number, but maybe
+    it only makes sense to have T<:Real
+    - certainly haven't implemented much complex number stuff, and not
+      sure what it would be for anyway
 
 point.jl
   - currently have Point and Vect as aliases for each other
@@ -65,7 +69,8 @@ triangle.jl
 circle.jl (center, radius)
   arc (part of a circle) needs to be finished out
      -- edgeintersection routines between arc and line/ray/segment
-     
+  ellipses?    
+
 
 transforms.jl
   shear
@@ -134,19 +139,19 @@ polygons.jl
 
    use a polygon as a clipping region for drawing some other object
 
-   monotone test http://en.wikipedia.org/wiki/Monotone_polygon
-
    tests
       isregular
       nearvertex
       congruence, similarity
             http://en.wikipedia.org/wiki/Congruence_%28geometry%29
+      monotone test http://en.wikipedia.org/wiki/Monotone_polygon
 
 bounds.jl
    could make Bounds a special case of a rectangle???
    add standard functions to bounds???
       maybe doesn't make sense if its an abstract, but 'isin' at least
           would be useful
+   transformations are an issue, e.g. rotation
    edgeintersection should replace hand written code for plotting
        - can do the same for rays, and other unbounded objects
 

@@ -4,7 +4,7 @@
 export Polygon, ComplexPolygon
 export PolygonType, ConvexPoly, ConcavePoly, SimplePoly, AlmostSimplePoly, ComplexPoly
 export PolygonRand, PolygonRegular, Pentagon, Hexagon, Octagon, PolygonStar, PolygonSimpleStar, Pentagram, Octogram
-export isin, bounded, bounds, area, perimeter, displayPath, closed, isregular, isconvex, issimple, closepoly, length,  nearvertex, copy, simplify, centroid, distance, edge
+export isin, bounded, bounds, area, perimeter, displayPath, closed, isregular, isconvex, issimple, closepoly, length,  nearvertex, copy, simplify, centroid, distance, edge, average
 abstract ComplexPolygon <: G2dCompoundObject
 # we need a second type for this (as yet unimplemented) as it can have multiple curves
 
@@ -445,6 +445,25 @@ function centroid(poly::Polygon)
         #   centroid(X) = weightedcentroid(  centroids(x_i) )
         # http://en.wikipedia.org/wiki/Centroid
     end 
+end
+
+# averaging as in the sense of
+#   "FROM RANDOM POLYGON TO ELLIPSE: AN EIGENANALYSIS"
+#    ADAM N. ELMACHTOUB AND CHARLES F. VAN LOAN
+#    www.cs.cornell.edu/cv/ResearchPDF/PolygonSmoothingPaper.pdf
+function average{T<:Number}(poly::Polygon{T})
+    n = length(poly)
+    c = mean(poly.points[1:n])
+    p = similar(poly.points, n)
+    for i=1:n
+        p[i] = (poly.points[i]+poly.points[i+1]) / (2*one(T)) - c
+    end
+    xnorm = sqrt( sum( points_x( p ).^2 ) )
+    ynorm = sqrt( sum( points_y( p ).^2 ) )
+    for i=1:n
+        p[i] = Point( p[i].x/xnorm, p[i].y/ynorm )
+    end
+    return Polygon(p+c)
 end
 
 # internal angles of the polygon

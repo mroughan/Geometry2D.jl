@@ -123,7 +123,7 @@ function isin(p::Point, c::Circle; tolerance=1.0e-12)
         return false, false
     end
 end
-bounded(c::Circle) = true
+bounded(::Circle) = true
 bounds(c::Circle) = Bounds(c.center.y+c.radius, c.center.y-c.radius, c.center.x-c.radius, c.center.x+c.radius)
 
 # does the shape define an "inside" and "outside" of the plane
@@ -222,7 +222,7 @@ function distance(p::Point, c::Circle)
         p = c.center + (c.radius/d)*direction
         return d - c.radius, p
     else
-        return zero(d),nothing
+        return zero(d), p
     end
 end
 distance2(p::Point, c::Circle) = distance(p, c)[1]^2

@@ -19,6 +19,7 @@ l1 = Line(Point(0.25,0), pi/2)
 r1 = Ray(Point(0.4,0.1), Vect(0.5, 0.1))
 s1 = Segment(Point(0.2,0.8), Point(0.8,0.2))
 b = Bounds(1.5, -0.1, -0.6, 1.8)
+e1 = Ellipse(Point(0.75,0.5), 0.3, 0.5, pi/6) 
 
 #################################
 # translation test
@@ -38,6 +39,7 @@ plot(a1; color="magenta")
 plot(l1; color="blue", bounds=b)
 plot(r1; color="red", bounds=b)
 plot(s1; color="green")
+plot(e1; color="black")
 
 pt = Vect(1,0.5)
 plot(poly1+pt; linestyle="--", marker="", color="green")
@@ -50,6 +52,7 @@ plot(a1+pt; linestyle="--", marker="", color="magenta")
 plot(l1+pt; linestyle="--", color="blue", bounds=b)
 plot(r1+pt; linestyle="--", color="red", bounds=b)
 plot(s1+pt; linestyle="--", color="green")
+plot(e1+pt; linestyle="--", color="black")
 
 axis("equal")
 
@@ -106,6 +109,7 @@ plot(a1; color="magenta")
 plot(l1; color="blue", bounds=b)
 plot(r1; color="red", bounds=b)
 plot(s1; color="green")
+plot(e1; color="black")
 
 angle = pi/30
 plot(rotate(poly1, angle); linestyle="--", marker="", color="green")
@@ -118,6 +122,7 @@ plot(rotate(a1, angle); linestyle="--", marker="", color="magenta")
 plot(rotate(l1, angle); linestyle="--", color="blue", bounds=b)
 plot(rotate(r1, angle); linestyle="--", color="red", bounds=b)
 plot(rotate(s1, angle); linestyle="--", color="green")
+plot(rotate(e1, angle); linestyle="--", color="black")
 
 axis("equal")
 
@@ -138,6 +143,7 @@ plot(a1; color="magenta")
 plot(l1; color="blue", bounds=b)
 plot(r1; color="red", bounds=b)
 plot(s1; color="green")
+plot(e1; color="black")
 
 angle = pi/10
 plot(rotate(poly1, angle, p3); linestyle="--", marker="", color="green")
@@ -150,6 +156,7 @@ plot(rotate(a1, angle, p2); linestyle="--", marker="", color="magenta")
 plot(rotate(l1, angle, p2); linestyle="--", color="blue", bounds=b)
 plot(rotate(r1, angle, p2); linestyle="--", color="red", bounds=b)
 plot(rotate(s1, angle, p2); linestyle="--", color="green")
+plot(rotate(e1, angle, p2); linestyle="--", color="black")
 
 axis("equal")
 
@@ -174,6 +181,7 @@ plot(a1; color="magenta")
 plot(l1; color="blue", bounds=b2)
 plot(r1; color="red", bounds=b2)
 plot(s1; color="green")
+plot(e1; color="black")
 
 plot(-poly1; linestyle="--", marker="", color="green")
 plot(-p1; marker="o", color="green")
@@ -185,6 +193,7 @@ plot(-a1; linestyle="--", marker="", color="magenta")
 plot(-l1; linestyle="--", color="blue", bounds=b2)
 plot(-r1; linestyle="--", color="red", bounds=b2)
 plot(-s1; linestyle="--", color="green")
+plot(-e1; linestyle="--", color="black")
 
 axis("equal")
 
@@ -207,6 +216,7 @@ plot(a1; color="magenta")
 plot(l1; color="blue", bounds=b)
 plot(r1; color="red", bounds=b)
 plot(s1; color="green")
+plot(e1; color="black")
 
 line = Line(Point(1.1,0), -pi/4)
 plot(line; color="black", bounds=b2)
@@ -220,6 +230,7 @@ plot(reflect(a1, line); linestyle="--", marker="", color="magenta")
 plot(reflect(l1, line); color="blue", bounds=b)
 plot(reflect(r1, line); linestyle="--", color="red", bounds=b)
 plot(reflect(s1, line); linestyle="--", color="green")
+plot(reflect(e1, line); linestyle="--", color="black")
 
 axis("equal")
 

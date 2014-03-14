@@ -219,7 +219,7 @@ function distance(p::Point, s::Segment)
         d = distance(p, s.startpoint)
         return d, s.startpoint
     else
-        error("something went wrong here")
+        error("something went wrong here: angles are $a1, and $a2, input point is $p, segment is $s")
     end
 end
 distance2(p::Point, s::Segment) = distance(p, s::Segment)[1]^2 # this isn't more efficient, but to be consistent with point distances

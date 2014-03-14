@@ -1,6 +1,6 @@
 export Bounds
 
-export isin, convert
+export isin, convert, displayPath, quantise, isequal, bounded, closed
 
 export default_bounds
 
@@ -78,3 +78,13 @@ function quantise(b::Bounds, x::Number, offset::Number)
     return Bounds(top, bottom, left, right)
 end
 
+# utility functions
+isequal(b1::Bounds, b2::Bounds) = b1.top==b2.top && b1.bottomw==b2.bottom && b1.left==b2.left && b1.right==b2.right
+bounded(::Bounds) = true
+closed(::Bounds) = true
+
+# function for plotting
+function displayPath(b::Bounds)
+    p = Polygon(b)
+    return p.points
+end
