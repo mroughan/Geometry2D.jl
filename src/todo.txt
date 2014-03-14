@@ -37,6 +37,13 @@ General
     - certainly haven't implemented much complex number stuff, and not
       sure what it would be for anyway
 
+  "distance" from point p to an object methods
+     -- should be consistent when point isin the object
+          at moment sometimes return (0,nothing) and sometimes (0,p)
+     -- maybe should return a negative distance to the edge of the object? 
+          might be useful somehow, but would then need to fix things
+          that assume that distances>=0 
+
 point.jl
   - currently have Point and Vect as aliases for each other
        strictly a point and a vector are different, and different operators work on each
@@ -69,8 +76,16 @@ triangle.jl
 circle.jl (center, radius)
   arc (part of a circle) needs to be finished out
      -- edgeintersection routines between arc and line/ray/segment
-  ellipses?    
+     -- maybe put "arc" in a separate file
+  circle/circle intersection
+     -- do as approximate polygons, using convex intersections
 
+ellipse.jl
+  distance functions don't work yet
+  lots of other bits to do
+     -- intersections and edgeintersections with various
+     -- all the other bits of circles
+     -- perimeter -- which requires elliptical integrals for obvious reasons
 
 transforms.jl
   shear
