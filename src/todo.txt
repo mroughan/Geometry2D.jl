@@ -44,6 +44,10 @@ General
           might be useful somehow, but would then need to fix things
           that assume that distances>=0 
 
+  need better and more uniform "random" routines
+     -- maybe should be a standard function
+           random(object, distribution)???
+
 point.jl
   - currently have Point and Vect as aliases for each other
        strictly a point and a vector are different, and different operators work on each
@@ -90,6 +94,7 @@ ellipse.jl
 transforms.jl
   shear
   ???
+  scalex and scaley for ellipses???
 
 polygons.jl
    simple OK
