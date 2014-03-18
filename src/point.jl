@@ -185,10 +185,6 @@ zeros{T<:Number}(x::Array{Point{T}}) = PointArray(zeros(T,size(x)), zeros(T,size
 ones{T<:Number}(x::Array{Point{T}}) = PointArray(ones(T,size(x)), ones(T,size(x)))
 # could have "nans" and "infs" as well?
 
-# create a set of random points
-PointArrayRand(n::Integer, m::Integer) = PointArray(rand(n,m), rand(n,m))
-PointArrayRand(n::Integer) = PointArray(rand(n), rand(n))
-
 # return x or y coordinates
 points_x{T<:Number}(p::Array{Point{T},1}) = [p[i].x for i=1:length(p)]
 points_y{T<:Number}(p::Array{Point{T},1}) = [p[i].y for i=1:length(p)]

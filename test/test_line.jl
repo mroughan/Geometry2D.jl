@@ -125,9 +125,9 @@ hold(true)
 b = Bounds(2, 0, -1, 2)
 l_test = Line( Point(0.60,0.56), pi/3.2)
 plot(l_test; label="line1", color="blue", bounds=b)
-l_rand = Line(Point(rand()+1, rand()+1), pi*rand()-pi/2)
+Line(Point(rand()+1, rand()+1), pi*rand()-pi/2)
 for i=1:30
-    p_test = Point(rand(), rand())
+    p_test = rand(Point)
     d,ps = distance(p_test, l_test)
     plot(Segment(p_test,ps); label="nearest", color="red")
 end
@@ -218,7 +218,7 @@ plot(p1; color="blue", marker="o")
 b = Bounds(2,-1,-1,2)
 plot(r1; label="ray1", color="blue", bounds=b)
 
-r_rand = Ray( Point(rand(),rand()), Point(rand(), rand()) )
+r_rand = rand(Ray)
 for i=1:10
     r_rand = Ray( Point(rand(),rand()), Point(rand()-0.5, rand()-0.5) )
     plot(r_rand; linestyle="-", marker="s", color="orange", bounds=b)
@@ -248,9 +248,9 @@ plot(s2; marker="o", color="green")
 plot(s3; marker="o", color="blue")
 plot(s4; marker="o", color="yellow")
 
-s5 = SegmentRand()
+s5 = rand(Segment)
 for i=1:10
-    s5 = SegmentRand()
+    s5 = rand(Segment)
     plot(s5; marker="", color="orange")
     I,pI = intersection(s1, s5)
     if I>0; plot(pI; marker="o", color="red"); end
@@ -264,7 +264,7 @@ b = Bounds(2, 0, -1, 2)
 l_test = Segment( Point(0.33,0.7), Point(0.68, 0.22))
 plot(l_test; label="line1", color="blue", bounds=b)
 for i=1:40
-    p_test = Point(rand(), rand())
+    p_test = rand(Point)
     d,ps = distance(p_test, l_test)
     plot(Segment(p_test,ps); label="nearest", color="red")
 end
@@ -296,8 +296,8 @@ S = Segment( Point(0.1,0.4), Point(0.8,0.2) )
 plot(S; color="green", marker="")
 axis("equal")
 n = 4000
-for i=1:n
-    p = Point(rand(), rand())
+for i=1:n 
+    p = rand(Point)
     in,edge = isin(p, S; tolerance=1.0e-4)
     if in && edge
         plot(p; marker="o", color="red")

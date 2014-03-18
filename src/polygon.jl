@@ -3,7 +3,7 @@
 #
 export Polygon, ComplexPolygon
 export PolygonType, ConvexPoly, ConcavePoly, SimplePoly, AlmostSimplePoly, ComplexPoly
-export PolygonRand, PolygonRegular, Pentagon, Hexagon, Octagon, PolygonStar, PolygonSimpleStar, Pentagram, Octogram
+export PolygonRegular, Pentagon, Hexagon, Octagon, PolygonStar, PolygonSimpleStar, Pentagram, Octogram
 export isin, bounded, bounds, area, perimeter, displayPath, closed, isregular, isconvex, issimple, closepoly, length,  nearvertex, copy, simplify, centroid, distance, edge, average
 abstract ComplexPolygon <: G2dCompoundObject
 # we need a second type for this (as yet unimplemented) as it can have multiple curves
@@ -445,7 +445,7 @@ function centroid(poly::Polygon)
         #   centroid(X) = weightedcentroid(  centroids(x_i) )
         # http://en.wikipedia.org/wiki/Centroid
     end 
-end
+end 
 
 # averaging as in the sense of
 #   "FROM RANDOM POLYGON TO ELLIPSE: AN EIGENANALYSIS"
