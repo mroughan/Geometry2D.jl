@@ -12,10 +12,8 @@ srand(2)
 
 m = 400
 n = 30
-points = PointArrayRand(n)
-points = points
 poly = Array(Polygon{Float64}, m+1)
-poly[1] = Polygon(points) 
+poly[1] = rand(Polygon, n)
 
 figure(80)
 hold(false)

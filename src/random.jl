@@ -13,7 +13,7 @@ rand{T<:FloatingPoint}(::Type{Line{T}}) = Line{T}(rand(Point{T}), randangle(T))
 rand{T<:FloatingPoint}(::Type{Ray{T}}) = Ray{T}(rand(Point{T}), rand(Point{T}))
 rand{T<:FloatingPoint}(::Type{Segment{T}}) = Segment{T}(rand(Point{T}), rand(Point{T}))
 rand{T<:FloatingPoint}(::Type{Triangle{T}}) = Triangle{T}( rand(Point{T}, (3,)) )
-rand{T<:FloatingPoint}(::Type{Polygon{T}}) = error("rand isn't implemented for polygons yet")
+rand{T<:FloatingPoint}(::Type{Polygon{T}}, n::Integer) = Polygon( rand(Point{T}, (n,)) )
 
 # random angle uniformly distributed over [-pi,pi]
 randangle{T<:FloatingPoint}(::Type{T}) = pi*(rand(T)-1)
@@ -28,5 +28,8 @@ for object in (Point, Circle, Ellipse, Arc, Line, Ray, Segment, Triangle)
         # end
    end
 end
+# do these one separately because of the extra argument, 
+rand(::Type{Polygon}, n::Integer) = rand(Polygon{Float64}, n)
 
 # vector versions are created automatically
+

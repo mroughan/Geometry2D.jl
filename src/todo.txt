@@ -44,6 +44,15 @@ General
           might be useful somehow, but would then need to fix things
           that assume that distances>=0 
 
+  winding number calculation still has the problem that for a
+  downward, or upward pointing (sharpish) "spike" almost exactly level with
+  the point of interest (which is to the left, and outside the
+  polygon) and just above an upwards spike, or just below a downwards spike
+       -- for a given tolerance, we might note an intersection with
+          one (instead of both) edges that meet at the point, and
+          hence get the winding number wrong
+                
+
 random.jl
      -- maybe should be a standard function
            random(object, distribution)???

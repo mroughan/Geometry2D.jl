@@ -5,15 +5,11 @@ using Geometry2D
 using PyPlot
 
 srand(1)
+n = 1000
 
-points1 = PointArrayRand(6)
-poly1 = Polygon(points1) 
-
-points2 = PointArrayRand(4)
-poly2 = Polygon(points2)
-
-points3 = PointArrayRand(3)
-poly3 = Polygon(points3)
+poly1 = Polygon(rand(Point{Float64}, (6,)))
+poly2 = Polygon(rand(Point, (4,)))
+poly3 = rand(Polygon, 3)
 
 figure(40)
 hold(false)
@@ -47,16 +43,13 @@ plot(poly3; marker="", color="blue", anglesOn=true, vertexLabelsOn=true)
 axis("equal")
 plot(translate(poly3, Vect(0.2, 0.2)); marker="", color="red")
 
-
-
 figure(44)
 hold(false)
 plot(0,0)
 hold(true)
 plot(poly1; marker="", color="blue")
-n = 1000
 for i=1:n
-    p = Point(rand(), rand())
+    p = rand(Point)
     in,edge = isin(p, poly1; tolerance=1.0e-4)
     if in && edge
         plot(p; marker="o", color="red")
@@ -72,16 +65,15 @@ hold(false)
 plot(0,0)
 hold(true)
 plot(poly2; marker="", color="blue")
-n = 1000
+p = rand(Point, (n,1))
 for i=1:n
-    p = Point(rand(), rand())
-    in,edge = isin(p, poly2; tolerance=1.0e-4)
+    in,edge = isin(p[i], poly2; tolerance=1.0e-4)
     if in && edge
-        plot(p; marker="o", color="red")
+        plot(p[i]; marker="o", color="red")
     elseif in
-        plot(p; marker="o", color="green")        
+        plot(p[i]; marker="o", color="green")        
     else
-        plot(p; marker="o", color="blue")
+        plot(p[i]; marker="o", color="blue")
     end
 end
 
@@ -90,17 +82,14 @@ hold(false)
 plot(0,0)
 hold(true)
 plot(poly3; marker="", color="blue")
-n = 1000
-for i=1:n
-    p = Point(rand(), rand())
-    in,edge = isin(p, poly3; tolerance=1.0e-4)
+p = rand(Point, (n,1))
+for i=1:n 
+    in,edge = isin(p[i], poly3; tolerance=1.0e-4)
     if in && edge
-        plot(p; marker="o", color="red")
+        plot(p[i]; marker="o", color="red")
     elseif in
-        plot(p; marker="o", color="green")        
+        plot(p[i]; marker="o", color="green")        
     else
-        plot(p; marker="o", color="blue")
+        plot(p[i]; marker="o", color="blue")
     end
 end
-
-

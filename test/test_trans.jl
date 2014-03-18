@@ -6,9 +6,7 @@ using PyPlot
 
 srand(15)
 
-points1 = PointArrayRand(5)
-poly1 = Polygon(points1) 
-
+poly1 = rand(Polygon, 5)
 p1 = Point(0.1, 0.5)
 p2 = Point(0.6, 0.2)
 p3 = Point(0.5, 0.8)

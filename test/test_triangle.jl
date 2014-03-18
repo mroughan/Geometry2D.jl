@@ -25,7 +25,7 @@ println( isin(Point(0.5,0.1-eps()),t1) )
 println( isin(Point(0.5,0.3),t1) )
 n = 300
 for i=1:n
-    p = Point(rand(), rand())
+    p = rand(Point)
     in,edge = isin(p, t1; tolerance=1.0e-2)
     if in && edge
         plot(p; marker="o", color="red")
@@ -40,12 +40,12 @@ figure(31)
 hold(false)
 plot(0,0)
 hold(true)
-t2 = TriangleRand()
+t2 = rand(Triangle)
 plot(t2; linewidth=3)
 c1 = Circle(t2)
 plot(c1; color="magenta", marker="")
 for i=1:n
-    p = Point(rand(), rand())
+    p = rand(Point)
     if incircumcircle(p, t2)
         plot(p; marker="o", color="red")
     else
@@ -66,7 +66,7 @@ plot(p)
 plot(Segment(p,q))
 max_diff = 0.0
 for i=1:n
-    p = Point(rand(), rand())
+    p = rand(Point)
     d,q = distance(p, t2)
     # plot(p)
     if (p != q)
@@ -113,7 +113,7 @@ figure(34)
 hold(false)
 plot(0,0)
 hold(true)
-t = [TriangleRand(), TriangleRand(), TriangleRand(), TriangleRand()]
+t = rand(Triangle, (4,))
 h = fill(t; alpha=0.3)
 axis("equal")
 

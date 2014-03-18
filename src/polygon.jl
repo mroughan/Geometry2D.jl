@@ -64,18 +64,22 @@ function Polygon{T<:Number}(points::Vector{Point{T}})
     if (length(points) < 3)
         error("polygons must have at least three vertices")
     end
-    
+     
     # make sure the points are closed, i.e., first point equals the last
     points = closepoly(points)
     
     if isconvex(points) != 0
-        return Polygon(ConvexPoly, points)
+        return Polygon{T}(ConvexPoly, points)
     elseif issimple(points)
-        return Polygon(SimplePoly, points)
+        return Polygon{T}(SimplePoly, points)
     else 
-        return Polygon(AlmostSimplePoly, points)
+        return Polygon{T}(AlmostSimplePoly, points)
     end
 end
+# NB: Array{Point{T<:Number},1} isn't a supertype of Array{Point{Float64},1} 
+#   so we need a constructor here for when an abstract Array{Point} is passed in
+#   and here we are just converting them into floating point, though perhaps there is a better approach
+Polygon(points::Vector{Point}) = Polygon( convert(Array{Point{Float64}, 1}, points) )
 Polygon{T<:Number,S<:Number}(x::Vector{T}, y::Vector{S}) = Polygon(PointArray(x,y))
 copy{T<:Number}(p::Polygon{T}) = Polygon( copy(p.points) )
 Polygon(b::Bounds) = Polygon([b.left, b.right, b.right, b.left], [b.bottom, b.bottom, b.top, b.top])
@@ -356,24 +360,52 @@ end
 # see for instance: http://geomalgorithms.com/a03-_inclusion.html
 function windingNumber(p::Point, poly::Polygon; tolerance=1.0e-12)
     n = length(poly)
-    R = Ray(p, Vect(1,0)) # horizontal ray from the point
-    count = 0
 
-    # count the number of upward transitions into Q1
+    # quick check
+    I,E = isin(p, bounds(poly))
+    if !I
+        return 0
+    end
+
+    R = Ray(p, Vect(1,0)) # horizontal ray from the point
+
+    # check the last edge for intersection to correctly set its direction
+    S = edge(poly, n) 
+    I,pi = intersection( S, R ; tolerance=tolerance )
+    if I==1 && pi.x > p.x
+        if     poly.points[n+1].y > poly.points[n].y + tolerance
+            direction = 1
+        elseif poly.points[n+1].y < poly.points[n].y - tolerance
+            direction = -1
+        else
+            direction = 0
+        end 
+    else
+        direction = 0
+    end
+    
+    # count the number of upward - downwards transitions into Q1
+    count = 0
     for i=1:n
         S = edge(poly, i) 
         I,pi = intersection( S, R ; tolerance=tolerance )
         if I==1 && pi.x > p.x
-            if poly.points[i+1].y > poly.points[i].y 
-                count += 1
-            elseif poly.points[i+1].y < poly.points[i].y
-                count -= 1
+            if     poly.points[i+1].y > poly.points[i].y + tolerance && direction != 1
+                direction = 1
+            elseif poly.points[i+1].y < poly.points[i].y - tolerance && direction != -1
+                direction = -1
+            else
+                direction = 0
             end 
+            count += direction
+        else
+            direction = 0
         end
     end
 
     return count
 end
+
 
 # function scanLineNumber(poly::Polygon; tolerance=1.0e-12)
 #     # assumes we translated the polygon, so the point of interest is the origin

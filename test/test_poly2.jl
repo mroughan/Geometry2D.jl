@@ -3,13 +3,9 @@ using PyPlot
 
 srand(1)
 
-points1 = PointArrayRand(6)
-poly1 = Polygon(points1) 
-
+poly1 = rand(Polygon, 6)
 poly2 = PolygonRegular(6)
-
 poly3 = PolygonRegular(12; center=Point(1,1), scale=2.0)
-
 poly4 = Hexagon(; center=Point(2,1.5), scale=0.8)
 
 figure(60)
