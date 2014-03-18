@@ -33,7 +33,6 @@ immutable Ellipse{T<:Number} <: G2dCompoundObject
     end
 end
 Ellipse{T<:Number}(center::Point{T}, a::T, b::T, theta::T) = Ellipse{T}(center, a, b, theta)
-EllipseRand() = Ellipse(PointRand(), rand(), rand(), pi*(rand()-1))
 
 # promotion/conversion functions?
 convert{T<:Number}(::Type{Ellipse}, e::Circle{T}) = Ellipse(e.center, e.radius, e.radius, zero(T))
@@ -88,7 +87,10 @@ function displayPath(e::Ellipse; n=100)
     P = approxpoly(e, n)
 end
 function displayPoints(e::Ellipse)
-    return e.center
+    # output the center, and two foci
+    f = focus(e)
+    F = Vect( f*cos(e.theta), f*sin(e.theta) )
+    return [e.center, e.center + F, e.center - F]
 end
 
 
@@ -96,16 +98,10 @@ end
 # distance functions
 
 function distance(p::Point, e::Ellipse)
-    # convert to problem of checking if the point is in the unit circle
-    c = Circle(Point(0.0,0.0), 1.0)
-    q = scaley(scalex(rotate((p-e.center), -e.theta), 1/e.a), 1/e.b)
-    d,pd = distance(q,c)
-    if d <= 0.0
-        return 0.0, p
-    else
-        # transform back and return
-        return d*sqrt(e.a*e.a + e.b*e.b), rotate(scaley(scalex(pd, e.a), e.b), e.theta) + e.center
-    end
+    # rotate so that major axis and x axis align
+
+    # 
+    
 end
 distance2(p::Point, e::Ellipse) = distance(p, c)[1]^2
 

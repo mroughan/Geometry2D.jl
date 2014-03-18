@@ -44,9 +44,14 @@ General
           might be useful somehow, but would then need to fix things
           that assume that distances>=0 
 
-  need better and more uniform "random" routines
+random.jl
      -- maybe should be a standard function
            random(object, distribution)???
+     -- need methods for parameters that only make sense for some
+        objects?
+                n - polygons
+		partial parameters for some?
+		different ranges?
 
 point.jl
   - currently have Point and Vect as aliases for each other
@@ -90,6 +95,8 @@ ellipse.jl
      -- intersections and edgeintersections with various
      -- all the other bits of circles
      -- perimeter -- which requires elliptical integrals for obvious reasons
+     -- incircle and outcircle
+  constructor that takes the two focal points, and generates the ellipse
 
 transforms.jl
   shear

@@ -4,7 +4,6 @@ export Point, Vect, PointArray
 export origin, originF
 
 export points_x, points_y, isfinite, isinf, isnan, eltype, isless, isequal, convert, cmp, angle, abs, distance, distance2, ones, zeros, quadrant, sign, print, bounded, displayPath, displayPoints, closed, inner, length, acute, polar, polar2
-export PointRand, PointArrayRand 
 
 # define a "point" temporarily with "type" instead of "immutable" to avoid a bug
 type Point{T<:Number} <: G2dSimpleObject
@@ -13,7 +12,6 @@ type Point{T<:Number} <: G2dSimpleObject
 end
 # convenience constructor
 Point{T<:Number, S<:Number}(x::T, y::S) = Point(promote(x,y)...)
-PointRand() = Point(rand(), rand())
 
 # various ways of constructing the origin
 const originF =  Point(0.0,0.0) # for using in defaults for keyword arguments
@@ -75,7 +73,7 @@ cmp(p1::Point, p2::Point) = p1<p2 ? -1 : p2<p1 ? 1 : 0
 isfinite(p::Point) = isfinite(p.x) & isfinite(p.y)
 isinf(p::Point) = !isfinite(p)
 isnan(p::Point) = isnan(p.x) | isnan(p.y)
-eltype{T<:Number}(p::Point{T}) = T
+eltype{T<:Number}(::Point{T}) = T
 convert{T<:Number, S<:Number}(::Type{Point{T}}, p::Point{S}) = Point(convert(T,p.x), convert(T,p.y))
 bounded(p::Point) = true
 length(p::Point) = 1 # just for convenience

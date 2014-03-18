@@ -2,7 +2,7 @@
 # An assortment of routines related to triangles
 #
 export Triangle
-export TriangleRand, isin, bounded, bounds, area, perimeter, angles, displayPath, closed, distance, centroid, incircumcircle
+export isin, bounded, bounds, area, perimeter, angles, displayPath, closed, distance, centroid, incircumcircle
 
 immutable Triangle{T<:Number} <:  G2dCompoundObject
     points::Vector{Point{T}}
@@ -33,8 +33,6 @@ function Triangle{T<:Number}(x::Vector{T}, y::Vector{T})
 end
 Triangle{T<:Number, S<:Number}(x::Vector{T}, y::Vector{S}) = Triangle(promote(x,y)...)
 Triangle{T<:Number}(p1::Point{T}, p2::Point{T}, p3::Point{T}) = Triangle( [p1,p2,p3] )
-Triangle() = PointArray(3)
-TriangleRand() = Triangle(rand(3), rand(3))
  
 # promotion/conversion functions
 

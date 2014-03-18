@@ -3,7 +3,7 @@ module Geometry2D
 using PyPlot 
 import PyPlot: plot, fill, polar
 
-import Base: convert, length, promote, promote_rule, sort, sort!, sortperm, unique, isfinite, isnan, copy, Array, eltype, abs, isequal, isless, ones, zeros, angle, sign, print, rationalize
+import Base: convert, length, promote, promote_rule, sort, sort!, sortperm, unique, isfinite, isnan, copy, Array, eltype, abs, isequal, isless, ones, zeros, angle, sign, print, rationalize, rand
 import Base: !, !=, $, %, .%, &, *, +, -, .!=, .+, .-, .*, ./, .<, .<=, .==, .>,
     .>=, .\, .^, /, //, <, <:, <<, <=, ==, >, >=, >>, .>>, .<<, >>>,
     <|, |>, \, ^, |, ~, !==, >:, colon, hcat, vcat, hvcat, getindex, setindex!,
@@ -39,6 +39,7 @@ include("ellipse.jl")
 include("polygon.jl")
 include("transform.jl")
 include("intersection.jl")
+include("random.jl")
 include("plot.jl")
 # include("convexhull.jl")
 
@@ -46,3 +47,4 @@ include("vectorize.jl")
 
 
 end # module
+

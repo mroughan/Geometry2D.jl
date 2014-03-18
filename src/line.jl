@@ -1,7 +1,7 @@
 
 export Line, Ray, Segment, LINETYPE
  
-export slope, invslope, yint, xint, isequal, isparallel,  isin, SegmentRand, displayPath, bounded, bounds, closed, area, perimeter, convert, flip, distance
+export slope, invslope, yint, xint, isequal, isparallel,  isin, displayPath, bounded, bounds, closed, area, perimeter, convert, flip, distance
 
 # general representation of a line that avoids problems with infinite slope
 #   at the cost of storing three values instead of just slope and intercept
@@ -72,7 +72,6 @@ immutable Segment{T<:Number} <: G2dCompoundObject
 end
 Segment{T<:Number}(startpoint::Point{T}, endpoint::Point{T}) = Segment{T}(promote(startpoint, endpoint)...)
 Segment{T<:Number, S<:Number}(startpoint::Point{T}, endpoint::Point{S}) = Segment(promote(startpoint, endpoint)...)
-SegmentRand() = Segment(Point(rand(),rand()), Point(rand(),rand()))
 
 # could have done this with an abstract type above the three, but wanted to try out Unions
 LINETYPE = Union(Line, Ray, Segment)
