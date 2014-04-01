@@ -12,7 +12,7 @@ import Base: !, !=, $, %, .%, &, *, +, -, .!=, .+, .-, .*, ./, .<, .<=, .==, .>,
 export G2dObject, G2dTransform, G2dSimpleObject, G2dCompoundObject
 export tolerance
  
-abstract G2dObject
+abstract G2dObject 
 
 # abstract G2dTransform <: G2dObject
 abstract G2dSimpleObject <: G2dObject # objects for which area,perimeter,isin, make no sense

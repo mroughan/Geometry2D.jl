@@ -78,7 +78,7 @@ line.jl
      -- similar issues with circles etc
   intersections for Rays and Segments probably aren't done the most
      efficient way, and this is worth a little more time
-
+ 
 triangle.jl
   intersections and unions -- by converting into a polygon
      (NB: triangles aren't polygons(type) because don't store 4 points
@@ -216,7 +216,6 @@ other issues
 
    -- make sure to vectorize a lot of the basic functions, e.g., area,
       perimeter, bounded, closed, isin
-
 
    -- basic issue of 
          Array{Point} <: Array{GeomObject} is false

@@ -1,7 +1,7 @@
 
 export Line, Ray, Segment, LINETYPE
  
-export slope, invslope, yint, xint, isequal, isparallel,  isin, displayPath, bounded, bounds, closed, area, perimeter, convert, flip, distance
+export slope, invslope, yint, xint, isequal, isparallel,  isin, displayPath, bounded, bounds, closed, area, perimeter, convert, flip, distance, length
 
 # general representation of a line that avoids problems with infinite slope
 #   at the cost of storing three values instead of just slope and intercept
@@ -160,6 +160,7 @@ area(::Segment) = 0
 perimeter(::Line) = Inf
 perimeter(::Ray) = Inf
 perimeter(s::Segment) = distance( s.startpoint, s.endpoint )
+length(s::Segment) = distance( s.startpoint, s.endpoint )
 
 # comparisons
 isequal(l1::Line, l2::Line) = ( l1.startpoint==l2.startpoint && l1.theta==l2.theta )

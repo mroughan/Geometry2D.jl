@@ -1,7 +1,9 @@
 export Ellipse
 
-export isequal, center, radius, area, perimeter, isin, bounded, approxpoly, displayPath, closed, distance, inellipse, centroid, edgeintersection, intersection
+using Elliptic
 
+export isequal, center, radius, area, perimeter, isin, bounded, approxpoly, displayPath, closed, distance, inellipse, centroid, edgeintersection, intersection
+ 
 #################################################################
 # Ellipses
 
@@ -41,11 +43,11 @@ convert{T<:Number}(::Type{Ellipse}, e::Circle{T}) = Ellipse(e.center, e.radius, 
 isequal(e1::Ellipse, e2::Ellipse) = e1.center==e2.center && e1.a==e2.a && e1.b==e2.b && e1.theta==e2.theta
 center(e::Ellipse) = e.center
 area(e::Ellipse) = pi*e.a*e.b
-# perimeter(e::Ellipse) = 4*e.a*Elliptic(eccentricity(e))
+perimeter(e::Ellipse) = 4*e.a*Elliptic.E(eccentricity(e)) # use an elliptic integral
 centroid(e::Ellipse) = e.center
 
 # specific ellipse functions
-semimajor(e::Ellipse) = e.a
+semimajor(e::Ellipse) = e.a 
 semiminor(e::Ellipse) = e.b
 focus(e::Ellipse) = sqrt(e.a*e.a - e.b*e.b) # distance from center to a focal point, along major axis
 eccentricity(e::Ellipse) = focus(e)/e.a
@@ -96,12 +98,58 @@ end
 
 #############################
 # distance functions
-
 function distance(p::Point, e::Ellipse)
-    # rotate so that major axis and x axis align
+    if isin(p, e)[1]
+        return 0.0, p
+    end
 
-    # 
-    
+    # translate so that the origin is the center
+    pt = translate(p, -e.center)
+    et = translate(e, -e.center)
+
+    # rotate so that major axis and x axis align
+    pr = rotate(pt, -e.theta)
+    er = rotate(et, -e.theta)  
+
+    # look for the angle of nearest point using iteration
+    #   "Distance to an Ellipse", Robert Estalella, 2012
+    # which looks for point on ellipse closest to (|xp|,|yp|), i.e., assuming the point is in the first quadrant
+    i = 1
+    converged = false
+    old_phi = 1.0
+    phi = pi/4
+    c = (e.a*e.a - e.b*e.b)
+    xp = abs(pr.x)
+    yp = abs(pr.y)
+    while !converged && i < 100
+        old_phi = phi
+        phi = atan( ( c*sin(phi) + yp*e.b ) / (xp*e.a) )
+        if abs(old_phi-phi) < 1.0e-12
+            converged = true
+        end
+        i += 1
+    end
+    # convert back to the correct quadrant
+    xe = e.a * cos(phi)
+    ye = e.b * sin(phi)
+    if quadrant(pr)==1
+        
+    elseif quadrant(pr)==2
+        xe = -xe
+    elseif quadrant(pr)==3
+        xe = -xe
+        ye = -ye
+    elseif quadrant(pr)==4
+        ye = -ye
+    end 
+
+    # find the point closest on the ellipse
+    qr = Point(xe,ye)
+
+    # rotate and translate back to original frame
+    d = distance(qr, pr)
+    q = translate(rotate(qr, e.theta), e.center)
+    return d, q
 end
 distance2(p::Point, e::Ellipse) = distance(p, c)[1]^2
 
