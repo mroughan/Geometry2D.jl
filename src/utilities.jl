@@ -18,6 +18,7 @@ function ccw{T <: Real}(point1::Point{T}, point2::Point{T}, point3::Point{T})
     v2 = point3 .- point2
     return v1.x*v2.y - v1.y*v2.x
 end
+ccw{T<:Real,S<:Real,V<:Real}(point1::Point{T}, point2::Point{S}, point3::Point{V}) = ccw(promote(point1,point2,point3)...)
 
 # Input is a vector of 3 Points
 function ccw{T <: Real}(points::Vector{Point{T}})

@@ -29,6 +29,7 @@ promote_rule{T<:Integer}(::Type{Point{Rational{T}}}, ::Type{Point{T}}) = Point{R
 promote_rule{T<:Integer,S<:Integer}(::Type{Point{Rational{T}}},::Type{Point{S}}) = Point{Rational{promote_type(T,S)}}
 promote_rule{T<:Integer,S<:Integer}(::Type{Point{Rational{T}}},::Type{Point{Rational{S}}}) = Point{Rational{promote_type(T,S)}}
 promote_rule{T<:Integer,S<:FloatingPoint}(::Type{Point{Rational{T}}}, ::Type{Point{S}})  = Point{promote_type(T,S)}
+promote_rule{T<:FloatingPoint,S<:FloatingPoint}(::Type{Point{T}}, ::Type{Point{S}})  = Point{promote_type(T,S)}
 # should probably put something in here for complex numbers too
 
 # don't seem to need these?

@@ -5,6 +5,7 @@
 #
 export rand
 
+# generate a random object
 rand{T<:FloatingPoint}(::Type{Point{T}}) = Point{T}(rand(T), rand(T))
 rand{T<:FloatingPoint}(::Type{Circle{T}}) = Circle{T}(rand(Point{T}), rand(T)) 
 rand{T<:FloatingPoint}(::Type{Ellipse{T}}) = Ellipse{T}(rand(Point{T}), rand(T), rand(T), randangle(T))
@@ -28,8 +29,40 @@ for object in (Point, Circle, Ellipse, Arc, Line, Ray, Segment, Triangle)
         # end
    end
 end
-# do these one separately because of the extra argument, 
+# do these ones separately because of the extra argument, 
 rand(::Type{Polygon}, n::Integer) = rand(Polygon{Float64}, n)
 
 # vector versions are created automatically
+
+
+################################################################
+# also functions for generating random points inside some other object
+#    technically, we are generating a 2D Poisson Process on the shape in question
+#    using repeated censoring of points (there are faster approaches for particular shapes
+#    but this will work for any, with the codicil that they have non-zero area).
+function rand{T<:FloatingPoint}(::Type{Point{T}}, b::Bounds)
+    xscale = b.right - b.left
+    yscale = b.top   - b.bottom
+    p = Point(convert(T, b.left + xscale*rand(T)), convert(T, b.bottom + yscale*rand(T))) 
+    return p
+end
+rand(::Type{Point}, b::Bounds) = rand(Point{Float64}, b)
+
+for object in (Circle, Ellipse, Triangle, Polygon)
+   @eval begin
+       function rand{T<:FloatingPoint}(::Type{Point{T}}, o::$(object))
+           B = bounds(o)
+           i = 0
+           p = rand(Point{T}, B)
+           while !isin(p, o)[1]
+               p = rand(Point{T}, B)
+               i+=1
+           end
+           # println("i=$i")
+           return p
+       end
+       rand(::Type{Point}, o::$(object)) = rand(Point{Float64}, o) 
+   end
+end
+
 
