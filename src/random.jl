@@ -20,6 +20,7 @@ rand{T<:FloatingPoint}(::Type{Polygon{T}}, n::Integer) = Polygon( rand(Point{T},
 randangle{T<:FloatingPoint}(::Type{T}) = pi*(rand(T)-1)
 # does this even make sense for integer?
 
+################################################################
 # default versions are all Float64
 for object in (Point, Circle, Ellipse, Arc, Line, Ray, Segment, Triangle)
    @eval begin
@@ -32,7 +33,18 @@ end
 # do these ones separately because of the extra argument, 
 rand(::Type{Polygon}, n::Integer) = rand(Polygon{Float64}, n)
 
-# vector versions are created automatically
+################################################################
+# vector versions are created automatically by base/random, but return a 
+# slightly weird data type in the default case:
+#        Array{Point{T<:Number},1} or  Array{Point{T<:Number},2}
+# but this isn't quite like an Array{Point{Float64},1} when you use it as a input type, so I have
+# my own code here to make the default type work, so we can create random arrays of objects
+for object in (Point, Circle, Ellipse, Arc, Line, Ray, Segment, Triangle)
+   @eval begin
+       rand{T<:FloatingPoint}(::Type{$(object){T}}, dims::Dims) = rand!(Array($(object){T}, dims))
+       rand(::Type{$(object)}, dims::Dims) = rand!(Array($(object){Float64}, dims))
+   end
+end
 
 
 ################################################################

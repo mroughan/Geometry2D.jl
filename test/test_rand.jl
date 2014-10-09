@@ -6,7 +6,7 @@ using PyPlot
 
 srand(1)
 
-p1 = rand(Point)
+p1 = rand(Point) 
 p2 = rand(Point{Float32})
 P = rand(Point, (4,))
 c1 = rand(Circle{Float32})

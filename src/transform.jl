@@ -8,6 +8,9 @@ export +, -, *, /
 ### maybe should also have objects here???
 
 ### probably should have better type checking and promotion here as well
+###   e.g. scale is only using Float64 scaling factors at the moment
+
+### transformations of an array of objects (have only done scale at the moment)
 
 ### translation functions
 translate(p::Point, d::Vect) = p + d
@@ -20,7 +23,7 @@ translate(r::Ray, d::Vect) = Ray(r.startpoint+d, r.direction)
 translate(s::Segment, d::Vect) = Segment(s.startpoint+d, s.endpoint+d)
 translate(t::Triangle, d::Vect) = Triangle(translate(t.points,d))
 translate(p::Polygon, d::Vect) = Polygon(translate(p.points,d))
-# + operator performs translation, .+ operator performs on arrays
+# + operator performs translation
 for object in (Circle, Ellipse, Arc, Line, Ray, Segment, Triangle, Polygon)
     @eval begin
         +(p::Point,o::$(object)) = translate(o, p)
@@ -28,7 +31,6 @@ for object in (Circle, Ellipse, Arc, Line, Ray, Segment, Triangle, Polygon)
         -(o::$(object),p::Point) = translate(o, -p)
     end
 end
-# and for arrays, including arrays of points?
 
 
 ### scale the object (except Line, Ray and Segment) around the origin
@@ -49,7 +51,16 @@ for object in (Circle, Ellipse, Arc, Triangle, Polygon)
 end
 # scale around a point q
 scale(o::G2dObject, factor::Float64, q::Point) = scale(o-q, factor) + q
- 
+# scale an array of objects
+for object in (Point, Circle, Ellipse, Arc, Triangle, Polygon)
+    @eval begin
+        scale{T<:Number}(O::Array{$(object){T}},factor::Float64) = reshape( [scale(O[i], factor) for i=1:length(O)], size(O) )
+        *{T<:Number}(factor::Float64,O::Array{$(object){T}}) = scale(O, factor)
+        *{T<:Number}(O::Array{$(object){T}},factor::Float64) = scale(O, factor)
+        /{T<:Number}(O::Array{$(object){T}},factor::Float64) = scale(O, 1.0/factor)
+    end
+end
+
 ### scale the object in x-direction (except Arc, Line, Ray and Segment) around the origin
 scalex(p::Point, factor::Float64) = Point( factor*p.x, p.y )
 scalex{T<:Number}(P::Array{Point{T}}, factor::Float64) = reshape( [scalex(P[i],factor) for i=1:length(P)], size(P) )
