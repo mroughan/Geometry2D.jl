@@ -14,8 +14,8 @@ plot(p3; marker="o", color="blue")
 p4 = Point(1, 1.0)
 p5 = Point(2, 3//4)
 p6 = Point(3.0, 2//3)
-p7 = Point(convert(Uint32,2), convert(Uint16,3))
-p8 = Point(convert(Uint32,2)//convert(Uint32,4), convert(Uint16,3))
+p7 = Point(convert(UInt32,2), convert(UInt16,3))
+p8 = Point(convert(UInt32,2)//convert(UInt32,4), convert(UInt16,3))
 
 # some tests of promotion of Points
 dump(promote(p1,p2))

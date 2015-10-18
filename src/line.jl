@@ -277,16 +277,16 @@ function displayPath(line::Line; bounds=default_bounds)
     # choose the two points that are in the bounding rectangle
     P = []
     if i1==1 && isin(p1, bounds)[1]
-        P = [P, p1]
+        P = vcat(P, p1)
     end
     if i2==1 && isin(p2, bounds)[1]
-        P = [P, p2]
+        P = vcat(P, p2)
     end
     if i3==1 && isin(p3, bounds)[1]
-        P = [P, p3]
+        P = vcat(P, p3)
     end
     if i4==1 && isin(p4, bounds)[1]
-        P = [P, p4]
+        P = vcat(P, p4)
     end
     return unique(P) # doesn't eliminate all possible redundant points because of roundoff errors
 end
