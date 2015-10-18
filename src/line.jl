@@ -74,7 +74,7 @@ Segment{T<:Number}(startpoint::Point{T}, endpoint::Point{T}) = Segment{T}(promot
 Segment{T<:Number, S<:Number}(startpoint::Point{T}, endpoint::Point{S}) = Segment(promote(startpoint, endpoint)...)
 
 # could have done this with an abstract type above the three, but wanted to try out Unions
-LINETYPE = Union(Line, Ray, Segment)
+LINETYPE = @compat Union{Line, Ray, Segment}
 
 # lots of alternate representations we could build constructors for
 #    ray constructed using two points (with one as start), or point and a slope (and + or -)
@@ -94,23 +94,23 @@ copy(r::Ray) = Ray(r.startpoint, r.direction)
 copy(s::Segment) = Segment(s.startpoint, s.endpoint)
 
 
-# promote_rule{T<:Integer,S<:FloatingPoint}(::Type{Line{T}}, ::Type{Line{S}} ) = Line{S}
+# promote_rule{T<:Integer,S<:AbstractFloat}(::Type{Line{T}}, ::Type{Line{S}} ) = Line{S}
 # promote_rule{T<:Integer}(::Type{Line{Rational{T}}}, ::Type{Line{T}}) = Line{Rational{T}}
 # promote_rule{T<:Integer,S<:Integer}(::Type{Line{Rational{T}}}, ::Type{Line{S}}) = Line{Rational{promote_type(T,S)}}
 # promote_rule{T<:Integer,S<:Integer}(::Type{Line{Rational{T}}}, ::Type{Line{Rational{S}}}) = Line{Rational{promote_type(T,S)}}
-# promote_rule{T<:Integer,S<:FloatingPoint}(::Type{Line{Rational{T}}}, ::Type{Line{S}})  = Line{promote_type(T,S)}
+# promote_rule{T<:Integer,S<:AbstractFloat}(::Type{Line{Rational{T}}}, ::Type{Line{S}})  = Line{promote_type(T,S)}
 
-# promote_rule{T<:Integer,S<:FloatingPoint}(::Type{Ray{T}}, ::Type{Ray{S}} ) = Ray{S}
+# promote_rule{T<:Integer,S<:AbstractFloat}(::Type{Ray{T}}, ::Type{Ray{S}} ) = Ray{S}
 # promote_rule{T<:Integer}(::Type{Ray{Rational{T}}}, ::Type{Ray{T}}) = Ray{Rational{T}}
 # promote_rule{T<:Integer,S<:Integer}(::Type{Ray{Rational{T}}}, ::Type{Ray{S}}) = Ray{Rational{promote_type(T,S)}}
 # promote_rule{T<:Integer,S<:Integer}(::Type{Ray{Rational{T}}}, ::Type{Ray{Rational{S}}}) = Ray{Rational{promote_type(T,S)}}
-# promote_rule{T<:Integer,S<:FloatingPoint}(::Type{Ray{Rational{T}}}, ::Type{Ray{S}})  = Ray{promote_type(T,S)}
+# promote_rule{T<:Integer,S<:AbstractFloat}(::Type{Ray{Rational{T}}}, ::Type{Ray{S}})  = Ray{promote_type(T,S)}
 
-# promote_rule{T<:Integer,S<:FloatingPoint}(::Type{Segment{T}}, ::Type{Segment{S}} ) = Segment{S}
+# promote_rule{T<:Integer,S<:AbstractFloat}(::Type{Segment{T}}, ::Type{Segment{S}} ) = Segment{S}
 # promote_rule{T<:Integer}(::Type{Segment{Rational{T}}}, ::Type{Segment{T}}) = Segment{Rational{T}}
 # promote_rule{T<:Integer,S<:Integer}(::Type{Segment{Rational{T}}}, ::Type{Segment{S}}) = Segment{Rational{promote_type(T,S)}}
 # promote_rule{T<:Integer,S<:Integer}(::Type{Segment{Rational{T}}}, ::Type{Segment{Rational{S}}}) = Segment{Rational{promote_type(T,S)}}
-# promote_rule{T<:Integer,S<:FloatingPoint}(::Type{Segment{Rational{T}}}, ::Type{Segment{S}})  = Segment{promote_type(T,S)}
+# promote_rule{T<:Integer,S<:AbstractFloat}(::Type{Segment{Rational{T}}}, ::Type{Segment{S}})  = Segment{promote_type(T,S)}
 
 # conversion of one type to another: note though that these loose information
 convert{T<:Number}(::Type{Ray}, s::Segment{T}) = Ray(s.startpoint, s.endpoint-s.startpoint)
@@ -277,16 +277,16 @@ function displayPath(line::Line; bounds=default_bounds)
     # choose the two points that are in the bounding rectangle
     P = []
     if i1==1 && isin(p1, bounds)[1]
-        P = [P, p1]
+        P = vcat(P, p1)
     end
     if i2==1 && isin(p2, bounds)[1]
-        P = [P, p2]
+        P = vcat(P, p2)
     end
     if i3==1 && isin(p3, bounds)[1]
-        P = [P, p3]
+        P = vcat(P, p3)
     end
     if i4==1 && isin(p4, bounds)[1]
-        P = [P, p4]
+        P = vcat(P, p4)
     end
     return unique(P) # doesn't eliminate all possible redundant points because of roundoff errors
 end

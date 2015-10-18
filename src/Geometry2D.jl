@@ -1,5 +1,6 @@
 module Geometry2D
 
+using Compat
 using PyPlot 
 import PyPlot: plot, fill, polar
 
@@ -19,11 +20,11 @@ abstract G2dSimpleObject <: G2dObject # objects for which area,perimeter,isin, m
 abstract G2dCompoundObject <: G2dObject
 
 # automated promotion rules for arrays of numbers
-promote_rule{T<:Integer,S<:FloatingPoint}(::Type{Array{T,1}}, ::Type{Array{S,1}} ) = Array{S,1}
+promote_rule{T<:Integer,S<:AbstractFloat}(::Type{Array{T,1}}, ::Type{Array{S,1}} ) = Array{S,1}
 promote_rule{T<:Integer}(::Type{Array{Rational{T},1}}, ::Type{Array{T,1}}) = Array{Rational{T},1}
 promote_rule{T<:Integer,S<:Integer}(::Type{Array{Rational{T},1}}, ::Type{Array{S,1}}) = Array{Rational{promote_type(T,S)},1}
 promote_rule{T<:Integer,S<:Integer}(::Type{Array{Rational{T},1}}, ::Type{Array{Rational{S},1}}) = Array{Rational{promote_type(T,S)},1}
-promote_rule{T<:Integer,S<:FloatingPoint}(::Type{Array{Rational{T},1}}, ::Type{Array{S,1}})  = Array{promote_type(T,S), 1}
+promote_rule{T<:Integer,S<:AbstractFloat}(::Type{Array{Rational{T},1}}, ::Type{Array{S,1}})  = Array{promote_type(T,S), 1}
 # should probably put something in here for complex numbers too
 
 tolerance = eps() # global variable for tolerance of many operations in floating point

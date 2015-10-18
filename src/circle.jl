@@ -132,7 +132,7 @@ closed(::Circle) = true
 # approximate as a regular polygon
 function approxpoly(c::Circle, n::Integer)
     dtheta = 2.0*pi/n
-    theta = dtheta*[0:n]
+    theta = dtheta*collect(0:n)
     x = c.center.x + c.radius * cos(theta)
     y = c.center.y + c.radius * sin(theta)
     return PointArray(x,y)

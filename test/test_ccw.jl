@@ -4,7 +4,7 @@ n = 5
 srand(1)
 X = rand(3,n)
 Y = rand(3,n)
-X[:,1] = [1:3]   # make sure there is at least one colinear case
+X[:,1] = collect(1:3)   # make sure there is at least one colinear case
 Y[:,1] = [0,0,0]
 CCW = Array(Float64,6,n)
 
