@@ -24,16 +24,16 @@ origin{T<:Number}(::Point{T}) = Point(convert(T,0),  convert(T,0))
 typealias Vect Point
 
 # automated promotion rules for Points
-promote_rule{T<:Integer,S<:FloatingPoint}(::Type{Point{T}}, ::Type{Point{S}} ) = Point{S}
+promote_rule{T<:Integer,S<:AbstractFloat}(::Type{Point{T}}, ::Type{Point{S}} ) = Point{S}
 promote_rule{T<:Integer}(::Type{Point{Rational{T}}}, ::Type{Point{T}}) = Point{Rational{T}}
 promote_rule{T<:Integer,S<:Integer}(::Type{Point{Rational{T}}},::Type{Point{S}}) = Point{Rational{promote_type(T,S)}}
 promote_rule{T<:Integer,S<:Integer}(::Type{Point{Rational{T}}},::Type{Point{Rational{S}}}) = Point{Rational{promote_type(T,S)}}
-promote_rule{T<:Integer,S<:FloatingPoint}(::Type{Point{Rational{T}}}, ::Type{Point{S}})  = Point{promote_type(T,S)}
-promote_rule{T<:FloatingPoint,S<:FloatingPoint}(::Type{Point{T}}, ::Type{Point{S}})  = Point{promote_type(T,S)}
+promote_rule{T<:Integer,S<:AbstractFloat}(::Type{Point{Rational{T}}}, ::Type{Point{S}})  = Point{promote_type(T,S)}
+promote_rule{T<:AbstractFloat,S<:AbstractFloat}(::Type{Point{T}}, ::Type{Point{S}})  = Point{promote_type(T,S)}
 # should probably put something in here for complex numbers too
 
 # don't seem to need these?
-# convert{T<:FloatingPoint}(::Type{Point{T}}, p::Point) = Point(convert(T,p.x), convert(T,p.y))
+# convert{T<:AbstractFloat}(::Type{Point{T}}, p::Point) = Point(convert(T,p.x), convert(T,p.y))
 # convert{T<:Integer}(::Type{Point{Rational{T}}}, p::Point) = Point(convert(Rational{T},p.x), convert(Rational{T},p.y))
 # convert{T<:Integer}(::Type{Point{T}}, p::Point) = Point(convert(T,p.x), convert(T,p.y))
 
@@ -60,7 +60,7 @@ isless(p1::Point, p2::Point) = ( p1.x<p2.x || (p1.x==p2.x && p1.y<p2.y) )
 !=(p1::Point, p2::Point) = !isequal(p1, p2)
 < (p1::Point, p2::Point) = isless(p1,p2)
 > (p1::Point, p2::Point) = p2<p1
-# isequal{T<:FloatingPoint}(p1::Point{T}, p2::Point{T}) = ( abs(p1-p2) <= Point(tolerance, tolerance))
+# isequal{T<:AbstractFloat}(p1::Point{T}, p2::Point{T}) = ( abs(p1-p2) <= Point(tolerance, tolerance))
 # isequal{T<:Number, S<:Number}(p1::Point{T}, p2::Point{S}) = isequal(promote(p1,p2)...) 
 ==(p1::Point, p2::Point) = isequal(p1, p2)
 .< (p1::Point, p2::Point) = p1<p2
