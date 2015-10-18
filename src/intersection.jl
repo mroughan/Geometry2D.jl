@@ -184,7 +184,7 @@ end
 intersection( r::Ray, s::Segment; tolerance=1.0e-12 ) =  intersection( s, r; tolerance=tolerance )
 
 # intersection of lines with segments or Rays
-RayOrSegment = Union(Ray, Segment)
+RayOrSegment = @compat Union{Ray, Segment}
 function intersection( s::RayOrSegment, l::Line; tolerance=1.0e-12 )
     #OUTPUTS: 
     #   intersect = 0 means no intersection

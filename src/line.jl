@@ -74,7 +74,7 @@ Segment{T<:Number}(startpoint::Point{T}, endpoint::Point{T}) = Segment{T}(promot
 Segment{T<:Number, S<:Number}(startpoint::Point{T}, endpoint::Point{S}) = Segment(promote(startpoint, endpoint)...)
 
 # could have done this with an abstract type above the three, but wanted to try out Unions
-LINETYPE = Union(Line, Ray, Segment)
+LINETYPE = @compat Union{Line, Ray, Segment}
 
 # lots of alternate representations we could build constructors for
 #    ray constructed using two points (with one as start), or point and a slope (and + or -)
